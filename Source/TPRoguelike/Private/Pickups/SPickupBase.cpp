@@ -5,19 +5,24 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "PlayerStates/SPlayerState.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 ASPickupBase::ASPickupBase() 
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	SphereComp->SetSphereRadius(64.f);
-	RootComponent = SphereComp;
+	CollisionSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	CollisionSphereComp->SetSphereRadius(64.f);
+	RootComponent = CollisionSphereComp;
 
-	MainMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MainMesh"));
-	MainMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MainMesh->SetupAttachment(RootComponent);
+	MainMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MainMesh"));
+	MainMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MainMeshComponent->SetupAttachment(RootComponent);
+
+	IdleParticleComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("IdleParticleComponent"));
+	IdleParticleComponent->SetupAttachment(RootComponent);
+	IdleParticleComponent->bAutoActivate = true;
 }
 
 void ASPickupBase::BeginPlay()
@@ -63,6 +68,7 @@ void ASPickupBase::UsePickupItem(APawn* InstigatorPawn)
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PickUpParticles, GetActorLocation());
 	bCanBeInteracted = false;
 	RootComponent->SetVisibility(bCanBeInteracted, true);
+	IdleParticleComponent->Deactivate();
 
 	GetWorldTimerManager().SetTimer(InteractionDelay_TimerHandle, this, &ASPickupBase::AllowInteraction, InteractionDelay);
 }
@@ -71,4 +77,5 @@ void ASPickupBase::AllowInteraction()
 {
 	bCanBeInteracted = true;
 	RootComponent->SetVisibility(bCanBeInteracted, true);
+	IdleParticleComponent->Activate();
 }

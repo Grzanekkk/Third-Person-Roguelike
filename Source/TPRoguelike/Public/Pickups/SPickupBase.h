@@ -8,6 +8,7 @@
 #include "SPickupBase.generated.h"
 
 class USphereComponent;
+class UParticleSystemComponent;
 
 UCLASS(Abstract)
 class TPROGUELIKE_API ASPickupBase : public AActor, public ISGameplayInterface
@@ -36,10 +37,13 @@ protected:
 	void AllowInteraction();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "RL|Components")
-	TObjectPtr<UStaticMeshComponent> MainMesh;
+	TObjectPtr<UStaticMeshComponent> MainMeshComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RL|Components")
-	TObjectPtr<USphereComponent> SphereComp;
+	TObjectPtr<USphereComponent> CollisionSphereComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RL|Components")
+	TObjectPtr<UParticleSystemComponent > IdleParticleComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "RL|Effects|Particles")
 	TObjectPtr<UParticleSystem> PickUpParticles;
