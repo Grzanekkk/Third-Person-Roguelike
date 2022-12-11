@@ -81,8 +81,7 @@ void ASCharacter::Tick(float DeltaTime)
 
 //////////////////////////////////////////////////////
 //////	Health + Death
-void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
-	float DeltaHealth)
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float DeltaHealth)
 {
 	if (DeltaHealth < 0.0f)
 	{

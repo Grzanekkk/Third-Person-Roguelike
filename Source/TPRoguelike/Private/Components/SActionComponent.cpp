@@ -7,11 +7,10 @@
 USActionComponent::USActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 
-void USActionComponent::BeginPlay()
+void USActionComponent::BeginPlay() 
 {
 	Super::BeginPlay();
 
@@ -28,7 +27,6 @@ void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	FString DebugMsg = GetNameSafe(GetOwner()) + ": " + ActiveGameplayTags.ToStringSimple();
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
 }
-
 
 void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> ActionClass)
 {

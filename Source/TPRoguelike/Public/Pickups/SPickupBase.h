@@ -23,7 +23,7 @@ public:
 
 	virtual bool CanInteract_Implementation(APawn* InstigatorPawn);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Pickup")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "RL|Pickup")
 	int32 UseCost = 0;
 
 protected:
@@ -35,21 +35,21 @@ protected:
 	UFUNCTION()
 	void AllowInteraction();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "RL|Components")
 	TObjectPtr<UStaticMeshComponent> MainMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RL|Components")
 	TObjectPtr<USphereComponent> SphereComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effects|Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "RL|Effects|Particles")
 	TObjectPtr<UParticleSystem> PickUpParticles;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	UPROPERTY(EditDefaultsOnly, Category = "RL|Pickup|Interaction")
 	float InteractionDelay = 10.f;
 
 	UPROPERTY()
 	FTimerHandle InteractionDelay_TimerHandle;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	UPROPERTY(EditDefaultsOnly, Category = "RL|Pickup|Interaction")
 	bool bCanBeInteracted = true;
 };

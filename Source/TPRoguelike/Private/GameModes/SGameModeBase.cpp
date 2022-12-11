@@ -7,12 +7,15 @@
 #include "AI/SAICharacter.h"
 #include "Characters/SCharacter.h"
 #include "Components/SAttributeComponent.h"
+#include "Pickups/SPickupBase.h"
 #include "PlayerStates/SPlayerState.h"
+#include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("jp.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
-static TAutoConsoleVariable<bool> CVarSpawnPickups(TEXT("jp.SpawnPickups"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
+static TAutoConsoleVariable<bool> CVarSpawnPickups(TEXT("jp.SpawnPickups"), true, TEXT("Enable spawning of pickups."), ECVF_Cheat);
+static TAutoConsoleVariable<int> CVarGiveCredits(TEXT("jp.GiveCredits"), 0, TEXT("Give credits to every player."), ECVF_Cheat);
 
 
 ASGameModeBase::ASGameModeBase()
@@ -200,5 +203,14 @@ void ASGameModeBase::KillAllAI()
 		TObjectPtr<ASAICharacter> Bot = *Iterator;
 
 		USAttributeComponent::GetAttributeComponent(Bot)->Kill(Bot);
+	}
+}
+
+void ASGameModeBase::GiveCredits(int32 Amount)
+{
+	TObjectPtr<ASCharacter> Player = Cast<ASCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	if (Player)
+	{
+		Player->GetPlayerState<ASPlayerState>()->AddCredits(Amount);
 	}
 }

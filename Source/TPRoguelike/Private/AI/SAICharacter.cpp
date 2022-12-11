@@ -8,6 +8,7 @@
 #include "BrainComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "UI/SWorldUserWidget.h"
+#include "UI/SPlayerSpottedWidget.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SActionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -61,10 +62,9 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 	//DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.f, true);
 }
 
-
 bool ASAICharacter::SetTargetActor(AActor* TargetActor)
 {
-	// If we ware hit by another ai we will start shooting this ai (its kinda fun)
+	// If this ai ware hit by another ai it will start shooting this ai (its kinda fun)
 	if (TargetActor != this)
 	{
 		TObjectPtr<AAIController> AIController = Cast<AAIController>(GetController());
@@ -72,13 +72,47 @@ bool ASAICharacter::SetTargetActor(AActor* TargetActor)
 		{
 			TObjectPtr<UBlackboardComponent> BBCComp = AIController->GetBlackboardComponent();
 
-			BBCComp->SetValueAsObject("TargetActor", TargetActor);
+			TObjectPtr<AActor> CurrentTargetActor = Cast<AActor>(BBCComp->GetValueAsObject(BBV_TargetActor));
+			if (TargetActor != CurrentTargetActor)
+			{
+				SpawnPlayerSpottedWidget();
+			}
+
+			BBCComp->SetValueAsObject(BBV_TargetActor, TargetActor);
 
 			return true;
 		}
 	}
 
 	return false;
+}
+
+void ASAICharacter::SpawnPlayerSpottedWidget()
+{
+	// If AI spots new target actor it will show PlayerSpotted Widget
+	if (PlayerSpottedWidgetInstance == nullptr && ensure(PlayerSpottedWidgetClass))
+	{
+		PlayerSpottedWidgetInstance = CreateWidget<USPlayerSpottedWidget>(GetWorld(), PlayerSpottedWidgetClass);
+	}
+
+	if (PlayerSpottedWidgetInstance && !PlayerSpottedWidgetInstance->IsInViewport())
+	{
+		PlayerSpottedWidgetInstance->AttachedActor = this;
+		PlayerSpottedWidgetInstance->AddToViewport();
+		PlayerSpottedWidgetInstance->PlayIconShakeAnimation();
+
+		if (!GetWorldTimerManager().IsTimerActive(PlayerSpottedTimer))
+		{
+			FTimerDelegate RemovePlayerSpottedDelegate;
+			RemovePlayerSpottedDelegate.BindUFunction(this, "RemovePlayerSpottedWidget");
+			GetWorldTimerManager().SetTimer(PlayerSpottedTimer, RemovePlayerSpottedDelegate, PlayerSpottedWidgetLifeTime, false);
+		}
+	}
+}
+
+void ASAICharacter::RemovePlayerSpottedWidget()
+{
+	PlayerSpottedWidgetInstance->RemoveFromViewport();
 }
 
 ////////////////////////////////////////////////////
@@ -91,13 +125,13 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 	{
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->GetTimeSeconds());
 
-		if (ActiveHealthBarWidget == nullptr)
+		if (HealthBarWidgetInstance == nullptr && ensure(HealthBarWidgetClass))
 		{
-			ActiveHealthBarWidget = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
-			if (ActiveHealthBarWidget)
+			HealthBarWidgetInstance = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+			if (HealthBarWidgetInstance)
 			{
-				ActiveHealthBarWidget->AttachedActor = this;
-				ActiveHealthBarWidget->AddToViewport();
+				HealthBarWidgetInstance->AttachedActor = this;
+				HealthBarWidgetInstance->AddToViewport();
 			}
 		}
 	}
@@ -129,7 +163,8 @@ void ASAICharacter::OnDeath()
 		StopHealingOverTime();
 	}
 
-	ActiveHealthBarWidget->RemoveFromViewport();
+	HealthBarWidgetInstance->RemoveFromViewport();
+	PlayerSpottedWidgetInstance->RemoveFromViewport();
 
 	// Destroy Actor in 10s
 	SetLifeSpan(10.f);

@@ -11,23 +11,23 @@ static TAutoConsoleVariable<float> CVarDamageMultipler(TEXT("jp.DamageMultipler"
 // Sets default values for this component's properties
 USAttributeComponent::USAttributeComponent()
 {
-	Health = MaxHealth;
+	CurrentHealth = MaxHealth;
 }
 
 bool USAttributeComponent::IsAlive() const
 {
 	// returns true if alive, false if dead
-	return Health > 0;
+	return CurrentHealth > 0;
 }
 
 bool USAttributeComponent::IsFullyHealed() const
 {
-	return Health == MaxHealth;
+	return CurrentHealth == MaxHealth;
 }
 
 bool USAttributeComponent::IsHealthHigherThen(float IsHealthHigherThenThis) const
 {
-	return Health > IsHealthHigherThenThis;
+	return CurrentHealth > IsHealthHigherThenThis;
 }
 
 bool USAttributeComponent::Kill(AActor* InstigatorActor)
@@ -35,6 +35,7 @@ bool USAttributeComponent::Kill(AActor* InstigatorActor)
 	return ApplyHealthChange(nullptr, -9999999.f);
 }
 
+// If HealthDealta is < 0 then we are healing
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float HealthDelta)
 {
 	if (!GetOwner()->CanBeDamaged())
@@ -50,16 +51,22 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Heal
 		HealthDelta *= DamageMultipler;
 	}
 
+	// Calculating Health
+	float OldHealth = CurrentHealth;
+	CurrentHealth = FMath::Clamp(CurrentHealth + HealthDelta, 0.0f, MaxHealth);
 
-	float OldHealth = Health;
+	float ActualDeltaHealth = CurrentHealth - OldHealth;
+	OnHealthChanged.Broadcast(InstigatorActor, this, CurrentHealth, ActualDeltaHealth);
 
-	Health = FMath::Clamp(Health + HealthDelta, 0.0f, MaxHealth);
-
-	float ActualDeltaHealth = Health - OldHealth;
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDeltaHealth);
+	// We dont want to lose rage when we are getting healed
+	if (ActualDeltaHealth < 0.0f)
+	{
+		float RageToApply = (-ActualDeltaHealth * RageMultiplier);
+		ApplyRageChange(RageToApply);
+	}
 
 	// Actor just died
-	if (ActualDeltaHealth < 0.0f && Health == 0.0f)
+	if (ActualDeltaHealth < 0.0f && CurrentHealth == 0.0f)
 	{
 		TObjectPtr<ASGameModeBase> GM = GetWorld()->GetAuthGameMode<ASGameModeBase>();
 		GM->OnActorKilled(GetOwner(), InstigatorActor);
@@ -67,6 +74,24 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Heal
 
 	// Returns false if dealth 0 damage (actor is already dead)
 	return ActualDeltaHealth != 0;
+}
+
+bool USAttributeComponent::ApplyRageChange(float RageDelta)
+{
+	// If we and spend rage we return false
+	if (RageDelta == 0.0f || CurrentRage + RageDelta < 0.0f)
+	{
+		return false;
+	}
+
+	// Calculating Rage
+	float OldRage = CurrentRage;
+	CurrentRage = FMath::Clamp(OldRage + RageDelta, 0.0f, MaxRage);
+
+	float ActualRageDelta = CurrentRage - OldRage;
+	OnRageChanged.Broadcast(this, CurrentRage, ActualRageDelta);
+
+	return true;
 }
 
 USAttributeComponent* USAttributeComponent::GetAttributeComponent(AActor* FromActor)

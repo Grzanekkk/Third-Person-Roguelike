@@ -91,7 +91,10 @@ public:
 
 
 	////////////////////////////////////////////////////
-	/// Cheats
+	/// Cheats*
 	UFUNCTION(Exec)
 	void KillAllAI();
+
+	UFUNCTION(Exec)
+	void GiveCredits(int32 Amount);
 };

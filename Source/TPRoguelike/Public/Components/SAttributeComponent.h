@@ -8,6 +8,7 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor,  class USAttributeComponent*, OwningComp, float, NewHealth, float, HealthDelta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRageChanged, class USAttributeComponent*, OwningComp, float, NewRage, float, RageDelta);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TPROGUELIKE_API USAttributeComponent : public UActorComponent
@@ -28,7 +29,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
-	float Health = 100.f;
+	float CurrentHealth = 100.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
 	float MaxHealth = 100.f;
@@ -36,6 +37,16 @@ protected:
 	// Credits that will be granted to a killer of component owner
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Credits")
 	int32 CreditsForKilling = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Rage")
+	float CurrentRage = 10.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Rage")
+	float MaxRage = 100.0f;
+
+	// Amount of Rage gained per 1 damage point recived
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Rage")
+	float RageMultiplier = 0.2f;
 
 	// HealthMax, Stamina, Mana, CritChance;
 
@@ -52,11 +63,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes|Health")
 	bool Kill(AActor* InstigatorActor);
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Attributes|Health")
 	FOnHealthChanged OnHealthChanged;
 
-	UFUNCTION(BlueprintCallable,  Category = "Attributes")
+	UPROPERTY(BlueprintAssignable, Category = "Attributes|Rage")
+	FOnRageChanged OnRageChanged;
+
+	UFUNCTION(BlueprintCallable,  Category = "Attributes|Health")
 	bool ApplyHealthChange(AActor* InstigatorActor, float HealthDelta);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes|Rage")
+	bool ApplyRageChange(float RageDelta);
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes|Credits")
 	FORCEINLINE int32 GetCreditsAmountForKill() const { return CreditsForKilling; };
