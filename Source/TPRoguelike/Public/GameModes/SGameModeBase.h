@@ -53,7 +53,6 @@ protected:
 	UFUNCTION()
 	void OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
-
 	////////////////////////////////////////////////////
 	/// Player Respawning
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Respawn")
@@ -61,7 +60,6 @@ protected:
 
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* PlayerController);
-
 
 	////////////////////////////////////////////////////
 	/// Pickup Spawning
@@ -88,7 +86,6 @@ public:
 	////////////////////////////////////////////////////
 	/// OnActorKilled
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
-
 
 	////////////////////////////////////////////////////
 	/// Cheats*

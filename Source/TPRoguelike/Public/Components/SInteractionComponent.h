@@ -21,6 +21,9 @@ public:
 	UFUNCTION()
 	void PrimaryInteract();
 
+	UFUNCTION(Server, Reliable)
+	void ServerPrimaryInteract(AActor* InFocusedActor);
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -19,17 +19,21 @@ public:
 	
 	ASItemChest();
 	
-	void Interact_Implementation(APawn* InstigatorPawn);
+	virtual void Interact_Implementation(APawn* InstigatorPawn);
+
+	virtual bool CanInteract_Implementation(APawn* InstigatorPawn);
+
+	virtual bool IsEnabled_Implementation();
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, Category = "Meshes")
+	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
 	UStaticMeshComponent* BaseMesh;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rogue|Components")
 	UStaticMeshComponent* LidMesh;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
 	class UParticleSystemComponent* ParticleComp;
 	
 	// Called when the game starts or when spawned

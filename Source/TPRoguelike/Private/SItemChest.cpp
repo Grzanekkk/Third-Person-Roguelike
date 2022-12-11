@@ -40,3 +40,13 @@ void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 	ParticleComp->Activate(true);
 
 }
+
+bool ASItemChest::CanInteract_Implementation(APawn* InstigatorPawn)
+{
+	return true;
+}
+
+bool ASItemChest::IsEnabled_Implementation()
+{
+	return true;
+}
