@@ -24,6 +24,8 @@ public:
 
 	virtual bool CanInteract_Implementation(APawn* InstigatorPawn);
 
+	virtual bool IsEnabled_Implementation();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "RL|Pickup")
 	int32 UseCost = 0;
 
@@ -43,6 +45,9 @@ protected:
 	TObjectPtr<USphereComponent> CollisionSphereComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RL|Components")
+	TObjectPtr<USphereComponent> RootSphereComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RL|Components")
 	TObjectPtr<UParticleSystemComponent > IdleParticleComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "RL|Effects|Particles")
@@ -55,5 +60,5 @@ protected:
 	FTimerHandle InteractionDelay_TimerHandle;
 
 	UPROPERTY(EditDefaultsOnly, Category = "RL|Pickup|Interaction")
-	bool bCanBeInteracted = true;
+	bool IsEnabled = true;
 };

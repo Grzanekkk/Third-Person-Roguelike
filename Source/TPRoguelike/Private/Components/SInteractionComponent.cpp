@@ -57,6 +57,7 @@ void USInteractionComponent::FindBestInteractable()
 
 	// Clear ref
 	FocusedActor = nullptr;
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 
 	for (FHitResult Hit : Hits)
 	{
@@ -68,7 +69,7 @@ void USInteractionComponent::FindBestInteractable()
 		AActor* HitActor = Hit.GetActor();
 		if (HitActor)
 		{
-			if (HitActor->Implements<USGameplayInterface>())
+			if (HitActor->Implements<USGameplayInterface>() && ISGameplayInterface::Execute_IsEnabled(HitActor))
 			{
 				FocusedActor = HitActor;
 				break;

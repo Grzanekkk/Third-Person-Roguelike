@@ -26,6 +26,11 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Interact(APawn* Instigator);
 
+	// Here we are checking if player meets requierements to interact fe: has enough coins or is damaged
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool CanInteract(APawn* Instigator);
+
+	// Here we are checking if interactable object itself is capable of beeing interacted fe: is not on cooldown
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool IsEnabled();
 };

@@ -21,12 +21,12 @@ void ASHealingPotion::Interact_Implementation(APawn* InstigatorPawn)
 
 bool ASHealingPotion::CanInteract_Implementation(APawn* InstigatorPawn)
 {
-	if (Super::CanInteract_Implementation(InstigatorPawn))
+	TObjectPtr<USAttributeComponent> AttributeComponent = USAttributeComponent::GetAttributeComponent(InstigatorPawn);
+	if (AttributeComponent)
 	{
-		USAttributeComponent* AttributeComponent = USAttributeComponent::GetAttributeComponent(InstigatorPawn);
-		if (AttributeComponent)
+		if (!AttributeComponent->IsFullyHealed())
 		{
-			if (!AttributeComponent->IsFullyHealed())
+			if (Super::CanInteract_Implementation(InstigatorPawn))
 			{
 				return true;
 			}
@@ -40,7 +40,7 @@ void ASHealingPotion::UsePickupItem(APawn* InstigatorPawn)
 {
 	Super::UsePickupItem(InstigatorPawn);
 
-	USAttributeComponent* AttributeComponent = USAttributeComponent::GetAttributeComponent(InstigatorPawn);
+	TObjectPtr<USAttributeComponent> AttributeComponent = USAttributeComponent::GetAttributeComponent(InstigatorPawn);
 	if (AttributeComponent)
 	{
 		AttributeComponent->ApplyHealthChange(this, HealingAmount);

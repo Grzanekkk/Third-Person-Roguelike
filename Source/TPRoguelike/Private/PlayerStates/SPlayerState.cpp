@@ -5,17 +5,21 @@
 
 bool ASPlayerState::AddCredits(int32 CreditsDelta)
 {
-	int32 NewCredits = AvalibleCredits + CreditsDelta;
-
-	if (NewCredits < 0)
+	if (CreditsDelta != 0)
 	{
-		// We dont have enaugh credits
-		return false;
+		int32 NewCredits = AvalibleCredits + CreditsDelta;
+
+		if (NewCredits < 0)
+		{
+			// We dont have enaugh credits
+			return false;
+		}
+
+		AvalibleCredits = NewCredits;
+
+		AActor* ControllecActor = Cast<AActor>(GetPlayerController()->GetPawn());
+		OnCreditsChanged.Broadcast(ControllecActor, AvalibleCredits, CreditsDelta);
 	}
 
-	AvalibleCredits = NewCredits;
-
-	AActor* ControllecActor = Cast<AActor>(GetPlayerController()->GetPawn());
-	OnCreditsChanged.Broadcast(ControllecActor, AvalibleCredits, CreditsDelta);
 	return true;
 }

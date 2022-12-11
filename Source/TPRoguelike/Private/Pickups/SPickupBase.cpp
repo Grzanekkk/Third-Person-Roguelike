@@ -12,17 +12,22 @@ ASPickupBase::ASPickupBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	RootSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
+	RootSphereComp->SetSphereRadius(0.f);
+	RootSphereComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RootComponent = RootSphereComp;
+
 	CollisionSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionSphereComp->SetSphereRadius(64.f);
-	RootComponent = CollisionSphereComp;
+	CollisionSphereComp->SetupAttachment(RootComponent);
 
 	MainMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MainMesh"));
 	MainMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MainMeshComponent->SetupAttachment(RootComponent);
+	MainMeshComponent->SetupAttachment(CollisionSphereComp);
 
 	IdleParticleComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("IdleParticleComponent"));
-	IdleParticleComponent->SetupAttachment(RootComponent);
 	IdleParticleComponent->bAutoActivate = true;
+	IdleParticleComponent->SetupAttachment(CollisionSphereComp);
 }
 
 void ASPickupBase::BeginPlay()
@@ -44,7 +49,7 @@ void ASPickupBase::Interact_Implementation(APawn* InstigatorPawn)
 
 bool ASPickupBase::CanInteract_Implementation(APawn* InstigatorPawn)
 {
-	if (bCanBeInteracted)
+	if (IsEnabled_Implementation())
 	{
 		if (InstigatorPawn->GetPlayerState<ASPlayerState>()->AddCredits(-UseCost))
 		{
@@ -63,11 +68,16 @@ bool ASPickupBase::CanInteract_Implementation(APawn* InstigatorPawn)
 	}
 }
 
+bool ASPickupBase::IsEnabled_Implementation()
+{
+	return IsEnabled;
+}
+
 void ASPickupBase::UsePickupItem(APawn* InstigatorPawn)
 {
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PickUpParticles, GetActorLocation());
-	bCanBeInteracted = false;
-	RootComponent->SetVisibility(bCanBeInteracted, true);
+	IsEnabled = false;
+	RootComponent->SetVisibility(IsEnabled, true);
 	IdleParticleComponent->Deactivate();
 
 	GetWorldTimerManager().SetTimer(InteractionDelay_TimerHandle, this, &ASPickupBase::AllowInteraction, InteractionDelay);
@@ -75,7 +85,7 @@ void ASPickupBase::UsePickupItem(APawn* InstigatorPawn)
 
 void ASPickupBase::AllowInteraction()
 {
-	bCanBeInteracted = true;
-	RootComponent->SetVisibility(bCanBeInteracted, true);
+	IsEnabled = true;
+	RootComponent->SetVisibility(IsEnabled, true);
 	IdleParticleComponent->Activate();
 }
