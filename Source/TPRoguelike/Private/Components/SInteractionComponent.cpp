@@ -114,7 +114,7 @@ void USInteractionComponent::FindBestInteractable()
 
 void USInteractionComponent::PrimaryInteract()
 {
-	ServerPrimaryInteract_Implementation(FocusedActor);
+	ServerPrimaryInteract(FocusedActor);
 }
 
 void USInteractionComponent::ServerPrimaryInteract_Implementation(AActor* InFocusedActor)

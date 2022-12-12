@@ -4,6 +4,7 @@
 #include "SItemChest.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Net/UnrealNetwork.h"
 
 ASItemChest::ASItemChest()
 {
@@ -20,6 +21,8 @@ ASItemChest::ASItemChest()
 	LidMesh->SetupAttachment(BaseMesh);
 
 	TargetLidPitch = 110.f;
+
+	SetReplicates(true);
 }
 
 void ASItemChest::BeginPlay()
@@ -37,8 +40,18 @@ void ASItemChest::Tick(float DeltaTime)
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// Opening Lid animation in Blueprint
-	ParticleComp->Activate(true);
+	//ParticleComp->Activate(true);
 
+	bIsOpened = !bIsOpened;
+
+	// It will be called automaticly on clients but if we want to call it on the server we need to do this manualy here
+	OnRep_bIsOpened();
+}
+
+void ASItemChest::OnRep_bIsOpened()
+{
+	ParticleComp->Activate(true);
+	OpenLid();
 }
 
 bool ASItemChest::CanInteract_Implementation(APawn* InstigatorPawn)
@@ -49,4 +62,11 @@ bool ASItemChest::CanInteract_Implementation(APawn* InstigatorPawn)
 bool ASItemChest::IsEnabled_Implementation()
 {
 	return true;
+}
+
+void ASItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASItemChest, bIsOpened);
 }

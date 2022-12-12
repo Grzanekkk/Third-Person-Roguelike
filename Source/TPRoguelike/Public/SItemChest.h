@@ -27,6 +27,15 @@ public:
 
 protected:
 
+	UPROPERTY(ReplicatedUsing="OnRep_bIsOpened", BlueprintReadOnly, Category = "Rogue|State")
+	bool bIsOpened = false;
+
+	UFUNCTION()
+	void OnRep_bIsOpened();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Rogue|State")
+	void OpenLid();
+
 	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
 	UStaticMeshComponent* BaseMesh;
 	
