@@ -3,6 +3,7 @@
 
 #include "Components/SAttributeComponent.h"
 #include "GameModes/SGameModeBase.h"
+#include "Net/UnrealNetwork.h"
 
 
 static TAutoConsoleVariable<float> CVarDamageMultipler(TEXT("jp.DamageMultipler"), 1.0f, TEXT("Global damage multiplier in AttributeComponent."), ECVF_Cheat);
@@ -12,6 +13,8 @@ static TAutoConsoleVariable<float> CVarDamageMultipler(TEXT("jp.DamageMultipler"
 USAttributeComponent::USAttributeComponent()
 {
 	CurrentHealth = MaxHealth;
+
+	SetIsReplicatedByDefault(true);
 }
 
 bool USAttributeComponent::IsAlive() const
@@ -56,13 +59,14 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Heal
 	CurrentHealth = FMath::Clamp(CurrentHealth + HealthDelta, 0.0f, MaxHealth);
 
 	float ActualDeltaHealth = CurrentHealth - OldHealth;
-	OnHealthChanged.Broadcast(InstigatorActor, this, CurrentHealth, ActualDeltaHealth);
+	// if this multicast is called on the client it will be called like a reguilar function
+	MulticastOnHealthChanged(InstigatorActor, this, CurrentHealth, ActualDeltaHealth);
 
 	// We dont want to lose rage when we are getting healed
 	if (ActualDeltaHealth < 0.0f)
 	{
 		float RageToApply = (-ActualDeltaHealth * RageMultiplier);
-		ApplyRageChange(RageToApply);
+		ApplyRageChange(InstigatorActor, RageToApply);
 	}
 
 	// Actor just died
@@ -76,7 +80,7 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Heal
 	return ActualDeltaHealth != 0;
 }
 
-bool USAttributeComponent::ApplyRageChange(float RageDelta)
+bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float RageDelta)
 {
 	// If we and spend rage we return false
 	if (RageDelta == 0.0f || CurrentRage + RageDelta < 0.0f)
@@ -89,7 +93,7 @@ bool USAttributeComponent::ApplyRageChange(float RageDelta)
 	CurrentRage = FMath::Clamp(OldRage + RageDelta, 0.0f, MaxRage);
 
 	float ActualRageDelta = CurrentRage - OldRage;
-	OnRageChanged.Broadcast(this, CurrentRage, ActualRageDelta);
+	OnRageChanged.Broadcast(InstigatorActor, this, CurrentRage, ActualRageDelta);
 
 	return true;
 }
@@ -113,4 +117,17 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 	}
 
 	return false;
+}
+
+void USAttributeComponent::MulticastOnHealthChanged_Implementation(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float HealthDelta)
+{
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, HealthDelta);
+}
+
+void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USAttributeComponent, CurrentHealth);
+	DOREPLIFETIME(USAttributeComponent, MaxHealth);
 }

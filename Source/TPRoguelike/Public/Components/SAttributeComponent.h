@@ -7,8 +7,11 @@
 #include "SAttributeComponent.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor,  class USAttributeComponent*, OwningComp, float, NewHealth, float, HealthDelta);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRageChanged, class USAttributeComponent*, OwningComp, float, NewRage, float, RageDelta);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor,  class USAttributeComponent*, OwningComp, float, NewHealth, float, HealthDelta);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRageChanged, class USAttributeComponent*, OwningComp, float, NewRage, float, RageDelta);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAttributeChanged, AActor*, InstigatorActor, class USAttributeComponent*, OwningComp, float, NewHealth, float, HealthDelta);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TPROGUELIKE_API USAttributeComponent : public UActorComponent
@@ -28,10 +31,10 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes|Health")
 	float CurrentHealth = 100.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes|Health")
 	float MaxHealth = 100.f;
 
 	// Credits that will be granted to a killer of component owner
@@ -64,16 +67,19 @@ public:
 	bool Kill(AActor* InstigatorActor);
 
 	UPROPERTY(BlueprintAssignable, Category = "Attributes|Health")
-	FOnHealthChanged OnHealthChanged;
+	FOnAttributeChanged OnHealthChanged;
 
-	UPROPERTY(BlueprintAssignable, Category = "Attributes|Rage")
-	FOnRageChanged OnRageChanged;
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float HealthDelta);
 
 	UFUNCTION(BlueprintCallable,  Category = "Attributes|Health")
 	bool ApplyHealthChange(AActor* InstigatorActor, float HealthDelta);
 
+	UPROPERTY(BlueprintAssignable, Category = "Attributes|Rage")
+	FOnAttributeChanged OnRageChanged;
+
 	UFUNCTION(BlueprintCallable, Category = "Attributes|Rage")
-	bool ApplyRageChange(float RageDelta);
+	bool ApplyRageChange(AActor* InstigatorActor, float RageDelta);
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes|Credits")
 	FORCEINLINE int32 GetCreditsAmountForKill() const { return CreditsForKilling; };

@@ -20,7 +20,7 @@ protected:
 	TObjectPtr<USizeBox> ParentSizeBox;
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI", meta = (ExposeOnSpawn=true))
 	TObjectPtr<AActor> AttachedActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")

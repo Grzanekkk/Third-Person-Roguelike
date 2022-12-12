@@ -17,6 +17,8 @@ class TPROGUELIKE_API USActionComponent : public UActorComponent
 public:	
 	USActionComponent();
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer ActiveGameplayTags;
 
@@ -35,14 +37,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	TArray<TSubclassOf<USAction>> DefaultActions;
 
+	UFUNCTION(Server, Reliable)
+	void ServerStartActionByName(AActor* Instigator, FName ActionName);
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	TArray<TObjectPtr<USAction>> Actions;
-
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
 };

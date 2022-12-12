@@ -28,6 +28,8 @@ ASPickupBase::ASPickupBase()
 	IdleParticleComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("IdleParticleComponent"));
 	IdleParticleComponent->bAutoActivate = true;
 	IdleParticleComponent->SetupAttachment(CollisionSphereComp);
+
+	SetReplicates(true);
 }
 
 void ASPickupBase::BeginPlay()

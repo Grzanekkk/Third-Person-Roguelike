@@ -7,10 +7,11 @@
 USActionComponent::USActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	SetIsReplicatedByDefault(true);
 }
 
-
-void USActionComponent::BeginPlay() 
+void USActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -71,6 +72,13 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 				return false;
 			}
 
+			// If we are a Client we want to tell the server to call StartAction and also run it locally
+			// If we are a Server we are just running this function na ther Sever
+			if (!GetOwner()->HasAuthority())
+			{
+				ServerStartActionByName(Instigator, ActionName);
+			}
+
 			Action->StartAction(Instigator);
 			return true;
 		}
@@ -78,6 +86,12 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 
 	return false;
 }
+
+void USActionComponent::ServerStartActionByName_Implementation(AActor* Instigator, FName ActionName)
+{
+	StartActionByName(Instigator, ActionName);
+}
+
 
 bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 {
