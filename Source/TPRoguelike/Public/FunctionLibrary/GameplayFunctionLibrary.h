@@ -15,9 +15,9 @@ class TPROGUELIKE_API UGameplayFunctionLibrary : public UBlueprintFunctionLibrar
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Gameplay")
 	static bool ApplyDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount);
 
-	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Gameplay")
 	static bool ApplyDirectionalDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount, const FHitResult& HitResult);
 };
