@@ -3,6 +3,9 @@
 
 #include "Components/SActionComponent.h"
 #include "Actions/SAction.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/ActorChannel.h"
 
 USActionComponent::USActionComponent()
 {
@@ -15,9 +18,13 @@ void USActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (TSubclassOf<USAction> DefaultActionClass : DefaultActions)
+	// We are only adding actions on the server and then replicationg them to clients
+	if (GetOwner()->HasAuthority())
 	{
-		AddAction(GetOwner(), DefaultActionClass);
+		for (TSubclassOf<USAction> DefaultActionClass : DefaultActions)
+		{
+			AddAction(GetOwner(), DefaultActionClass);
+		}
 	}
 }
 
@@ -25,8 +32,20 @@ void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FString DebugMsg = GetNameSafe(GetOwner()) + ": " + ActiveGameplayTags.ToStringSimple();
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
+	//FString DebugMsg = GetNameSafe(GetOwner()) + ": " + ActiveGameplayTags.ToStringSimple();
+	//GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
+
+	// Draw all actions
+	for (TObjectPtr<USAction> Action : Actions)
+	{
+		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s : IsRunning: %s : Outer: %s"),
+			*GetNameSafe(GetOwner()),
+			*Action->ActionName.ToString(),
+			Action->IsRunning() ? TEXT("true") : TEXT("false"),
+			*GetNameSafe(Action->GetOuter()));
+		ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetOwner(), ActionMsg, TextColor, 0.0f);
+	}
 }
 
 void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> ActionClass)
@@ -36,9 +55,11 @@ void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> Acti
 		return;
 	}
 
-	TObjectPtr<USAction> NewAction = NewObject<USAction>(this, ActionClass);
+	TObjectPtr<USAction> NewAction = NewObject<USAction>(GetOwner(), ActionClass);
 	if (NewAction)
 	{
+		NewAction->Initialize(this);
+
 		Actions.Add(NewAction);
 
 		if (NewAction->bAutoStart && ensure(NewAction->CanStart(Instigator)))
@@ -92,7 +113,6 @@ void USActionComponent::ServerStartActionByName_Implementation(AActor* Instigato
 	StartActionByName(Instigator, ActionName);
 }
 
-
 bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 {
 	for (TObjectPtr<USAction> Action : Actions)
@@ -108,4 +128,26 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	}
 
 	return false;
+}
+
+bool USActionComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	for (TObjectPtr<USAction> Action : Actions)
+	{
+		if (Action)
+		{
+			// We are calling ReplicateSubobject on every Action and then we are checking if any of the action should be replicated, if yes we return true
+			bWroteSomething |= Channel->ReplicateSubobject(Action, *Bunch, *RepFlags);
+		}
+	}
+
+	return false;
+}
+
+void USActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USActionComponent, Actions);
 }

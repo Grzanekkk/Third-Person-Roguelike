@@ -17,39 +17,51 @@ class TPROGUELIKE_API USAction : public UObject
 	
 public:
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Action")
+	UFUNCTION()
+	void Initialize(USActionComponent* NewActionComponent);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Rogue|Action")
 	void StartAction(AActor* Instigator);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Rogue|Action")
 	void StopAction(AActor* Instigator);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Action")
+	UFUNCTION(BlueprintNativeEvent, Category = "Rogue|Action")
 	bool CanStart(AActor* Instigator);
 
-	UFUNCTION(BlueprintCallable, Category = "Action")
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Action")
 	FORCEINLINE	bool IsRunning() const { return bIsRunning; };
 
-	UPROPERTY(EditDefaultsOnly, Category = "Action")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action")
 	FName ActionName = "";
 
-	UPROPERTY(EditDefaultsOnly, Category = "Action")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action")
 	bool bAutoStart = false;
 
-	// We have to override this function so we will have acces to line traces and other world related stuff in blueprint children of this class
+	/** We have to override this function so we will have acces to line traces and other world related stuff in blueprint children of this class */
 	UWorld* GetWorld() const override;
 
-protected:
-	UFUNCTION(BlueprintCallable, Category = "Action")
-	USActionComponent* GetOuterComponent() const;
+	/** We need to override this function so we can use actions in the network fe.replicate them */
+	virtual bool IsSupportedForNetworking() const override;
 
-	// Tags Added to owning actor when activated, removed when action stops
-	UPROPERTY(EditDefaultsOnly, Category = "Action|Tags")
+protected:
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Action")
+	USActionComponent* GetOwningComponent() const;
+
+	UPROPERTY(Replicated)
+	TObjectPtr<USActionComponent> OwningActionComponent = nullptr;
+
+	/** Tags Added to owning actor when activated, removed when action stops */
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action|Tags")
 	FGameplayTagContainer GrantsTags;
 
-	// Action acn olny atart if Owning Actor has none of these Tags appplied
-	UPROPERTY(EditDefaultsOnly, Category = "Action|Tags")
+	/** Action acn olny atart if Owning Actor has none of these Tags appplied */
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action|Tags")
 	FGameplayTagContainer BlockedTags;
 
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing="OnRep_IsRunning", VisibleAnywhere, Category = "Rogue|Action")
 	bool bIsRunning = false;
+
+	UFUNCTION()
+	void OnRep_IsRunning();
 };

@@ -19,22 +19,25 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
+	/** We need this to be able to replicate SActions */
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rogue|Action|Tags")
 	FGameplayTagContainer ActiveGameplayTags;
 
-	UFUNCTION(BlueprintCallable, Category = "Action")
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Action")
 	void AddAction(AActor* Instigator, TSubclassOf<USAction> ActionClass);
 
-	UFUNCTION(BlueprintCallable, Category = "Action")
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Action")
 	void RemoveAction(USAction* Action);
 
-	UFUNCTION(BlueprintCallable, Category = "Action")
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Action")
 	bool StartActionByName(AActor* Instigator, FName ActionName);
 
-	UFUNCTION(BlueprintCallable, Category = "Action")
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Action")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Action")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action")
 	TArray<TSubclassOf<USAction>> DefaultActions;
 
 	UFUNCTION(Server, Reliable)
@@ -43,6 +46,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<TObjectPtr<USAction>> Actions;
+
 };

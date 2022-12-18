@@ -42,7 +42,7 @@ void USActionEffect::StopAction_Implementation(AActor* Instigator)
 	GetWorld()->GetTimerManager().ClearTimer(DurationTimerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(PeriodTimerHandle);
 
-	TObjectPtr<USActionComponent> ActionComp = GetOuterComponent();
+	TObjectPtr<USActionComponent> ActionComp = GetOwningComponent();
 	if (ActionComp)
 	{
 		// should be garbage colected after this

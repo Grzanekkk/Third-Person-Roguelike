@@ -12,7 +12,7 @@ bool USAction_Blackhole_Attack::CanStart_Implementation(AActor* Instigator)
 		bool bCanStart = true;
 		if (bCanStart)
 		{
-			TObjectPtr<USAttributeComponent> AttributeComponent = Cast< USAttributeComponent>(GetOuterComponent()->GetOwner()->GetComponentByClass(USAttributeComponent::StaticClass()));
+			TObjectPtr<USAttributeComponent> AttributeComponent = Cast< USAttributeComponent>(GetOwningComponent()->GetOwner()->GetComponentByClass(USAttributeComponent::StaticClass()));
 			if (AttributeComponent)
 			{
 				bCanStart = AttributeComponent->ApplyRageChange(Instigator, -RageCost);
