@@ -142,7 +142,7 @@ bool USActionComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* B
 		}
 	}
 
-	return false;
+	return bWroteSomething;
 }
 
 void USActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

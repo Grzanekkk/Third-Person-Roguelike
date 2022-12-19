@@ -55,7 +55,7 @@ UWorld* USAction::GetWorld() const
 {
 	// Outer is set when creating actions via NewObject<T>
 	// Outer == ActionComponent on Actor
-	TObjectPtr<AActor> Actor = Cast<AActor>(GetOwningComponent());
+	TObjectPtr<AActor> Actor = Cast<AActor>(GetOuter());
 	if (Actor)
 	{
 		return Actor->GetWorld();
@@ -72,6 +72,9 @@ USActionComponent* USAction::GetOwningComponent() const
 
 void USAction::OnRep_IsRunning()
 {
+	ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Running OnRep_IsRunning() -> %b"), bIsRunning), FColor::Cyan);
+
+
 	if (bIsRunning)
 	{
 		StartAction(nullptr);

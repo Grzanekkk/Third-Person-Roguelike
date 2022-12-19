@@ -59,7 +59,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action|Tags")
 	FGameplayTagContainer BlockedTags;
 
-	UPROPERTY(ReplicatedUsing="OnRep_IsRunning", VisibleAnywhere, Category = "Rogue|Action")
+	UPROPERTY(ReplicatedUsing="OnRep_IsRunning" /*Category = "Rogue|Action"*/)
 	bool bIsRunning = false;
 
 	UFUNCTION()
