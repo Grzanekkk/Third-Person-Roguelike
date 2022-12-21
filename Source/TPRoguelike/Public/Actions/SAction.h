@@ -10,6 +10,25 @@
 class UWorld;
 class USActionComponent;
 
+/**
+*
+**/
+USTRUCT()
+struct FReplicationData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	bool bIsRunning = false;
+
+	UPROPERTY()
+	TObjectPtr<AActor> Instigator = nullptr;
+};
+
+/**
+*
+**/
 UCLASS(Blueprintable)
 class TPROGUELIKE_API USAction : public UObject
 {
@@ -30,7 +49,7 @@ public:
 	bool CanStart(AActor* Instigator);
 
 	UFUNCTION(BlueprintCallable, Category = "Rogue|Action")
-	FORCEINLINE	bool IsRunning() const { return bIsRunning; };
+	FORCEINLINE	bool IsRunning() const { return ReplicationData.bIsRunning; };
 
 	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action")
 	FName ActionName = "";
@@ -59,9 +78,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action|Tags")
 	FGameplayTagContainer BlockedTags;
 
-	UPROPERTY(ReplicatedUsing="OnRep_IsRunning" /*Category = "Rogue|Action"*/)
-	bool bIsRunning = false;
+	UPROPERTY(ReplicatedUsing = "OnRep_ReplicatoinData" /*Category = "Rogue|Action"*/)
+	FReplicationData ReplicationData;
 
 	UFUNCTION()
-	void OnRep_IsRunning();
+	void OnRep_ReplicatoinData();
 };

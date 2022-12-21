@@ -35,7 +35,8 @@ void USAction::StartAction_Implementation(AActor* Instigator)
 	TObjectPtr<USActionComponent> Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantsTags);
 
-	bIsRunning = true;
+	ReplicationData.bIsRunning = true;
+	ReplicationData.Instigator = Instigator;
 }
 
 void USAction::StopAction_Implementation(AActor* Instigator)
@@ -48,7 +49,8 @@ void USAction::StopAction_Implementation(AActor* Instigator)
 	TObjectPtr<USActionComponent> Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantsTags);
 
-	bIsRunning = false;
+	ReplicationData.bIsRunning = false;
+	ReplicationData.Instigator = Instigator;
 }
 
 UWorld* USAction::GetWorld() const
@@ -70,18 +72,18 @@ USActionComponent* USAction::GetOwningComponent() const
 	return OwningActionComponent;
 }
 
-void USAction::OnRep_IsRunning()
+void USAction::OnRep_ReplicatoinData()
 {
-	ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Running OnRep_IsRunning() -> %b"), bIsRunning), FColor::Cyan);
+	ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Running OnRep_IsRunning() -> %b"), ReplicationData.bIsRunning), FColor::Cyan);
 
 
-	if (bIsRunning)
+	if (ReplicationData.bIsRunning)
 	{
-		StartAction(nullptr);
+		StartAction(ReplicationData.Instigator);
 	}
 	else
 	{
-		StopAction(nullptr);
+		StopAction(ReplicationData.Instigator);
 	}
 }
 
@@ -94,6 +96,6 @@ void USAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(USAction, bIsRunning);
+	DOREPLIFETIME(USAction, ReplicationData);
 	DOREPLIFETIME(USAction, OwningActionComponent);
 }

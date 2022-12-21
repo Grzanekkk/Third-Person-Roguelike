@@ -24,12 +24,16 @@ void USAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 		// Delay before attack (we are waiting for an animation)
 		InstigatorCharacter->PlayAnimMontage(AttackAnim);
 
-		FTimerHandle Attack_TimerHandle;
-		FTimerDelegate Attack_Delegate;
+		// Is Server?
+		if (InstigatorCharacter->HasAuthority())
+		{
+			FTimerHandle Attack_TimerHandle;
+			FTimerDelegate Attack_Delegate;
 
-		Attack_Delegate.BindUFunction(this, "AtackDelay_Elapsed", InstigatorCharacter);
+			Attack_Delegate.BindUFunction(this, "AtackDelay_Elapsed", InstigatorCharacter);
 
-		InstigatorCharacter->GetWorldTimerManager().SetTimer(Attack_TimerHandle, Attack_Delegate, AttackAnimDelay, false);
+			InstigatorCharacter->GetWorldTimerManager().SetTimer(Attack_TimerHandle, Attack_Delegate, AttackAnimDelay, false);
+		}
 	}
 }
 
