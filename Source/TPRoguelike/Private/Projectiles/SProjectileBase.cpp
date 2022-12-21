@@ -28,7 +28,7 @@ ASProjectileBase::ASProjectileBase()
 	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));
 	AudioComp->SetupAttachment(RootComponent);
 
-	//SetReplicates(true);
+	SetReplicates(true);
 }
 
 void ASProjectileBase::PostInitializeComponents()

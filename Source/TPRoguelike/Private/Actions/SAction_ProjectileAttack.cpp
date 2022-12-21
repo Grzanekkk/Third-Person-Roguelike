@@ -24,16 +24,12 @@ void USAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 		// Delay before attack (we are waiting for an animation)
 		InstigatorCharacter->PlayAnimMontage(AttackAnim);
 
-		// Is Server?
-		if (InstigatorCharacter->HasAuthority())
-		{
-			FTimerHandle Attack_TimerHandle;
-			FTimerDelegate Attack_Delegate;
+		FTimerHandle Attack_TimerHandle;
+		FTimerDelegate Attack_Delegate;
 
-			Attack_Delegate.BindUFunction(this, "AtackDelay_Elapsed", InstigatorCharacter);
+		Attack_Delegate.BindUFunction(this, "AtackDelay_Elapsed", InstigatorCharacter);
 
-			InstigatorCharacter->GetWorldTimerManager().SetTimer(Attack_TimerHandle, Attack_Delegate, AttackAnimDelay, false);
-		}
+		InstigatorCharacter->GetWorldTimerManager().SetTimer(Attack_TimerHandle, Attack_Delegate, AttackAnimDelay, false);	
 	}
 }
 
@@ -42,35 +38,45 @@ void USAction_ProjectileAttack::AtackDelay_Elapsed(ACharacter* InstigatorCharact
 {
 	if (ensureMsgf(Attack_ProjectileClass, TEXT("Attack_ProjectileClass is missing! Please assign Attack_ProjectileClass in your SAction")))
 	{
-		FVector TraceStart = FVector::ZeroVector;
-		FRotator EyeRotation;
-		InstigatorCharacter->GetController()->GetPlayerViewPoint(TraceStart, EyeRotation); // @fixme fix this for AI
-		FVector ShotDirection = EyeRotation.Vector();
-		FVector TraceEnd = TraceStart + ShotDirection * 5000;
+		TObjectPtr<ASProjectileBase> ProjectileSpawned = nullptr;
 
-		FHitResult HitResult;
-		bool bHitSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_WorldStatic);
-
-		if (bHitSuccess)
+		// Is Server?
+		if (InstigatorCharacter->HasAuthority())
 		{
-			TraceEnd = HitResult.ImpactPoint;
+			FVector TraceStart = FVector::ZeroVector;
+			FRotator EyeRotation;
+			InstigatorCharacter->GetController()->GetPlayerViewPoint(TraceStart, EyeRotation); // @fixme fix this for AI
+			FVector ShotDirection = EyeRotation.Vector();
+			FVector TraceEnd = TraceStart + ShotDirection * 5000;
+
+			FHitResult HitResult;
+			bool bHitSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_WorldStatic);
+
+			if (bHitSuccess)
+			{
+				TraceEnd = HitResult.ImpactPoint;
+			}
+
+			FVector HandLocation = InstigatorCharacter->GetMesh()->GetSocketLocation(WeaponSocketName);
+			FRotator ProjectileSpawnRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TraceEnd);
+
+			// SpawnTM == SpawnTransformMatrix
+			FTransform SpawnTM = FTransform(ProjectileSpawnRotation, HandLocation);
+
+			ProjectileSpawned = GetWorld()->SpawnActorDeferred<ASProjectileBase>(Attack_ProjectileClass, SpawnTM, InstigatorCharacter, InstigatorCharacter, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+			ProjectileSpawned->SetInstigator(InstigatorCharacter);
+			ProjectileSpawned->FinishSpawning(SpawnTM);
+
+			// Spawn FX
+
+			DrawDebugSphere(GetWorld(), SpawnTM.GetLocation(), 3.f, 8, FColor::Purple, false, 2.f);
+			DrawDebugSphere(GetWorld(), TraceEnd, 3.f, 8, FColor::Blue, true, 2.f);
 		}
 
-		FVector HandLocation = InstigatorCharacter->GetMesh()->GetSocketLocation(WeaponSocketName);
-		FRotator ProjectileSpawnRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TraceEnd);
-
-		// SpawnTM == SpawnTransformMatrix
-		FTransform SpawnTM = FTransform(ProjectileSpawnRotation, HandLocation);
-
-		TObjectPtr<ASProjectileBase> ProjectileSpawned = GetWorld()->SpawnActorDeferred<ASProjectileBase>(Attack_ProjectileClass, SpawnTM, InstigatorCharacter, InstigatorCharacter, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-		ProjectileSpawned->SetInstigator(InstigatorCharacter);
-		ProjectileSpawned->FinishSpawning(SpawnTM);
-
-		// Spawn FX
-		UGameplayStatics::SpawnEmitterAttached(ProjectileSpawned->SpawnVFX, InstigatorCharacter->GetMesh(), WeaponSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
-
-		DrawDebugSphere(GetWorld(), SpawnTM.GetLocation(), 3.f, 8, FColor::Purple, false, 2.f);
-		DrawDebugSphere(GetWorld(), TraceEnd, 3.f, 8, FColor::Blue, true, 2.f);
+		if (ProjectileSpawned)
+		{
+			UGameplayStatics::SpawnEmitterAttached(ProjectileSpawned->SpawnVFX, InstigatorCharacter->GetMesh(), WeaponSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+		}
 	}
 
 	StopAction(InstigatorCharacter);

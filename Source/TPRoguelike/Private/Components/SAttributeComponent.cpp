@@ -57,14 +57,12 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Heal
 	// Calculating Health
 	float OldHealth = CurrentHealth;
 	float NewHealth = FMath::Clamp(CurrentHealth + HealthDelta, 0.0f, MaxHealth);
-	float ActualDeltaHealth = CurrentHealth - OldHealth;
+	float ActualDeltaHealth = NewHealth - OldHealth;
 
 	// Is Server?
 	if (GetOwner()->HasAuthority())
 	{
 		CurrentHealth = NewHealth;
-
-		MulticastOnHealthChanged(InstigatorActor, this, CurrentHealth, ActualDeltaHealth);
 
 		// Actor just died
 		if (ActualDeltaHealth < 0.0f && CurrentHealth == 0.0f)
@@ -73,6 +71,9 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Heal
 			GM->OnActorKilled(GetOwner(), InstigatorActor);
 		}
 	}
+
+	// if this multicast is called on the client it will be called like a reguilar function
+	MulticastOnHealthChanged(InstigatorActor, this, NewHealth, ActualDeltaHealth);
 
 	// We dont want to lose rage when we are getting healed
 	if (ActualDeltaHealth < 0.0f)

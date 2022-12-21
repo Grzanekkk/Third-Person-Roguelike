@@ -42,7 +42,7 @@ void USAction::StartAction_Implementation(AActor* Instigator)
 void USAction::StopAction_Implementation(AActor* Instigator)
 {
 	//UE_LOG(LogTemp, Log, TEXT("Stopping: %s"), *GetNameSafe(this));
-	ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
+	//ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
 
 	//ensureAlways(bIsRunning); // If this is false here this means that we are stopping this action for a seound time and something is not right
 
@@ -74,7 +74,7 @@ USActionComponent* USAction::GetOwningComponent() const
 
 void USAction::OnRep_ReplicatoinData()
 {
-	ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Running OnRep_IsRunning() -> %b"), ReplicationData.bIsRunning), FColor::Cyan);
+	//ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Running OnRep_IsRunning() -> %b"), ReplicationData.bIsRunning), FColor::Cyan);
 
 
 	if (ReplicationData.bIsRunning)
