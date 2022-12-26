@@ -18,29 +18,29 @@ class TPROGUELIKE_API ASProjectileBase : public AActor
 public:
 	ASProjectileBase();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effects|Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Effects|Particles")
 	TObjectPtr<UParticleSystem> ImpactVFX;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effects|Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Effects|Particles")
 	TObjectPtr<UParticleSystem> SpawnVFX;	// Muzzle Flash
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effects|Speed")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Effects|Speed")
 	float ProjectileSpeed = 3000.f;
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<UParticleSystemComponent> ParticleComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<USphereComponent> SphereComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<UProjectileMovementComponent> MovementComp;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<UAudioComponent> AudioComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effects|Camera Shake")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Effects|Camera Shake")
 	TSubclassOf<UCameraShakeBase> ImpactCameraShake;
 
 	UFUNCTION()
@@ -49,7 +49,7 @@ protected:
 	UFUNCTION()
 	virtual void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
-	UFUNCTION(BlueprintCallable, Category = "Damage")
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Damage")
 	virtual void Explode();
 
 	virtual void BeginPlay() override;
@@ -59,9 +59,9 @@ protected:
 
 	////////////////////////////////////////////////////
 	/// Sounds
-	UPROPERTY(EditDefaultsOnly, Category = "Effects|Sounds")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Effects|Sounds")
 	TObjectPtr<USoundCue> FlightSound;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Effects|Sounds")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Effects|Sounds")
 	TObjectPtr<USoundCue> ImpactSound;
 };

@@ -51,6 +51,13 @@ void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> Acti
 		return;
 	}
 
+	if (!GetOwner()->HasAuthority())
+	{
+		FString ActionMsg = FString::Printf(TEXT("Client: %s tried to AddAction: Class: [%s]"), *GetNameSafe(GetOwner()), *GetNameSafe(ActionClass));
+		UE_LOG(LogTemp, Warning, TEXT("Client: %s tried to AddAction: Class: [%s]"), *GetNameSafe(GetOwner()), *GetNameSafe(ActionClass));
+		ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetOwner(), ActionMsg, FColor::Red, 2.0f);
+	}
+
 	TObjectPtr<USAction> NewAction = NewObject<USAction>(GetOwner(), ActionClass);
 	if (NewAction)
 	{
@@ -117,6 +124,13 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 		{
 			if (Action->IsRunning())
 			{
+				// If we are a Client we want to tell the server to call StopAction and also run it locally
+				// If we are a Server we are just running this function na ther Sever
+				if (!GetOwner()->HasAuthority())
+				{
+					ServerStopActionByName(Instigator, ActionName);
+				}
+
 				Action->StopAction(Instigator);
 				return true;
 			}
@@ -124,6 +138,11 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	}
 
 	return false;
+}
+
+void USActionComponent::ServerStopActionByName_Implementation(AActor* Instigator, FName ActionName)
+{
+	StopActionByName(Instigator, ActionName);
 }
 
 bool USActionComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)

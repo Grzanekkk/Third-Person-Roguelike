@@ -26,7 +26,7 @@ public:
 
 	virtual bool IsEnabled_Implementation();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "RL|Pickup")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Rogue|Pickup")
 	int32 UseCost = 0;
 
 protected:
@@ -38,27 +38,27 @@ protected:
 	UFUNCTION()
 	void AllowInteraction();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "RL|Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Rogue|Components")
 	TObjectPtr<UStaticMeshComponent> MainMeshComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RL|Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<USphereComponent> CollisionSphereComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RL|Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<USphereComponent> RootSphereComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "RL|Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<UParticleSystemComponent > IdleParticleComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RL|Effects|Particles")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Effects|Particles")
 	TObjectPtr<UParticleSystem> PickUpParticles;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RL|Pickup|Interaction")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Pickup|Interaction")
 	float InteractionDelay = 10.f;
 
 	UPROPERTY()
 	FTimerHandle InteractionDelay_TimerHandle;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RL|Pickup|Interaction")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Pickup|Interaction")
 	bool IsEnabled = true;
 };

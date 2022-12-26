@@ -17,6 +17,6 @@ class TPROGUELIKE_API USBTTask_Heal : public UBTTaskNode
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 public:
-	UPROPERTY(EditAnywhere, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "Rogue|AI")
 	float HealingAmount = 50; 
 };

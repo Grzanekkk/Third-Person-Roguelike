@@ -27,24 +27,22 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 	
-
 	////////////////////////////////////////////////////
 	/// Components
-	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Components")
 	TObjectPtr<UCameraComponent> CameraComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Components")
 	TObjectPtr<USpringArmComponent> SpringArmComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Components")
 	TObjectPtr<USInteractionComponent> InteractionComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<USAttributeComponent> AttributeComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<USActionComponent> ActionComponent;
-
 
 	////////////////////////////////////////////////////
 	/// Movement
@@ -66,7 +64,6 @@ protected:
 	/// Interaction
 	UFUNCTION()
 	void PrimaryInteract();
-
 	
 	////////////////////////////////////////////////////
 	/// Abilities
@@ -85,7 +82,6 @@ protected:
 	UFUNCTION()
 	void StopParry();
 
-
 	////////////////////////////////////////////////////
 	/// Health + Death
 	UFUNCTION()
@@ -94,14 +90,13 @@ protected:
 	UFUNCTION()
 	void OnDeath();
 
-	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	UPROPERTY(VisibleAnywhere, Category = "Rogue|Effects")
 	FName TimeToHitParamName = "TimeToHit";
 
 public:	
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 
 	////////////////////////////////////////////////////
 	/// Cheats

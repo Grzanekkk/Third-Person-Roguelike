@@ -24,15 +24,15 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Parry")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action|Parry")
 	float ActionDuration = 2.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Parry|Effects")
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Action|Parry|Effects")
 	TObjectPtr<UParticleSystem> ParryFX;
 
 	UPROPERTY()
 	TObjectPtr<UParticleSystemComponent> ParryParticleCompnent;
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Parry")
-	//FGameplayTag ParryTag;
+	UPROPERTY(Replicated)
+	FTimerHandle Parry_TimerHandle;
 };
