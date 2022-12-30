@@ -2,16 +2,17 @@
 
 
 #include "GameModes/SGameModeBase.h"
-#include "EnvironmentQuery/EnvQueryManager.h"
-#include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
 #include "AI/SAICharacter.h"
 #include "Characters/SCharacter.h"
 #include "Components/SAttributeComponent.h"
+#include "DrawDebugHelpers.h"
+#include "EngineUtils.h"
+#include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
+#include "EnvironmentQuery/EnvQueryManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Pickups/SPickupBase.h"
 #include "PlayerStates/SPlayerState.h"
-#include "Kismet/GameplayStatics.h"
-#include "EngineUtils.h"
-#include "DrawDebugHelpers.h"
+#include "SaveSystem/SSaveGame.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("jp.SpawnBots"), false, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 static TAutoConsoleVariable<bool> CVarSpawnPickups(TEXT("jp.SpawnPickups"), true, TEXT("Enable spawning of pickups."), ECVF_Cheat);
@@ -23,6 +24,12 @@ ASGameModeBase::ASGameModeBase()
 
 }
 
+void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+	LoadSaveGame();
+}
+
 void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
@@ -31,7 +38,6 @@ void ASGameModeBase::StartPlay()
 
 	SpawnPickups();
 }
-
 
 ////////////////////////////////////////////////////
 /// Bots Spawning
@@ -99,7 +105,6 @@ void ASGameModeBase::OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper*
 	}
 }
 
-
 ////////////////////////////////////////////////////
 /// Player Respawning
 void ASGameModeBase::RespawnPlayerElapsed(AController* PlayerController)
@@ -109,7 +114,6 @@ void ASGameModeBase::RespawnPlayerElapsed(AController* PlayerController)
 	PlayerController->UnPossess();
 	RestartPlayer(PlayerController);
 }
-
 
 ////////////////////////////////////////////////////
 /// Pickup spawning
@@ -163,6 +167,33 @@ void ASGameModeBase::OnSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* Qu
 	}
 }
 
+////////////////////////////////////////////////////
+/// SaveSystem
+void ASGameModeBase::WriteSaveGame()
+{
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SaveSlotName, 0);
+}
+
+void ASGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SaveSlotName, 0))
+	{
+		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+		if (CurrentSaveGame == nullptr)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to load SaveGame Data"));
+			return;
+		}
+
+		UE_LOG(LogTemp, Log, TEXT("Successfully loaded SaveGame Data"));
+	}
+	else
+	{
+		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
+
+		UE_LOG(LogTemp, Log, TEXT("Successfully created new SaveGame Object"));
+	}
+}
 
 ////////////////////////////////////////////////////
 /// OnActorKilled
@@ -192,7 +223,6 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 
 	UE_LOG(LogTemp, Warning, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(VictimActor));
 }
-
 
 ////////////////////////////////////////////////////
 /// Cheats

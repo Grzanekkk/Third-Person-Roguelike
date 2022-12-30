@@ -1,15 +1,15 @@
 // Made by Jan Puto 2022 :D
 
 #include "Projectiles/SMagicProjectile.h"
-#include "Components/SAttributeComponent.h"
-#include "Components/SphereComponent.h"
-#include "Components/SActionComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "Particles/ParticleSystemComponent.h"
+#include "Actions/Effects/SActionEffect.h"
 #include "Characters/SCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SActionComponent.h"
+#include "Components/SAttributeComponent.h"
+#include "Components/SphereComponent.h"
 #include "FunctionLibrary/GameplayFunctionLibrary.h"
-#include "Actions/Effects/SActionEffect.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()

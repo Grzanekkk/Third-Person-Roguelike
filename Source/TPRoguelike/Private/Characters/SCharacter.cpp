@@ -3,15 +3,15 @@
 
 #include "Characters/SCharacter.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SActionComponent.h"
+#include "Components/SAttributeComponent.h"
 #include "Components/SInteractionComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Components/SAttributeComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/SActionComponent.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 //////////////////////////////////////////////////////
 //////	Setups
