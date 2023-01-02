@@ -9,10 +9,12 @@
 #include "EngineUtils.h"
 #include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pickups/SPickupBase.h"
 #include "PlayerStates/SPlayerState.h"
 #include "SaveSystem/SSaveGame.h"
+
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("jp.SpawnBots"), false, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 static TAutoConsoleVariable<bool> CVarSpawnPickups(TEXT("jp.SpawnPickups"), true, TEXT("Enable spawning of pickups."), ECVF_Cheat);
@@ -27,7 +29,22 @@ ASGameModeBase::ASGameModeBase()
 void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
+
 	LoadSaveGame();
+}
+
+void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	if (NewPlayer)
+	{
+		TObjectPtr<ASPlayerState> PlayerState = NewPlayer->GetPlayerState<ASPlayerState>();
+		if (PlayerState)
+		{
+			PlayerState->LoadPlayerState(CurrentSaveGame);
+		}
+	}
 }
 
 void ASGameModeBase::StartPlay()
@@ -171,6 +188,16 @@ void ASGameModeBase::OnSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* Qu
 /// SaveSystem
 void ASGameModeBase::WriteSaveGame()
 {
+	for (int i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		TObjectPtr<ASPlayerState> PlayerState = Cast<ASPlayerState>(GameState->PlayerArray[i]);
+		if (PlayerState)
+		{
+			PlayerState->SavePlayerState(CurrentSaveGame);
+			break; // SinglePlayer only for now
+		}
+	}
+
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SaveSlotName, 0);
 }
 

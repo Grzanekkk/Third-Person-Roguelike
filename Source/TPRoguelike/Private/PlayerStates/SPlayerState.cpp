@@ -2,6 +2,7 @@
 
 
 #include "PlayerStates/SPlayerState.h"
+#include "SaveSystem/SSaveGame.h"
 
 bool ASPlayerState::AddCredits(int32 CreditsDelta)
 {
@@ -22,4 +23,20 @@ bool ASPlayerState::AddCredits(int32 CreditsDelta)
 	}
 
 	return true;
+}
+
+void ASPlayerState::SavePlayerState(USSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		SaveObject->Credits = AvalibleCredits;
+	}
+}
+
+void ASPlayerState::LoadPlayerState(USSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		AvalibleCredits = SaveObject->Credits;
+	}
 }

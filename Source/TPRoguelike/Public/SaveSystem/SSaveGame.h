@@ -14,8 +14,8 @@ class TPROGUELIKE_API USSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 	
-protected: 
+public: 
 	UPROPERTY()
-	int32 Credits;
+	int32 Credits = 0;
 
 };
