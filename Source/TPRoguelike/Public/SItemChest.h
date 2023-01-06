@@ -27,7 +27,7 @@ public:
 
 protected:
 
-	UPROPERTY(ReplicatedUsing="OnRep_bIsOpened", BlueprintReadOnly, Category = "Rogue|State")
+	UPROPERTY(SaveGame, ReplicatedUsing="OnRep_bIsOpened", BlueprintReadOnly, Category = "Rogue|State")
 	bool bIsOpened = false;
 
 	UFUNCTION()

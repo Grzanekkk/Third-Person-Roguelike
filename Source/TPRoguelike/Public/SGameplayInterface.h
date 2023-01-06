@@ -33,4 +33,9 @@ public:
 	// Here we are checking if interactable object itself is capable of beeing interacted fe: is not on cooldown
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool IsEnabled();
+
+	// Function called after loading actor from save
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void OnActorLoaded();
 };

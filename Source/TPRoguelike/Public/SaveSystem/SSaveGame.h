@@ -6,6 +6,23 @@
 #include "GameFramework/SaveGame.h"
 #include "SSaveGame.generated.h"
 
+USTRUCT()
+struct FActorSavedData
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	FString ActorName;
+
+	UPROPERTY()
+	FTransform ActorTransform;
+
+	UPROPERTY()
+	TArray<int8> ByteData;
+};
+
 /**
  * 
  */
@@ -16,6 +33,8 @@ class TPROGUELIKE_API USSaveGame : public USaveGame
 	
 public: 
 	UPROPERTY()
-	int32 Credits = 0;
+	int32 Credits;
 
+	UPROPERTY()
+	TArray<FActorSavedData> SavedActors;
 };

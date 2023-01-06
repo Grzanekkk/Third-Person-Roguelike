@@ -12,6 +12,7 @@ ASItemChest::ASItemChest()
 
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
 	RootComponent = BaseMesh;
+	BaseMesh->SetSimulatePhysics(true);
 
 	ParticleComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ParticleComp"));
 	ParticleComp->SetupAttachment(RootComponent);
@@ -23,6 +24,8 @@ ASItemChest::ASItemChest()
 	TargetLidPitch = 110.f;
 
 	SetReplicates(true);
+	SetReplicateMovement(true);
+	BaseMesh->SetIsReplicated(true);
 }
 
 void ASItemChest::BeginPlay()
