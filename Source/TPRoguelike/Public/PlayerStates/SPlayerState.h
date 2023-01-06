@@ -18,7 +18,10 @@ class TPROGUELIKE_API ASPlayerState : public APlayerState
 	
 public:
 	UFUNCTION(BlueprintCallable, Category = "Rogue|Credits")
-	bool AddCredits(int32 CreditsDelta);
+	bool ApplyCreditsChange(int32 CreditsDelta);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnCreditsChanged(AActor* InstigatorActor, float NewCredits, float CreditsDelta);
 
 	UFUNCTION(BlueprintCallable, Category = "Rogue|Credits")
 	FORCEINLINE int32 GetCredits() const { return AvalibleCredits; };
@@ -33,6 +36,6 @@ public:
 	void LoadPlayerState(USSaveGame* SaveObject);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Credits")
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Rogue|Credits")
 	int32 AvalibleCredits = 0;
 };

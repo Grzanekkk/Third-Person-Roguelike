@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "GameFramework/Character.h"
 #include "Components/SAttributeComponent.h"
+#include "Projectiles/SProjectileBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 EBTNodeResult::Type USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -12,8 +13,8 @@ EBTNodeResult::Type USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& O
 	TObjectPtr<AAIController> OwnerController = OwnerComp.GetAIOwner();
 	if (ensure(OwnerController))
 	{
-		TObjectPtr<ACharacter> MyPawn = Cast<ACharacter>(OwnerController->GetPawn());
-		if (MyPawn == nullptr)
+		TObjectPtr<ACharacter> AIPawn = Cast<ACharacter>(OwnerController->GetPawn());
+		if (AIPawn == nullptr)
 		{
 			return EBTNodeResult::Failed;
 		}
@@ -31,18 +32,27 @@ EBTNodeResult::Type USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& O
 			return EBTNodeResult::Failed;
 		}
 
-		FVector MuzzleLocation = MyPawn->GetMesh()->GetSocketLocation("Muzzle_Front");
+		FVector MuzzleLocation = AIPawn->GetMesh()->GetSocketLocation("Muzzle_Front");
 		FVector Direction = TargetActor->GetActorLocation() - MuzzleLocation;
 		FRotator MuzzleRotation = Direction.Rotation();
 
 		MuzzleRotation.Pitch += FMath::RandRange(-0.2f, MaxBulletSpread);
 		MuzzleRotation.Yaw += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
 
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = MyPawn;
+		//FActorSpawnParameters SpawnParams;
+		//SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		//SpawnParams.Instigator = AIPawn;
 
-		TObjectPtr<AActor> NewProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+		//TObjectPtr<AActor> NewProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+		
+		FTransform SpawnTM;
+		SpawnTM.SetLocation(MuzzleLocation);
+		SpawnTM.SetRotation(MuzzleRotation.Quaternion());
+
+		TObjectPtr<AActor> NewProjectile = GetWorld()->SpawnActorDeferred<ASProjectileBase>(ProjectileClass, SpawnTM, AIPawn, AIPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		NewProjectile->SetInstigator(AIPawn);
+		//NewProjectile->bReplic
+		NewProjectile->FinishSpawning(SpawnTM);
 
 		return NewProjectile ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 	}

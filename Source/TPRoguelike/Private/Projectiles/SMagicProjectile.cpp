@@ -43,9 +43,16 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 
 		if (UGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, Damage, SweepResult) && ensureAlways(BurningActionClass))
 		{
-			if (ActionComp && GetOwner()->HasAuthority())
+			if (GetOwner())
 			{
-				ActionComp->AddAction(GetInstigator(), BurningActionClass);
+				if (ActionComp && GetOwner()->HasAuthority())
+				{
+					ActionComp->AddAction(GetInstigator(), BurningActionClass);
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("This projectile has no owner!"));
 			}
 		}
 

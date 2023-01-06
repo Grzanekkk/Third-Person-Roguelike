@@ -28,8 +28,10 @@ ASProjectileBase::ASProjectileBase()
 	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));
 	AudioComp->SetupAttachment(RootComponent);
 
-	SetReplicates(true);
+	//SetReplicates(true);
+	bReplicates = true;
 }
+
 
 void ASProjectileBase::PostInitializeComponents()
 {
@@ -38,6 +40,7 @@ void ASProjectileBase::PostInitializeComponents()
 	//SphereComp->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnComponentHit);
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASProjectileBase::OnActorOverlap);
 }
+
 
 void ASProjectileBase::BeginPlay()
 {
@@ -61,6 +64,7 @@ void ASProjectileBase::BeginPlay()
 	}
 }
 
+
 void ASProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -70,6 +74,7 @@ void ASProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor*
 	//Explode();
 }
 
+
 void ASProjectileBase::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s, Component: %s"), *GetNameSafe(OtherActor), *GetNameSafe(OverlappedComponent));
@@ -78,6 +83,7 @@ void ASProjectileBase::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, 
 		Explode();
 	}
 }
+
 
 void ASProjectileBase::Explode()
 {

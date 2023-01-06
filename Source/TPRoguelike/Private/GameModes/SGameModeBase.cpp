@@ -305,7 +305,7 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		TObjectPtr<USAttributeComponent> VictimAttribComp = Cast<USAttributeComponent>(VictimActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if (VictimAttribComp)
 		{
-			PlayerKiller->GetPlayerState<ASPlayerState>()->AddCredits(VictimAttribComp->GetCreditsAmountForKill());
+			PlayerKiller->GetPlayerState<ASPlayerState>()->ApplyCreditsChange(VictimAttribComp->GetCreditsAmountForKill());
 		}
 	}
 
@@ -329,6 +329,6 @@ void ASGameModeBase::GiveCredits(int32 Amount)
 	TObjectPtr<ASCharacter> Player = Cast<ASCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	if (Player)
 	{
-		Player->GetPlayerState<ASPlayerState>()->AddCredits(Amount);
+		Player->GetPlayerState<ASPlayerState>()->ApplyCreditsChange(Amount);
 	}
 }

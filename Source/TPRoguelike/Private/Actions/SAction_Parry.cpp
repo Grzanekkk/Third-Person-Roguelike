@@ -31,7 +31,10 @@ void USAction_Parry::StopAction_Implementation(AActor* Instigator)
 {
 	Super::StopAction_Implementation(Instigator);
 
-	ParryParticleCompnent->Deactivate();
+	if (ParryParticleCompnent->IsActive())
+	{
+		ParryParticleCompnent->Deactivate();
+	}
 		
 	if (GetOwningComponent()->GetOwner()->HasAuthority())
 	{

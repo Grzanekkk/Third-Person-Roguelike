@@ -14,7 +14,7 @@ void ASCoinPickup::UsePickupItem(APawn* InstigatorPawn)
 		TObjectPtr<ASCharacter>	InstigatorCharacter = Cast<ASCharacter>(InstigatorPawn);
 		if (InstigatorCharacter)
 		{
-			InstigatorCharacter->GetPlayerState<ASPlayerState>()->AddCredits(CreditsGrantedOnInteraction);
+			InstigatorCharacter->GetPlayerState<ASPlayerState>()->ApplyCreditsChange(CreditsGrantedOnInteraction);
 		}
 	}
 }

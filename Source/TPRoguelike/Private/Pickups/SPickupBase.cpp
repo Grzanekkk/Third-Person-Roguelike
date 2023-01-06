@@ -50,7 +50,8 @@ void ASPickupBase::Tick(float DeltaTime)
 
 void ASPickupBase::Interact_Implementation(APawn* InstigatorPawn)
 {
-	UsePickupItem(InstigatorPawn);
+	//UsePickupItem(InstigatorPawn);
+	MulticastUsePickupItem(InstigatorPawn);
 }
 
 
@@ -58,7 +59,7 @@ bool ASPickupBase::CanInteract_Implementation(APawn* InstigatorPawn)
 {
 	if (IsEnabled_Implementation())
 	{
-		if (InstigatorPawn->GetPlayerState<ASPlayerState>()->AddCredits(-UseCost))
+		if (InstigatorPawn->GetPlayerState<ASPlayerState>()->ApplyCreditsChange(-UseCost))
 		{
 			return true;
 		}
@@ -88,10 +89,17 @@ void ASPickupBase::UsePickupItem(APawn* InstigatorPawn)
 	{
 		IsEnabled = false;
 
+		// Its here so stuff inside will also get executed on the server
 		OnRep_IsEnabled();
 
 		GetWorldTimerManager().SetTimer(InteractionDelay_TimerHandle, this, &ASPickupBase::AllowInteraction, InteractionDelay);
 	}
+}
+
+
+void ASPickupBase::MulticastUsePickupItem_Implementation(APawn* InstigatorPawn)
+{
+	UsePickupItem(InstigatorPawn);
 }
 
 

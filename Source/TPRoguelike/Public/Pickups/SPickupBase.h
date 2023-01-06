@@ -35,6 +35,9 @@ protected:
 	UFUNCTION()
 	virtual void UsePickupItem(APawn* InstigatorPawn);
 
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastUsePickupItem(APawn* InstigatorPawn);
+
 	UFUNCTION()
 	void AllowInteraction();
 
