@@ -25,16 +25,23 @@ public:
 
 	virtual bool IsEnabled_Implementation();
 
-protected:
+	virtual void OnActorLoaded_Implementation();
 
-	UPROPERTY(SaveGame, ReplicatedUsing="OnRep_bIsOpened", BlueprintReadOnly, Category = "Rogue|State")
-	bool bIsOpened = false;
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnRep_bIsOpened();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Rogue|State")
-	void OpenLid();
+	void OpenCloseLid(bool bOpen);
+
+	UPROPERTY(SaveGame, ReplicatedUsing = "OnRep_bIsOpened", BlueprintReadOnly, Category = "Rogue|State")
+	bool bIsOpened = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|State")
+	float OpenLidRotation = 110.f;
 
 	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
 	UStaticMeshComponent* BaseMesh;
@@ -45,8 +52,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
 	class UParticleSystemComponent* ParticleComp;
 	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+
 
 public:	
 	// Called every frame

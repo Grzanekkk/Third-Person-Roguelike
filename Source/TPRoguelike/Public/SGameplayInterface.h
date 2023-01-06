@@ -35,7 +35,6 @@ public:
 	bool IsEnabled();
 
 	// Function called after loading actor from save
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OnActorLoaded();
 };

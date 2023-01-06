@@ -20,7 +20,7 @@ public:
 	FTransform ActorTransform;
 
 	UPROPERTY()
-	TArray<int8> ByteData;
+	TArray<uint8> ByteData;
 };
 
 /**

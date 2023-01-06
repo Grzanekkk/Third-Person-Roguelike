@@ -29,7 +29,6 @@ void USAction_Parry::StartAction_Implementation(AActor* Instigator)
 
 void USAction_Parry::StopAction_Implementation(AActor* Instigator)
 {
-
 	Super::StopAction_Implementation(Instigator);
 
 	ParryParticleCompnent->Deactivate();

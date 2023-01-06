@@ -76,7 +76,6 @@ void USAction::OnRep_ReplicatoinData()
 {
 	//ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Running OnRep_IsRunning() -> %b"), ReplicationData.bIsRunning), FColor::Cyan);
 
-
 	if (ReplicationData.bIsRunning)
 	{
 		StartAction(ReplicationData.Instigator);

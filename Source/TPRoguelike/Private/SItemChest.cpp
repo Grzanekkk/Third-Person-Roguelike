@@ -28,17 +28,20 @@ ASItemChest::ASItemChest()
 	BaseMesh->SetIsReplicated(true);
 }
 
+
 void ASItemChest::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
+
 void ASItemChest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
+
 
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
@@ -51,21 +54,35 @@ void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 	OnRep_bIsOpened();
 }
 
+
 void ASItemChest::OnRep_bIsOpened()
 {
 	ParticleComp->Activate(true);
-	OpenLid();
+	OpenCloseLid(bIsOpened);
 }
+
 
 bool ASItemChest::CanInteract_Implementation(APawn* InstigatorPawn)
 {
 	return true;
 }
 
+
 bool ASItemChest::IsEnabled_Implementation()
 {
 	return true;
 }
+
+
+void ASItemChest::OnActorLoaded_Implementation()
+{
+	//OnRep_bIsOpened();
+
+	float LidRotation = bIsOpened ? OpenLidRotation : 0.0f;
+
+	LidMesh->SetRelativeRotation(FRotator(LidRotation, 0.f, 0.f));
+}
+
 
 void ASItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

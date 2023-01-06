@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "PlayerStates/SPlayerState.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASPickupBase::ASPickupBase() 
@@ -32,11 +33,13 @@ ASPickupBase::ASPickupBase()
 	SetReplicates(true);
 }
 
+
 void ASPickupBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
+
 
 void ASPickupBase::Tick(float DeltaTime)
 {
@@ -44,10 +47,12 @@ void ASPickupBase::Tick(float DeltaTime)
 
 }
 
+
 void ASPickupBase::Interact_Implementation(APawn* InstigatorPawn)
 {
 	UsePickupItem(InstigatorPawn);
 }
+
 
 bool ASPickupBase::CanInteract_Implementation(APawn* InstigatorPawn)
 {
@@ -70,24 +75,55 @@ bool ASPickupBase::CanInteract_Implementation(APawn* InstigatorPawn)
 	}
 }
 
+
 bool ASPickupBase::IsEnabled_Implementation()
 {
 	return IsEnabled;
 }
 
+
 void ASPickupBase::UsePickupItem(APawn* InstigatorPawn)
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PickUpParticles, GetActorLocation());
-	IsEnabled = false;
-	RootComponent->SetVisibility(IsEnabled, true);
-	IdleParticleComponent->Deactivate();
+	if (InstigatorPawn->HasAuthority())
+	{
+		IsEnabled = false;
 
-	GetWorldTimerManager().SetTimer(InteractionDelay_TimerHandle, this, &ASPickupBase::AllowInteraction, InteractionDelay);
+		OnRep_IsEnabled();
+
+		GetWorldTimerManager().SetTimer(InteractionDelay_TimerHandle, this, &ASPickupBase::AllowInteraction, InteractionDelay);
+	}
 }
+
 
 void ASPickupBase::AllowInteraction()
 {
 	IsEnabled = true;
-	RootComponent->SetVisibility(IsEnabled, true);
-	IdleParticleComponent->Activate();
+
+	OnRep_IsEnabled();
+}
+
+
+void ASPickupBase::OnRep_IsEnabled()
+{
+	if (IsEnabled)
+	{
+		// We just enabled this item
+		RootComponent->SetVisibility(IsEnabled, true);
+		IdleParticleComponent->Activate();
+	}
+	else
+	{
+		// We just picked up this item
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PickUpParticles, GetActorLocation());
+
+		RootComponent->SetVisibility(IsEnabled, true);
+		IdleParticleComponent->Deactivate();
+	}
+}
+
+void ASPickupBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASPickupBase, IsEnabled);
 }

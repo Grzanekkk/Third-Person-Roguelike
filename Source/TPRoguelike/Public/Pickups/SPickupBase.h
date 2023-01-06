@@ -59,6 +59,9 @@ protected:
 	UPROPERTY()
 	FTimerHandle InteractionDelay_TimerHandle;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Pickup|Interaction")
+	UPROPERTY(ReplicatedUsing="OnRep_IsEnabled", EditDefaultsOnly, Category = "Rogue|Pickup|Interaction")
 	bool IsEnabled = true;
+
+	UFUNCTION()
+	void OnRep_IsEnabled();
 };
