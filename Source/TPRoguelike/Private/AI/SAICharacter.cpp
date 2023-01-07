@@ -75,7 +75,7 @@ bool ASAICharacter::SetTargetActor(AActor* TargetActor)
 			TObjectPtr<AActor> CurrentTargetActor = Cast<AActor>(BBCComp->GetValueAsObject(BBV_TargetActor));
 			if (TargetActor != CurrentTargetActor)
 			{
-				SpawnPlayerSpottedWidget();
+				MulticastSpawnPlayerSpottedWidget();
 			}
 
 			BBCComp->SetValueAsObject(BBV_TargetActor, TargetActor);
@@ -87,7 +87,7 @@ bool ASAICharacter::SetTargetActor(AActor* TargetActor)
 	return false;
 }
 
-void ASAICharacter::SpawnPlayerSpottedWidget()
+void ASAICharacter::MulticastSpawnPlayerSpottedWidget_Implementation()
 {
 	// If AI spots new target actor it will show PlayerSpotted Widget
 	if (PlayerSpottedWidgetInstance == nullptr && ensure(PlayerSpottedWidgetClass))

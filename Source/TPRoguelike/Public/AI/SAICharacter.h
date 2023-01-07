@@ -42,8 +42,8 @@ protected:
 	UFUNCTION()
 	void RemovePlayerSpottedWidget();
 
-	UFUNCTION()
-	void SpawnPlayerSpottedWidget();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSpawnPlayerSpottedWidget();
 
 	////////////////////////////////////////////////////
 	/// Health + Death
