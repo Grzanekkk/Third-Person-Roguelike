@@ -87,6 +87,7 @@ bool ASAICharacter::SetTargetActor(AActor* TargetActor)
 	return false;
 }
 
+
 void ASAICharacter::MulticastSpawnPlayerSpottedWidget_Implementation()
 {
 	// If AI spots new target actor it will show PlayerSpotted Widget

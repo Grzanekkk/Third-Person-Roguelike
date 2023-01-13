@@ -22,7 +22,18 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void Heal(float HealingAmount);
+
+	UFUNCTION()
+	void StartHealingOverTime(float _HealthPerSecond, float _HealForSeconds);
+
+	UFUNCTION()
+	void StopHealingOverTime();
+
 protected:
+
+	virtual void PostInitializeComponents() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<USAttributeComponent> AttributeComponent;
@@ -96,18 +107,4 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|UI|PlayerSpotted")
 	FName BBV_TargetActor = "TargetActor";
 
-
-public:
-	UFUNCTION()
-	void Heal(float HealingAmount);
-
-	UFUNCTION()
-	void StartHealingOverTime(float _HealthPerSecond, float _HealForSeconds);
-
-	UFUNCTION()
-	void StopHealingOverTime();
-
-
-protected:
-	virtual void PostInitializeComponents() override;
 };
