@@ -30,7 +30,7 @@ bool USAction::CanStart_Implementation(AActor* Instigator)
 void USAction::StartAction_Implementation(AActor* Instigator)
 {
 	//UE_LOG(LogTemp, Log, TEXT("Running: %s"), *GetNameSafe(this));
-	ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
+	//ULogsFunctionLibrary::LogOnScreen_IsClientServer(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
 
 	TObjectPtr<USActionComponent> Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantsTags);

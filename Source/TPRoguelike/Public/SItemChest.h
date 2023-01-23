@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "SItemChest.generated.h"
 
+class UParticleSystemComponent;
+
 UCLASS()
 class TPROGUELIKE_API ASItemChest : public AActor, public ISGameplayInterface
 {
@@ -44,15 +46,14 @@ protected:
 	float OpenLidRotation = 110.f;
 
 	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
-	UStaticMeshComponent* BaseMesh;
+	TObjectPtr<UStaticMeshComponent> BaseMesh;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rogue|Components")
-	UStaticMeshComponent* LidMesh;
+	TObjectPtr<UStaticMeshComponent> LidMesh;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
-	class UParticleSystemComponent* ParticleComp;
+	TObjectPtr<UParticleSystemComponent> ParticleComp;
 	
-
 
 public:	
 	// Called every frame

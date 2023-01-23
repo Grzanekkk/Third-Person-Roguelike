@@ -3,16 +3,192 @@
 
 #include "ObjectiveArea/CaptureZone.h"
 #include "Components/CapsuleComponent.h"
+#include "Characters/SCharacter.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameState/SGameState.h"
+
 
 ACaptureZone::ACaptureZone()
 {
-	TriggerBox = CreateDefaultSubobject<UCapsuleComponent>("TriggerBox");
+	TriggerBox = CreateDefaultSubobject<UCapsuleComponent>("Zone Area");
 	RootComponent = TriggerBox;
+
+	AreaIndicatorMesh = CreateDefaultSubobject<UStaticMeshComponent>("AreaIndicatorMesh");
+	AreaIndicatorMesh->SetupAttachment(RootComponent);
+
+	FlagPoleMesh = CreateDefaultSubobject<UStaticMeshComponent>("FlagPoleMesh");
+	FlagPoleMesh->SetupAttachment(RootComponent);
+
+	FlagMesh = CreateDefaultSubobject<UStaticMeshComponent>("FlagMesh");
+	FlagMesh->SetupAttachment(RootComponent);
+
+	QuestIndicatorMesh = CreateDefaultSubobject<UStaticMeshComponent>("QuestIndicator");
+	QuestIndicatorMesh->SetupAttachment(RootComponent);
+	QuestIndicatorMesh->SetHiddenInGame(true);
+
+	SetReplicates(true);
 }
+
+
+
+void ACaptureZone::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ACaptureZone::StartOverlapingZone);
+	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &ACaptureZone::StopOverlapingZone);
+}
+
 
 void ACaptureZone::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (UKismetSystemLibrary::IsServer(GetWorld()))
+	{
+		TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (GameState)
+		{
+			GameState->ServerOnlyAddCaptureZoneToActiveList(this);
+		}
+	}
+}
 
+
+void ACaptureZone::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (UKismetSystemLibrary::IsServer(GetWorld()))
+	{
+		if (IsBeingCaptured())
+		{
+			CalculateCapturePoints();
+			//IsCaptured();
+		}
+	}
+}
+
+
+void ACaptureZone::StartOverlapingZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (UKismetSystemLibrary::IsServer(GetWorld()))
+	{
+		TObjectPtr<ASCharacter> PlayerCharacter = Cast<ASCharacter>(OtherActor);
+		if (PlayerCharacter && !PlayersInsideZone.Contains(PlayerCharacter))
+		{
+			// We know new player entered the zone
+			PlayersInsideZone.Add(PlayerCharacter);
+		}
+	}
+}
+
+
+void ACaptureZone::StopOverlapingZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (UKismetSystemLibrary::IsServer(GetWorld()))
+	{
+		TObjectPtr<ASCharacter> PlayerCharacter = Cast<ASCharacter>(OtherActor);
+		if (PlayerCharacter && PlayersInsideZone.Contains(PlayerCharacter))
+		{
+			// We know player left the zone
+			PlayersInsideZone.Remove(PlayerCharacter);
+		}
+	}
+}
+
+
+void ACaptureZone::CalculateCapturePoints()
+{
+	// This runs only on the server
+	CurrentCapPoints = FMath::Clamp(CurrentCapPoints + CapPointPerTick * GetCaptureSpeedMultiplier() * GetWorld()->DeltaTimeSeconds, 0, MaxCapPoints);
+
+	// We need to call it directly on the server
+	OnRep_CurrentCapPoints();
+
+	if (!bIsCaptured)
+	{
+		if (CurrentCapPoints >= MaxCapPoints)
+		{
+			// We just captured the zone
+			bIsCaptured = true;
+			MulticastOnZoneCaptured();
+		}
+	}
+}
+
+
+float ACaptureZone::GetCaptureSpeedMultiplier()
+{
+	if (PlayersInsideZone.Num() > CapPointPerPlayerMultiplier.Num())
+	{
+		return CapPointPerPlayerMultiplier.Last();
+	}
+
+	return CapPointPerPlayerMultiplier[PlayersInsideZone.Num()];
+}
+
+
+bool ACaptureZone::IsBeingCaptured()
+{
+	// If there is at least one player inside the zone its is being captured
+	return PlayersInsideZone.Num() > 0;
+}
+
+
+float ACaptureZone::GetZoneCapturePercent()
+{
+	return (CurrentCapPoints / MaxCapPoints) * 100;
+}
+
+
+void ACaptureZone::SetFlagHight()
+{
+	FVector FlagLocation = FlagMesh->GetRelativeLocation();
+	FlagLocation.Z = UKismetMathLibrary::MapRangeClamped(CurrentCapPoints, 0, MaxCapPoints, 0, FlagTargetHight);
+
+	FlagMesh->SetRelativeLocation(FlagLocation);
+}
+
+
+void ACaptureZone::ServerOnlyAssginedQuestFinished()
+{
+	MulticastAssginedQuestFinished();
+}
+
+void ACaptureZone::MulticastAssginedQuestFinished_Implementation()
+{
+	QuestIndicatorMesh->SetHiddenInGame(true);
+}
+
+void ACaptureZone::ServerOnlyInitializeForQuest()
+{
+	// Maybe add variable like bHasBeeninitializedForQuest?
+	MulticastInitializeForQuest();
+}
+
+void ACaptureZone::MulticastInitializeForQuest_Implementation()
+{
+	QuestIndicatorMesh->SetHiddenInGame(false);
+}
+
+void ACaptureZone::MulticastOnZoneCaptured_Implementation()
+{
+	OnZoneCaptured.Broadcast(this, PlayersInsideZone);
+}
+
+void ACaptureZone::OnRep_CurrentCapPoints()
+{
+	// update progress bar of smth (or some visual state)
+	SetFlagHight();
+}
+
+void ACaptureZone::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACaptureZone, CurrentCapPoints);
 }

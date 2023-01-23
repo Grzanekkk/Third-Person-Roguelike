@@ -5,6 +5,8 @@
 #include "SaveSystem/SSaveGame.h"
 #include "Net/UnrealNetwork.h"
 
+
+
 bool ASPlayerState::ApplyCreditsChange(int32 CreditsDelta)
 {
 	if (CreditsDelta != 0)
@@ -61,3 +63,5 @@ void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 
 	DOREPLIFETIME(ASPlayerState, AvalibleCredits);
 }
+
+#undef AUTHORITY_ONLY_FUNCTION
