@@ -47,12 +47,15 @@ public:
 
 	UFUNCTION()
 	void ServerOnlyRemoveCaptureZoneFromActiveList(ACaptureZone* CaptureZone);
+
+	UFUNCTION()
+	bool IsAnyCaptureZoneAvalibleForQuest();
 	
 protected:
 	UPROPERTY()
 	TObjectPtr<USQuestManagerComponent> QuestManagerComponent = nullptr;
 
 	UPROPERTY(Replicated)
-	TArray<FQuestCaptureZone> CaptureZonesAvalibeForQuests;
+	TArray<TObjectPtr<ACaptureZone>> CaptureZonesAvalibeForQuests;
 
 };

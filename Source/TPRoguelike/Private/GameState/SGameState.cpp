@@ -14,42 +14,37 @@ ASGameState::ASGameState()
 TObjectPtr<ACaptureZone> ASGameState::GetCaptureZoneForQuest()
 {
 	bool bZoneFound = false;
-	FQuestCaptureZone QuestCaptureZone;
+	TObjectPtr<ACaptureZone> QuestCaptureZone;
 
-	while (!bZoneFound)
+	if (IsAnyCaptureZoneAvalibleForQuest())
 	{
-		int32 Rand = FMath::RandRange(0, ActiveCaptureZonesOnTheMap.Num() - 1);
-		QuestCaptureZone = ActiveCaptureZonesOnTheMap[Rand];
-		if (!QuestCaptureZone.bHasQuestAssigned)
-		{
-			bZoneFound = true;
-		}
+		int32 Rand = FMath::RandRange(0, CaptureZonesAvalibeForQuests.Num() - 1);
+		QuestCaptureZone = CaptureZonesAvalibeForQuests[Rand];
 	}
 
-	return QuestCaptureZone.CaptureZone;
+	return QuestCaptureZone;
 }
 
 void ASGameState::ServerOnlyAddCaptureZoneToActiveList(ACaptureZone* CaptureZone)
 {
 	//AUTHORITY_ONLY_FUNCTION(ServerOnlyAddCaptureZoneToActiveList)
 
-	FQuestCaptureZone QuestCaptureZone;
-	QuestCaptureZone.CaptureZone = CaptureZone;
-	QuestCaptureZone.bHasQuestAssigned = false;
-	ActiveCaptureZonesOnTheMap.Add(QuestCaptureZone);
+	CaptureZonesAvalibeForQuests.Add(CaptureZone);
 }
 
 void ASGameState::ServerOnlyRemoveCaptureZoneFromActiveList(ACaptureZone* CaptureZone)
 {
-	FQuestCaptureZone QuestCaptureZone;
-	QuestCaptureZone.CaptureZone = CaptureZone;
-	QuestCaptureZone.bHasQuestAssigned = true;
-	ActiveCaptureZonesOnTheMap.Remove(QuestCaptureZone);
+	CaptureZonesAvalibeForQuests.Remove(CaptureZone);
+}
+
+bool ASGameState::IsAnyCaptureZoneAvalibleForQuest()
+{
+	return CaptureZonesAvalibeForQuests.Num() > 0;
 }
 
 void ASGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASGameState, ActiveCaptureZonesOnTheMap);
+	DOREPLIFETIME(ASGameState, CaptureZonesAvalibeForQuests);
 }

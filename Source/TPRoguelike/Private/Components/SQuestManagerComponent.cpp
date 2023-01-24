@@ -10,19 +10,38 @@
 USQuestManagerComponent::USQuestManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 void USQuestManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void USQuestManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
 
+void USQuestManagerComponent::ServerOnlyFinishQuestByClass(const TSoftClassPtr<USQuestBase>& QuestClass, bool bQuestFinishedSuccessfully)
+{
+	TSubclassOf<USQuestBase> QuestClassLoaded = UAssetFunctionLibrary::LoadClassSynchronousIfNeeded(QuestClass);
+	if (QuestClassLoaded)
+	{
+ 		if (QuestClassLoaded == CurrentActiveQuest.GetClass())
+		{
+			// for now we can olny have one active quest, so we are not looking through a list of active quest
+			CurrentActiveQuest->ServerOnlyFinishQuest();
+			CurrentActiveQuest == nullptr;
+			
+			EQuestState FinishedQuestState = bQuestFinishedSuccessfully ? EQuestState::FINISHED : EQuestState::FAILED;
+
+			MulticastOnQuestStateChanged(QuestClassLoaded, FinishedQuestState);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Trying to finish quest that is not currently active"));
+		}
+	}
 }
 
 void USQuestManagerComponent::ServerStartQuestByClass_Implementation(const TSoftClassPtr<USQuestBase>& QuestClass)
@@ -43,14 +62,6 @@ void USQuestManagerComponent::ServerStartQuestByClass_Implementation(const TSoft
 		}
 	}
 }
-
-
-void USQuestManagerComponent::ServerOnQuestStateChanged_Implementation(TSubclassOf<USQuestBase> QuestClass, EQuestState QuestState)
-{
-	// Useless function ???
-	MulticastOnQuestStateChanged(QuestClass, QuestState);
-}
-
 
 void USQuestManagerComponent::MulticastOnQuestStateChanged_Implementation(TSubclassOf<USQuestBase> QuestClass, EQuestState QuestState)
 {

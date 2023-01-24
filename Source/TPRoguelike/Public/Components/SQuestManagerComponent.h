@@ -25,17 +25,17 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerStartQuestByClass(const TSoftClassPtr<USQuestBase>& QuestClass);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOnQuestStateChanged(TSubclassOf<USQuestBase> QuestClass, EQuestState QuestState);
-
-	UFUNCTION(Server, Reliable)
-	void ServerOnQuestStateChanged(TSubclassOf<USQuestBase> QuestClass, EQuestState QuestState);
+	UFUNCTION()
+	void ServerOnlyFinishQuestByClass(const TSoftClassPtr<USQuestBase>& QuestClass, bool bQuestFinishedSuccessfully);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnQuestStateChanged OnQuestStateChanged;
 
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnQuestStateChanged(TSubclassOf<USQuestBase> QuestClass, EQuestState QuestState);
 
 	UPROPERTY(Replicated)
 	TObjectPtr<USQuestBase> CurrentActiveQuest = nullptr;

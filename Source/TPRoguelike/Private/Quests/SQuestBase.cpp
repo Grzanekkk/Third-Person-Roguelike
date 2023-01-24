@@ -22,7 +22,7 @@ void USQuestBase::ServerOnlyStartQuest()
 	// We only want to change this value on the server
 	QuestState = EQuestState::IN_PROGRESS;
 
-	OuterComponent->MulticastOnQuestStateChanged(GetClass(), EQuestState::IN_PROGRESS);
+	//OuterComponent->MulticastOnQuestStateChanged(GetClass(), EQuestState::IN_PROGRESS);
 	
 	// Some more functilonaity
 }
@@ -39,12 +39,18 @@ void USQuestBase::ServerOnlyFinishQuest()
 	QuestState = EQuestState::FINISHED;
 
 	// Notifies everyone else aboute the change
-	OuterComponent->MulticastOnQuestStateChanged(GetClass(), EQuestState::FINISHED);
+	//OuterComponent->MulticastOnQuestStateChanged(GetClass(), EQuestState::FINISHED);
 }
 
 void USQuestBase::ClientFinishQuest_Implementation()
 {
 	// Visuals
+}
+
+void USQuestBase::ServerOnlyOnAllObjectivesFinished()
+{
+	// For now we are setting true by defalut
+	OuterComponent->ServerOnlyFinishQuestByClass(GetClass(), true);
 }
 
 bool USQuestBase::CanStartQuest()

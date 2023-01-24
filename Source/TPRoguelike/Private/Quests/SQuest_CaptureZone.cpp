@@ -12,7 +12,6 @@ USQuest_CaptureZone::USQuest_CaptureZone()
 	QuestName = FText::FromString("Capture Zone!");
 }
 
-
 void USQuest_CaptureZone::ServerOnlyStartQuest()
 {
 	Super::ServerOnlyStartQuest();
@@ -25,6 +24,8 @@ void USQuest_CaptureZone::ServerOnlyStartQuest()
 		{
 			CaptureZone->ServerOnlyInitializeForQuest();
 			CaptureZone->OnZoneCaptured.AddDynamic(this, &USQuest_CaptureZone::OnZoneCaptured);
+
+			GameState->ServerOnlyRemoveCaptureZoneFromActiveList(CaptureZone);
 		}
 	}
 }
@@ -36,7 +37,16 @@ void USQuest_CaptureZone::ServerOnlyFinishQuest()
 
 bool USQuest_CaptureZone::CanStartQuest()
 {
-	Super::CanStartQuest();
+	if (Super::CanStartQuest())
+	{
+		TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (GameState && GameState->IsAnyCaptureZoneAvalibleForQuest())
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void USQuest_CaptureZone::OnZoneCaptured(ACaptureZone* CapturedZone, TArray<ASCharacter*> PlayersResponsibleForCapture)
@@ -50,5 +60,6 @@ void USQuest_CaptureZone::OnZoneCaptured(ACaptureZone* CapturedZone, TArray<ASCh
 		GameState->ServerOnlyRemoveCaptureZoneFromActiveList(CapturedZone);
 	}
 
-	ServerOnlyFinishQuest();
+	//ServerOnlyFinishQuest();
+	ServerOnlyOnAllObjectivesFinished();
 }

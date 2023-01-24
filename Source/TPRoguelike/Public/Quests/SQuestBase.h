@@ -36,6 +36,9 @@ public:
 	UFUNCTION()
 	virtual bool CanStartQuest();
 
+	UFUNCTION()
+	virtual void ServerOnlyOnAllObjectivesFinished()
+
 	UPROPERTY();
 	TObjectPtr<USQuestManagerComponent> OuterComponent = nullptr;
 

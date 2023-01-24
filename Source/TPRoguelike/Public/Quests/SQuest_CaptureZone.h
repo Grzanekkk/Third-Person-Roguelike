@@ -24,6 +24,8 @@ public:
 
 	virtual bool CanStartQuest() override;
 
+	// virtual void ServerOnlyOnAllObjectivesFinished() override;
+
 protected:
 	UFUNCTION()
 	void OnZoneCaptured(ACaptureZone* CapturedZone, TArray<ASCharacter*> PlayersResponsibleForCapture);
