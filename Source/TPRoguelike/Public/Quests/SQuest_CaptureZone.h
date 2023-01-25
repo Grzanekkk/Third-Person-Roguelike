@@ -18,15 +18,15 @@ public:
 
 	USQuest_CaptureZone();
 	
-	virtual void ServerOnlyStartQuest() override;
-	
-	virtual void ServerOnlyFinishQuest() override;
+	//virtual void ServerOnlyStartQuest() override;
+	//
+	//virtual void ServerOnlyFinishQuest() override;
 
-	virtual bool CanStartQuest() override;
+	//virtual bool CanStartQuest() override;
 
 	// virtual void ServerOnlyOnAllObjectivesFinished() override;
 
 protected:
-	UFUNCTION()
-	void OnZoneCaptured(ACaptureZone* CapturedZone, TArray<ASCharacter*> PlayersResponsibleForCapture);
+	//UFUNCTION()
+	//void OnZoneCaptured(ACaptureZone* CapturedZone, TArray<ASCharacter*> PlayersResponsibleForCapture);
 };

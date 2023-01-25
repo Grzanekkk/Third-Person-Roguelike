@@ -2,6 +2,7 @@
 
 
 #include "Quests/SQuestBase.h"
+#include "Objectives/SObjectiveBase.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/SQuestManagerComponent.h"
 #include "Enums/SEnums_Objectives.h"
@@ -21,10 +22,14 @@ void USQuestBase::ServerOnlyStartQuest()
 	
 	// We only want to change this value on the server
 	QuestState = EQuestState::IN_PROGRESS;
-
-	//OuterComponent->MulticastOnQuestStateChanged(GetClass(), EQuestState::IN_PROGRESS);
 	
-	// Some more functilonaity
+	// Starting default objectives
+	for (TSoftClassPtr<USObjectiveBase> ObjectiveSoftClass : StartingObjectives)
+	{
+		// @FIXME
+		// I know we are calling RPC from the server
+		OuterComponent->ServerStartObjectiveByClass(ObjectiveSoftClass, this);
+	}
 }
 
 void USQuestBase::ClientStartQuest_Implementation()
@@ -39,7 +44,6 @@ void USQuestBase::ServerOnlyFinishQuest()
 	QuestState = EQuestState::FINISHED;
 
 	// Notifies everyone else aboute the change
-	//OuterComponent->MulticastOnQuestStateChanged(GetClass(), EQuestState::FINISHED);
 }
 
 void USQuestBase::ClientFinishQuest_Implementation()
@@ -53,9 +57,44 @@ void USQuestBase::ServerOnlyOnAllObjectivesFinished()
 	OuterComponent->ServerOnlyFinishQuestByClass(GetClass(), true);
 }
 
+void USQuestBase::Initialize(USQuestManagerComponent* InOuterComponent)
+{
+	OuterComponent = InOuterComponent;
+}
+
+USObjectiveBase* USQuestBase::GetActiveObjectiveByClass(const TSoftClassPtr<USObjectiveBase>& ObjectiveSoftClass)
+{
+	for (TObjectPtr<USObjectiveBase> ActiveObjective : ActiveObjectives)
+	{
+		if (ActiveObjective.GetClass() == ObjectiveSoftClass)
+		{
+			return ActiveObjective;
+		}
+	}
+
+	return nullptr;
+}
+
 bool USQuestBase::CanStartQuest()
 {
 	return true;
+}
+
+bool USQuestBase::ServerOnlyStartObjectiveByClass(const TSoftClassPtr<USObjectiveBase>& ObjectiveSoftClass)
+{
+	TSubclassOf<USObjectiveBase> ObjectiveClass = ObjectiveSoftClass.LoadSynchronous();
+	TObjectPtr<USObjectiveBase> NewObjectiveInstance = NewObject<USObjectiveBase>(OuterComponent->GetOwner(), ObjectiveClass);
+	if (NewObjectiveInstance && NewObjectiveInstance->CanStartObjective())
+	{
+		ActiveObjectives.Add(NewObjectiveInstance);
+
+		NewObjectiveInstance->Initialize(this);
+		NewObjectiveInstance->ServerOnlyStartObjective();
+
+		return true;
+	}
+
+	return false;
 }
 
 void USQuestBase::OnRep_QuestState()

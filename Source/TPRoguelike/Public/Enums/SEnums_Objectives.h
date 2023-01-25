@@ -16,6 +16,25 @@ enum class EQuestState : uint8
 	MAX UMETA(Hidden)
 };
 
+UENUM(BlueprintType)
+enum class EObjectiveState : uint8
+{
+	NOT_STARTED UMETA(DisplayName = "Not Started"),
+	IN_PROGRESS UMETA(DisplayName = "In Progress"),
+	FINISHED UMETA(DisplayName = "Finished"),
+	FAILED UMETA(DisplayName = "Failed"),
+	MAX UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EObjectiveType : uint8
+{
+	STAT UMETA(DisplayName = "Stat"),
+	TRIGGER UMETA(DisplayName = "Trigger"),
+	OTHER UMETA(DisplayName = "Other"),
+	MAX UMETA(Hidden)
+};
+
 UCLASS()
 class TPROGUELIKE_API USEnums_Quests : public UObject
 {

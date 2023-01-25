@@ -7,12 +7,13 @@
 #include "SQuestBase.generated.h"
 
 class USQuestManagerComponent;
+class USObjectiveBase;
 enum class EQuestState : uint8;
 
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class TPROGUELIKE_API USQuestBase : public UObject
 {
 	GENERATED_BODY()
@@ -37,12 +38,25 @@ public:
 	virtual bool CanStartQuest();
 
 	UFUNCTION()
-	virtual void ServerOnlyOnAllObjectivesFinished()
+	virtual bool ServerOnlyStartObjectiveByClass(const TSoftClassPtr<USObjectiveBase>& ObjectiveSoftClass);
 
-	UPROPERTY();
-	TObjectPtr<USQuestManagerComponent> OuterComponent = nullptr;
+	// Only call this from the manager
+	UFUNCTION()
+	virtual void ServerOnlyOnAllObjectivesFinished();
+
+	UFUNCTION()
+	void Initialize(USQuestManagerComponent* InOuterComponent);
+
+
+	/// GETTERS
+	UFUNCTION()
+	USObjectiveBase* GetActiveObjectiveByClass(const TSoftClassPtr<USObjectiveBase>& ObjectiveSoftClass);
 
 protected:
+
+	UPROPERTY()
+	TObjectPtr<USQuestManagerComponent> OuterComponent = nullptr;
+
 	UPROPERTY(ReplicatedUsing="OnRep_QuestState")
 	EQuestState QuestState;
 
@@ -52,5 +66,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quest")
 	FText QuestName;
 
+	UPROPERTY(Replicated)
+	TArray<TObjectPtr<USObjectiveBase>> ActiveObjectives;
 
+	UPROPERTY()
+	TArray<TSoftClassPtr<USObjectiveBase>> StartingObjectives;
 };

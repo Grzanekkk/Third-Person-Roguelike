@@ -27,21 +27,53 @@ void USQuestManagerComponent::ServerOnlyFinishQuestByClass(const TSoftClassPtr<U
 	TSubclassOf<USQuestBase> QuestClassLoaded = UAssetFunctionLibrary::LoadClassSynchronousIfNeeded(QuestClass);
 	if (QuestClassLoaded)
 	{
- 		if (QuestClassLoaded == CurrentActiveQuest.GetClass())
+		TObjectPtr<USQuestBase> CurrentActiveQuest = FindActiveQuestByClass(QuestClassLoaded);
+ 		if (CurrentActiveQuest)
 		{
 			// for now we can olny have one active quest, so we are not looking through a list of active quest
 			CurrentActiveQuest->ServerOnlyFinishQuest();
-			CurrentActiveQuest == nullptr;
+			CurrentActiveQuests.Remove(CurrentActiveQuest);
 			
 			EQuestState FinishedQuestState = bQuestFinishedSuccessfully ? EQuestState::FINISHED : EQuestState::FAILED;
 
-			MulticastOnQuestStateChanged(QuestClassLoaded, FinishedQuestState);
+			MulticastOnQuestStateChanged(CurrentActiveQuest, FinishedQuestState);
 		}
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Trying to finish quest that is not currently active"));
 		}
 	}
+}
+
+void USQuestManagerComponent::ServerStartObjectiveByClass_Implementation(const TSoftClassPtr<USObjectiveBase>& ObjectiveSoftClass, USQuestBase* InQuest)
+{
+	// KONSULTACJA Z ERYKIEM !!!
+	if (InQuest->ServerOnlyStartObjectiveByClass(ObjectiveSoftClass))
+	{
+		TObjectPtr<USObjectiveBase> ActiveObjective = InQuest->GetActiveObjectiveByClass(ObjectiveSoftClass);
+		if (ActiveObjective)
+		{
+			MulticastOnObjectiveStateChanged(ActiveObjective, InQuest, EObjectiveState::IN_PROGRESS);
+		}
+	}
+	else
+	{
+		FString Msg = "Failed to start Objective: " + ObjectiveSoftClass.GetAssetName() + ". In Quest: " + GetNameSafe(InQuest);
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, Msg);
+	}
+}
+
+USQuestBase* USQuestManagerComponent::FindActiveQuestByClass(const TSubclassOf<USQuestBase>& QuestClass)
+{
+	for (TObjectPtr<USQuestBase> ActiveQuest : CurrentActiveQuests)
+	{
+		if (ActiveQuest.GetClass() == QuestClass)
+		{
+			return ActiveQuest;
+		}
+	}
+
+	return nullptr;
 }
 
 void USQuestManagerComponent::ServerStartQuestByClass_Implementation(const TSoftClassPtr<USQuestBase>& QuestClass)
@@ -54,23 +86,28 @@ void USQuestManagerComponent::ServerStartQuestByClass_Implementation(const TSoft
 		{
 			if (NewQuestInstance->CanStartQuest())
 			{
-				NewQuestInstance->OuterComponent = this;
+				NewQuestInstance->Initialize(this);
 				NewQuestInstance->ServerOnlyStartQuest();
-				CurrentActiveQuest = NewQuestInstance;
-				MulticastOnQuestStateChanged(QuestClassLoaded, EQuestState::IN_PROGRESS);
+				CurrentActiveQuests.Add(NewQuestInstance);
+				MulticastOnQuestStateChanged(NewQuestInstance, EQuestState::IN_PROGRESS);
 			}
 		}
 	}
 }
 
-void USQuestManagerComponent::MulticastOnQuestStateChanged_Implementation(TSubclassOf<USQuestBase> QuestClass, EQuestState QuestState)
+void USQuestManagerComponent::MulticastOnQuestStateChanged_Implementation(USQuestBase* QuestInstance, EQuestState QuestState)
 {
-	OnQuestStateChanged.Broadcast(QuestClass, QuestState);
+	OnQuestStateChanged.Broadcast(QuestInstance, QuestState);
+}
+
+void USQuestManagerComponent::MulticastOnObjectiveStateChanged_Implementation(USObjectiveBase* ObjectiveInstance, USQuestBase* QuestInstance, EObjectiveState ObjectiveState)
+{
+	OnObjectiveStateChanged.Broadcast(ObjectiveInstance, QuestInstance, ObjectiveState);
 }
 
 void USQuestManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(USQuestManagerComponent, CurrentActiveQuest);
+	DOREPLIFETIME(USQuestManagerComponent, CurrentActiveQuests);
 }

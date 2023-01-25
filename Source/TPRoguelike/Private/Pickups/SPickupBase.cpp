@@ -30,7 +30,7 @@ ASPickupBase::ASPickupBase()
 	IdleParticleComponent->bAutoActivate = true;
 	IdleParticleComponent->SetupAttachment(CollisionSphereComp);
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 
