@@ -23,7 +23,8 @@ ASItemChest::ASItemChest()
 
 	TargetLidPitch = 110.f;
 
-	SetReplicates(true);
+	//SetReplicates(true);
+	bReplicates = true;
 	SetReplicateMovement(true);
 	BaseMesh->SetIsReplicated(true);
 }

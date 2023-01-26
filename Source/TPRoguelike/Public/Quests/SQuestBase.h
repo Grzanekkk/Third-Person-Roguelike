@@ -45,12 +45,22 @@ public:
 	virtual void ServerOnlyOnAllObjectivesFinished();
 
 	UFUNCTION()
+	virtual void ServerOnlyOnObjectiveFinished(USObjectiveBase* ObjectiveInstance, bool bObjectiveFinishedSuccessfully);
+
+	UFUNCTION(Client, Reliable)
+	virtual void ClientFinishObjective();
+
+	UFUNCTION()
 	void Initialize(USQuestManagerComponent* InOuterComponent);
 
 
 	/// GETTERS
 	UFUNCTION()
 	USObjectiveBase* GetActiveObjectiveByClass(const TSoftClassPtr<USObjectiveBase>& ObjectiveSoftClass);
+
+
+	/** We need to override this function so we can use actions in the network fe.replicate them */
+	virtual bool IsSupportedForNetworking() const override;
 
 protected:
 
@@ -66,7 +76,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quest")
 	FText QuestName;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<TObjectPtr<USObjectiveBase>> ActiveObjectives;
 
 	UPROPERTY()

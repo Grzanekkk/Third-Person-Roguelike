@@ -10,6 +10,8 @@
 USQuestManagerComponent::USQuestManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	SetIsReplicatedByDefault(true);
 }
 
 void USQuestManagerComponent::BeginPlay()
@@ -20,6 +22,25 @@ void USQuestManagerComponent::BeginPlay()
 void USQuestManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
+void USQuestManagerComponent::ServerStartQuestByClass_Implementation(const TSoftClassPtr<USQuestBase>& QuestClass)
+{
+	TSubclassOf<USQuestBase> QuestClassLoaded = UAssetFunctionLibrary::LoadClassSynchronousIfNeeded(QuestClass);
+	if (QuestClassLoaded)
+	{
+		TObjectPtr<USQuestBase> NewQuestInstance = NewObject<USQuestBase>(this->GetOwner(), QuestClassLoaded);
+		if (NewQuestInstance)
+		{
+			if (NewQuestInstance->CanStartQuest())
+			{
+				NewQuestInstance->Initialize(this);
+				CurrentActiveQuests.Add(NewQuestInstance);
+				//MulticastOnQuestStateChanged(NewQuestInstance, EQuestState::IN_PROGRESS);
+				NewQuestInstance->ServerOnlyStartQuest();
+			}
+		}
+	}
 }
 
 void USQuestManagerComponent::ServerOnlyFinishQuestByClass(const TSoftClassPtr<USQuestBase>& QuestClass, bool bQuestFinishedSuccessfully)
@@ -36,7 +57,7 @@ void USQuestManagerComponent::ServerOnlyFinishQuestByClass(const TSoftClassPtr<U
 			
 			EQuestState FinishedQuestState = bQuestFinishedSuccessfully ? EQuestState::FINISHED : EQuestState::FAILED;
 
-			MulticastOnQuestStateChanged(CurrentActiveQuest, FinishedQuestState);
+			//MulticastOnQuestStateChanged(CurrentActiveQuest, FinishedQuestState);
 		}
 		else
 		{
@@ -53,7 +74,7 @@ void USQuestManagerComponent::ServerStartObjectiveByClass_Implementation(const T
 		TObjectPtr<USObjectiveBase> ActiveObjective = InQuest->GetActiveObjectiveByClass(ObjectiveSoftClass);
 		if (ActiveObjective)
 		{
-			MulticastOnObjectiveStateChanged(ActiveObjective, InQuest, EObjectiveState::IN_PROGRESS);
+			//MulticastOnObjectiveStateChanged(ActiveObjective, InQuest, EObjectiveState::IN_PROGRESS);
 		}
 	}
 	else
@@ -61,6 +82,14 @@ void USQuestManagerComponent::ServerStartObjectiveByClass_Implementation(const T
 		FString Msg = "Failed to start Objective: " + ObjectiveSoftClass.GetAssetName() + ". In Quest: " + GetNameSafe(InQuest);
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, Msg);
 	}
+}
+
+void USQuestManagerComponent::ServerOnlyFinishObjective(USObjectiveBase* ObjectiveInstance, USQuestBase* InQuest, bool bObjectiveFinishedSuccessfully)
+{
+	//InQuest->FinishObjective
+
+	EObjectiveState FinishedQuestState = bObjectiveFinishedSuccessfully ? EObjectiveState::FINISHED : EObjectiveState::FAILED;
+	//MulticastOnObjectiveStateChanged(ObjectiveInstance, InQuest, FinishedQuestState);
 }
 
 USQuestBase* USQuestManagerComponent::FindActiveQuestByClass(const TSubclassOf<USQuestBase>& QuestClass)
@@ -74,25 +103,6 @@ USQuestBase* USQuestManagerComponent::FindActiveQuestByClass(const TSubclassOf<U
 	}
 
 	return nullptr;
-}
-
-void USQuestManagerComponent::ServerStartQuestByClass_Implementation(const TSoftClassPtr<USQuestBase>& QuestClass)
-{
-	TSubclassOf<USQuestBase> QuestClassLoaded = UAssetFunctionLibrary::LoadClassSynchronousIfNeeded(QuestClass);
-	if (QuestClassLoaded)
-	{
-		TObjectPtr<USQuestBase> NewQuestInstance = NewObject<USQuestBase>(this->GetOwner(), QuestClassLoaded);
-		if (NewQuestInstance)
-		{
-			if (NewQuestInstance->CanStartQuest())
-			{
-				NewQuestInstance->Initialize(this);
-				NewQuestInstance->ServerOnlyStartQuest();
-				CurrentActiveQuests.Add(NewQuestInstance);
-				MulticastOnQuestStateChanged(NewQuestInstance, EQuestState::IN_PROGRESS);
-			}
-		}
-	}
 }
 
 void USQuestManagerComponent::MulticastOnQuestStateChanged_Implementation(USQuestBase* QuestInstance, EQuestState QuestState)

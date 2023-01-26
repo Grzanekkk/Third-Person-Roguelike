@@ -2,6 +2,8 @@
 
 
 #include "Objectives/SObjectiveBase.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Quests/SQuestBase.h"
 #include "Enums/SEnums_Objectives.h"
 #include "Net/UnrealNetwork.h"
 
@@ -15,6 +17,8 @@ USObjectiveBase::USObjectiveBase()
 
 void USObjectiveBase::ServerOnlyStartObjective()
 {
+	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
+
 	ObjectiveState = EObjectiveState::IN_PROGRESS;
 }
 
@@ -24,6 +28,8 @@ void USObjectiveBase::ClientStartObjective_Implementation()
 
 void USObjectiveBase::ServerOnlyFinishObjective()
 {
+	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
+
 	ObjectiveState = EObjectiveState::FINISHED;
 }
 
@@ -38,7 +44,9 @@ bool USObjectiveBase::CanStartObjective()
 
 void USObjectiveBase::ServerOnlyOnObjectiveFinished()
 {
-	//OuterQuest->O
+	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
+
+	OuterQuest->ServerOnlyOnObjectiveFinished(this, true);
 }
 
 void USObjectiveBase::Initialize(USQuestBase* OuterQuestPtr)
@@ -65,6 +73,11 @@ void USObjectiveBase::OnRep_ObjectiveState()
 		default:
 			break;
 	}
+}
+
+bool USObjectiveBase::IsSupportedForNetworking() const
+{
+	return true;
 }
 
 void USObjectiveBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

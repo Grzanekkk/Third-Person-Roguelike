@@ -42,6 +42,9 @@ public:
 	UFUNCTION()
 	void Initialize(USQuestBase* OuterQuestPtr);
 
+	/** We need to override this function so we can use actions in the network fe.replicate them */
+	virtual bool IsSupportedForNetworking() const override;
+
 protected:
 	UFUNCTION()
 	void OnRep_ObjectiveState();
@@ -55,7 +58,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<USQuestBase> OuterQuest = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FText ObjectiveName;
 };
 

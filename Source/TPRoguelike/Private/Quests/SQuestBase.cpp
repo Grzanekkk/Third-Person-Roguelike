@@ -53,8 +53,31 @@ void USQuestBase::ClientFinishQuest_Implementation()
 
 void USQuestBase::ServerOnlyOnAllObjectivesFinished()
 {
+	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
 	// For now we are setting true by defalut
 	OuterComponent->ServerOnlyFinishQuestByClass(GetClass(), true);
+}
+
+void USQuestBase::ServerOnlyOnObjectiveFinished(USObjectiveBase* ObjectiveInstance, bool bObjectiveFinishedSuccessfully)
+{
+	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
+
+	OuterComponent->ServerOnlyFinishObjective(ObjectiveInstance, this, bObjectiveFinishedSuccessfully);
+
+	// Start next objective if exist
+	if (false)
+	{
+		// We have another objective in this quest and we are goint to start it now
+	}
+	else
+	{
+		ServerOnlyOnAllObjectivesFinished();
+	}
+}
+
+void USQuestBase::ClientFinishObjective_Implementation()
+{
+
 }
 
 void USQuestBase::Initialize(USQuestManagerComponent* InOuterComponent)
@@ -118,9 +141,15 @@ void USQuestBase::OnRep_QuestState()
 	}
 }
 
+bool USQuestBase::IsSupportedForNetworking() const
+{
+	return true;
+}
+
 void USQuestBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(USQuestBase, QuestState);
+	DOREPLIFETIME(USQuestBase, ActiveObjectives);
 }

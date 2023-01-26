@@ -34,6 +34,9 @@ public:
 	void ServerStartObjectiveByClass(const TSoftClassPtr<USObjectiveBase>& ObjectiveSoftClass, USQuestBase* InQuest);
 
 	UFUNCTION()
+	void ServerOnlyFinishObjective(USObjectiveBase* ObjectiveInstance, USQuestBase* InQuest, bool bObjectiveFinishedSuccessfully);
+
+	UFUNCTION()
 	USQuestBase* FindActiveQuestByClass(const TSubclassOf<USQuestBase>& QuestClass);
 
 
