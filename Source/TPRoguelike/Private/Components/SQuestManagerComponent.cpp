@@ -4,7 +4,9 @@
 #include "Components/SQuestManagerComponent.h"
 #include "FunctionLibrary/AssetFunctionLibrary.h"
 #include "Quests/SQuestBase.h"
+#include "Objectives/SObjectiveBase.h"
 #include "Enums/SEnums_Objectives.h"
+#include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
 USQuestManagerComponent::USQuestManagerComponent()
@@ -89,6 +91,7 @@ void USQuestManagerComponent::ServerOnlyFinishObjective(USObjectiveBase* Objecti
 	//InQuest->FinishObjective
 
 	EObjectiveState FinishedQuestState = bObjectiveFinishedSuccessfully ? EObjectiveState::FINISHED : EObjectiveState::FAILED;
+	//
 	//MulticastOnObjectiveStateChanged(ObjectiveInstance, InQuest, FinishedQuestState);
 }
 
@@ -105,14 +108,47 @@ USQuestBase* USQuestManagerComponent::FindActiveQuestByClass(const TSubclassOf<U
 	return nullptr;
 }
 
-void USQuestManagerComponent::MulticastOnQuestStateChanged_Implementation(USQuestBase* QuestInstance, EQuestState QuestState)
+void USQuestManagerComponent::OnQuestStateChanged(USQuestBase* QuestInstance, EQuestState QuestState)
 {
-	OnQuestStateChanged.Broadcast(QuestInstance, QuestState);
+	OnQuestStateChangedEvent.Broadcast(QuestInstance, QuestState);
 }
 
-void USQuestManagerComponent::MulticastOnObjectiveStateChanged_Implementation(USObjectiveBase* ObjectiveInstance, USQuestBase* QuestInstance, EObjectiveState ObjectiveState)
+void USQuestManagerComponent::OnObjectiveStateChanged(USObjectiveBase* ObjectiveInstance, USQuestBase* QuestInstance, EObjectiveState ObjectiveState)
 {
-	OnObjectiveStateChanged.Broadcast(ObjectiveInstance, QuestInstance, ObjectiveState);
+	OnObjectiveStateChangedEvent.Broadcast(ObjectiveInstance, QuestInstance, ObjectiveState);
+}
+
+//void USQuestManagerComponent::MulticastOnQuestStateChanged_Implementation(USQuestBase* QuestInstance, EQuestState QuestState)
+//{
+//	OnQuestStateChanged.Broadcast(QuestInstance, QuestState);
+//}
+//
+//void USQuestManagerComponent::MulticastOnObjectiveStateChanged_Implementation(USObjectiveBase* ObjectiveInstance, USQuestBase* QuestInstance, EObjectiveState ObjectiveState)
+//{
+//	OnObjectiveStateChangedEvent.Broadcast(ObjectiveInstance, QuestInstance, ObjectiveState);
+//}
+
+bool USQuestManagerComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	for (TObjectPtr<USQuestBase> Quest : CurrentActiveQuests)
+	{
+		if (Quest)
+		{
+			TArray<USObjectiveBase*> ActiveObjectives = Quest->GetAllActiveObjective();
+			for (USObjectiveBase* ActiveObjective : ActiveObjectives)
+			{
+				if (ActiveObjective)
+				{
+					bWroteSomething |= Channel->ReplicateSubobject(ActiveObjective, *Bunch, *RepFlags);
+				}
+			}
+			// We are calling ReplicateSubobject on every Action and then we are checking if any of the action should be replicated, if yes we return true
+			bWroteSomething |= Channel->ReplicateSubobject(Quest, *Bunch, *RepFlags);
+		}
+	}
+
+	return bWroteSomething;
 }
 
 void USQuestManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

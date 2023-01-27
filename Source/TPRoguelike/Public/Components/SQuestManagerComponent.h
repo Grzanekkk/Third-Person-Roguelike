@@ -24,6 +24,8 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
 	UFUNCTION(Server, Reliable)
 	void ServerStartQuestByClass(const TSoftClassPtr<USQuestBase>& QuestClass);
 
@@ -39,21 +41,27 @@ public:
 	UFUNCTION()
 	USQuestBase* FindActiveQuestByClass(const TSubclassOf<USQuestBase>& QuestClass);
 
+	UFUNCTION()
+	void OnQuestStateChanged(USQuestBase* QuestInstance, EQuestState QuestState);
+
+	UFUNCTION()
+	void OnObjectiveStateChanged(USObjectiveBase* ObjectiveInstance, USQuestBase* QuestInstance, EObjectiveState ObjectiveState);
+
 
 protected:
 	virtual void BeginPlay() override;
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOnQuestStateChanged(USQuestBase* QuestInstance, EQuestState QuestState);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOnObjectiveStateChanged(USObjectiveBase* ObjectiveInstance, USQuestBase* QuestInstance, EObjectiveState ObjectiveState);
-
-	UPROPERTY(BlueprintAssignable)
-	FOnQuestStateChanged OnQuestStateChanged;
+	//UFUNCTION(NetMulticast, Reliable)
+	//void MulticastOnQuestStateChanged(USQuestBase* QuestInstance, EQuestState QuestState);
+	//
+	//UFUNCTION(NetMulticast, Reliable)
+	//void MulticastOnObjectiveStateChanged(USObjectiveBase* ObjectiveInstance, USQuestBase* QuestInstance, EObjectiveState ObjectiveState);
 
 	UPROPERTY(BlueprintAssignable)
-	FOnObjectiveStateChanged OnObjectiveStateChanged;
+	FOnQuestStateChanged OnQuestStateChangedEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnObjectiveStateChanged OnObjectiveStateChangedEvent;
 
 	UPROPERTY(Replicated)
 	TArray<TObjectPtr<USQuestBase>> CurrentActiveQuests;

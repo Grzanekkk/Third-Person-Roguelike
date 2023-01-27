@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Quests/SQuestBase.h"
 #include "Enums/SEnums_Objectives.h"
+#include "Components/SQuestManagerComponent.h"
 #include "Net/UnrealNetwork.h"
 
 USObjectiveBase::USObjectiveBase()
@@ -20,6 +21,7 @@ void USObjectiveBase::ServerOnlyStartObjective()
 	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
 
 	ObjectiveState = EObjectiveState::IN_PROGRESS;
+	OnRep_ObjectiveState();
 }
 
 void USObjectiveBase::ClientStartObjective_Implementation()
@@ -31,6 +33,7 @@ void USObjectiveBase::ServerOnlyFinishObjective()
 	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
 
 	ObjectiveState = EObjectiveState::FINISHED;
+	OnRep_ObjectiveState();
 }
 
 void USObjectiveBase::ClientFinishObjective_Implementation()
@@ -56,6 +59,8 @@ void USObjectiveBase::Initialize(USQuestBase* OuterQuestPtr)
 
 void USObjectiveBase::OnRep_ObjectiveState()
 {
+	OuterQuest->GetOuterComponent()->OnObjectiveStateChanged(this, OuterQuest, ObjectiveState);
+
 	switch (ObjectiveState)
 	{
 		case EObjectiveState::NOT_STARTED:
@@ -75,6 +80,11 @@ void USObjectiveBase::OnRep_ObjectiveState()
 	}
 }
 
+void USObjectiveBase::OnRep_OuterQuest()
+{
+	ObjectiveName = FText::FromString("BITCH WORK");
+}
+
 bool USObjectiveBase::IsSupportedForNetworking() const
 {
 	return true;
@@ -84,5 +94,6 @@ void USObjectiveBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(USObjectiveBase, OuterQuest);
 	DOREPLIFETIME(USObjectiveBase, ObjectiveState);
 }

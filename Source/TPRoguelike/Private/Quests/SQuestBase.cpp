@@ -6,6 +6,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/SQuestManagerComponent.h"
 #include "Enums/SEnums_Objectives.h"
+#include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -22,6 +23,7 @@ void USQuestBase::ServerOnlyStartQuest()
 	
 	// We only want to change this value on the server
 	QuestState = EQuestState::IN_PROGRESS;
+	OnRep_QuestState();
 	
 	// Starting default objectives
 	for (TSoftClassPtr<USObjectiveBase> ObjectiveSoftClass : StartingObjectives)
@@ -42,6 +44,7 @@ void USQuestBase::ServerOnlyFinishQuest()
 	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
 	// Changes state internaly in this quest class
 	QuestState = EQuestState::FINISHED;
+	OnRep_QuestState();
 
 	// Notifies everyone else aboute the change
 }
@@ -98,6 +101,11 @@ USObjectiveBase* USQuestBase::GetActiveObjectiveByClass(const TSoftClassPtr<USOb
 	return nullptr;
 }
 
+TArray<USObjectiveBase*> USQuestBase::GetAllActiveObjective()
+{
+	return ActiveObjectives;
+}
+
 bool USQuestBase::CanStartQuest()
 {
 	return true;
@@ -122,6 +130,8 @@ bool USQuestBase::ServerOnlyStartObjectiveByClass(const TSoftClassPtr<USObjectiv
 
 void USQuestBase::OnRep_QuestState()
 {
+	OuterComponent->OnQuestStateChanged(this, QuestState);
+
 	switch (QuestState)
 	{
 		case EQuestState::NOT_STARTED:
@@ -146,10 +156,27 @@ bool USQuestBase::IsSupportedForNetworking() const
 	return true;
 }
 
+//bool USQuestBase::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+//{
+//	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+//	for (TObjectPtr<USObjectiveBase> Objective : ActiveObjectives)
+//	{
+//		if (Objective)
+//		{
+//			// We are calling ReplicateSubobject on every Action and then we are checking if any of the action should be replicated, if yes we return true
+//			bWroteSomething |= Channel->ReplicateSubobject(Objective, *Bunch, *RepFlags);
+//		}
+//	}
+//
+//	return bWroteSomething;
+//}
+
+
 void USQuestBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(USQuestBase, OuterComponent);
 	DOREPLIFETIME(USQuestBase, QuestState);
 	DOREPLIFETIME(USQuestBase, ActiveObjectives);
 }

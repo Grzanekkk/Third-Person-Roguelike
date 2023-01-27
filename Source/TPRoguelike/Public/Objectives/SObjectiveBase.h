@@ -55,8 +55,11 @@ protected:
 	UPROPERTY()
 	EObjectiveType ObjectiveType;
 
-	UPROPERTY()
-	TObjectPtr<USQuestBase> OuterQuest = nullptr;
+	UPROPERTY(ReplicatedUsing = "OnRep_OuterQuest")
+	TObjectPtr<USQuestBase> OuterQuest;
+
+	UFUNCTION()
+	void OnRep_OuterQuest();
 
 	UPROPERTY(BlueprintReadOnly)
 	FText ObjectiveName;

@@ -21,6 +21,8 @@ class TPROGUELIKE_API USQuestBase : public UObject
 public:
 	USQuestBase();
 
+	//virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
 	/* Its not marked as "Server" because we are only going to call this function from the server on the server */
 	UFUNCTION()
 	virtual void ServerOnlyStartQuest();
@@ -58,13 +60,19 @@ public:
 	UFUNCTION()
 	USObjectiveBase* GetActiveObjectiveByClass(const TSoftClassPtr<USObjectiveBase>& ObjectiveSoftClass);
 
+	UFUNCTION()
+	TArray<USObjectiveBase*> GetAllActiveObjective();
+
+	UFUNCTION()
+	FORCEINLINE USQuestManagerComponent* GetOuterComponent() { return OuterComponent; }
+
 
 	/** We need to override this function so we can use actions in the network fe.replicate them */
 	virtual bool IsSupportedForNetworking() const override;
 
 protected:
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<USQuestManagerComponent> OuterComponent = nullptr;
 
 	UPROPERTY(ReplicatedUsing="OnRep_QuestState")
