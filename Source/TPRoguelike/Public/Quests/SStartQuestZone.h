@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "SStartQuestZone.generated.h"
 
 class USQuestBase;
@@ -28,6 +29,6 @@ protected:
 	UFUNCTION()
 	void OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|QuestZone")
-	TSoftClassPtr<USQuestBase> QuestToStartOnEnter = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|QuestZone")
+	FGameplayTagContainer ObjectiveTag;
 };

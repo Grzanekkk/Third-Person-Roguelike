@@ -90,7 +90,7 @@
 //
 //USObjectiveBase* USQuestBase::GetActiveObjectiveByClass(const TSoftClassPtr<USObjectiveBase>& ObjectiveSoftClass)
 //{
-//	for (TObjectPtr<USObjectiveBase> ActiveObjective : ActiveObjectives)
+//	for (TObjectPtr<USObjectiveBase> ActiveObjective : DefalutObjectivesGoals)
 //	{
 //		if (ActiveObjective.GetClass() == ObjectiveSoftClass)
 //		{
@@ -103,7 +103,7 @@
 //
 //TArray<USObjectiveBase*> USQuestBase::GetAllActiveObjective()
 //{
-//	return ActiveObjectives;
+//	return DefalutObjectivesGoals;
 //}
 //
 //bool USQuestBase::CanStartQuest()
@@ -117,7 +117,7 @@
 //	TObjectPtr<USObjectiveBase> NewObjectiveInstance = NewObject<USObjectiveBase>(OuterComponent->GetOwner(), ObjectiveClass);
 //	if (NewObjectiveInstance && NewObjectiveInstance->CanStartObjective())
 //	{
-//		ActiveObjectives.Add(NewObjectiveInstance);
+//		DefalutObjectivesGoals.Add(NewObjectiveInstance);
 //
 //		NewObjectiveInstance->Initialize(this);
 //		NewObjectiveInstance->ServerOnlyStartObjective();
@@ -159,7 +159,7 @@
 ////bool USQuestBase::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
 ////{
 ////	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
-////	for (TObjectPtr<USObjectiveBase> Objective : ActiveObjectives)
+////	for (TObjectPtr<USObjectiveBase> Objective : DefalutObjectivesGoals)
 ////	{
 ////		if (Objective)
 ////		{
@@ -178,5 +178,5 @@
 //
 //	DOREPLIFETIME(USQuestBase, OuterComponent);
 //	DOREPLIFETIME(USQuestBase, QuestState);
-//	DOREPLIFETIME(USQuestBase, ActiveObjectives);
+//	DOREPLIFETIME(USQuestBase, DefalutObjectivesGoals);
 //}

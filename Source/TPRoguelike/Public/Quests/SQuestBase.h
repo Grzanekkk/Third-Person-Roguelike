@@ -85,7 +85,7 @@ class TPROGUELIKE_API USQuestBase : public UObject
 //	FText QuestName;
 //
 //	UPROPERTY(BlueprintReadOnly, Replicated)
-//	TArray<TObjectPtr<USObjectiveBase>> ActiveObjectives;
+//	TArray<TObjectPtr<USObjectiveBase>> DefalutObjectivesGoals;
 //
 //	UPROPERTY()
 //	TArray<TSoftClassPtr<USObjectiveBase>> StartingObjectives;

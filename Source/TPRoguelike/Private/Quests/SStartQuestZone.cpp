@@ -36,8 +36,8 @@ void ASStartQuestZone::BeginPlay()
 
 void ASStartQuestZone::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (UKismetSystemLibrary::IsServer(GetWorld()))
-	{
+	//if (UKismetSystemLibrary::IsServer(GetWorld()))
+	//{
 		TObjectPtr<ASCharacter> ACharacter = Cast<ASCharacter>(OtherActor);
 		if (ACharacter)
 		{
@@ -47,9 +47,9 @@ void ASStartQuestZone::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AA
 				TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
 				if (QuestManager)
 				{
-					//QuestManager->ServerStartQuestByClass(QuestToStartOnEnter);
+					QuestManager->StartObjective(ObjectiveTag.GetByIndex(0));
 				}
 			}
 		}
-	}
+	//}
 }

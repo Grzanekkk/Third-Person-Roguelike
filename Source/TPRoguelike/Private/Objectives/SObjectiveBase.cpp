@@ -10,7 +10,7 @@
 
 //USObjectiveBase::USObjectiveBase()
 //{
-//	ObjectiveState = EObjectiveState::NOT_STARTED;
+//	ActiveObjectivesState = EObjectiveState::NOT_STARTED;
 //	ObjectiveType = EObjectiveType::OTHER;
 //
 //	ObjectiveName = FText::FromString("Default Objective Name");
@@ -20,7 +20,7 @@
 //{
 //	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
 //
-//	ObjectiveState = EObjectiveState::IN_PROGRESS;
+//	ActiveObjectivesState = EObjectiveState::IN_PROGRESS;
 //	OnRep_ObjectiveState();
 //}
 //
@@ -32,7 +32,7 @@
 //{
 //	ensure(UKismetSystemLibrary::IsServer(GetWorld()));
 //
-//	ObjectiveState = EObjectiveState::FINISHED;
+//	ActiveObjectivesState = EObjectiveState::FINISHED;
 //	OnRep_ObjectiveState();
 //}
 //
@@ -59,9 +59,9 @@
 //
 //void USObjectiveBase::OnRep_ObjectiveState()
 //{
-//	OuterQuest->GetOuterComponent()->OnObjectiveStateChanged(this, OuterQuest, ObjectiveState);
+//	OuterQuest->GetOuterComponent()->OnObjectiveStateChanged(this, OuterQuest, ActiveObjectivesState);
 //
-//	switch (ObjectiveState)
+//	switch (ActiveObjectivesState)
 //	{
 //		case EObjectiveState::NOT_STARTED:
 //			break;
@@ -95,5 +95,5 @@
 //	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 //
 //	DOREPLIFETIME(USObjectiveBase, OuterQuest);
-//	DOREPLIFETIME(USObjectiveBase, ObjectiveState);
+//	DOREPLIFETIME(USObjectiveBase, ActiveObjectivesState);
 //}

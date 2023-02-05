@@ -49,9 +49,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Rogue|CaptureZone")
 	float GetZoneCapturePercent();
 
-	//UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Rogue|CaptureZone")
-	//bool IsCaptured();
-
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Rogue|CaptureZone")
 	float GetCaptureSpeedMultiplier();
 
@@ -101,5 +98,5 @@ protected:
 	TArray<TObjectPtr<ASCharacter>> PlayersInsideZone;
 
 	UPROPERTY(EditAnywhere, Category = "Rogue|CaptureZone|Quest")
-	FGameplayTagContainer ObjectiveTag;
+	FGameplayTag ObjectiveTag;
 };

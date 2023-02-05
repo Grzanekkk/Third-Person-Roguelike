@@ -50,7 +50,7 @@ class TPROGUELIKE_API USObjectiveBase : public UObject
 //	void OnRep_ObjectiveState();
 //
 //	UPROPERTY(ReplicatedUsing="OnRep_ObjectiveState")
-//	EObjectiveState ObjectiveState;
+//	EObjectiveState ActiveObjectivesState;
 //
 //	UPROPERTY()
 //	EObjectiveType ObjectiveType;

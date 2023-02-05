@@ -163,7 +163,7 @@ void ACaptureZone::OnZoneCaptured()
 		TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
 		if (QuestManager)
 		{
-			QuestManager->AddObjectiveStat(ObjectiveTag.GetByIndex(0), 1);
+			QuestManager->AddObjectiveStat(ObjectiveTag, 1);
 		}
 	}
 }

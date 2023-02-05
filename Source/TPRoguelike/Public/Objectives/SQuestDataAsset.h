@@ -7,19 +7,19 @@
 #include "GameplayTagContainer.h"
 #include "SQuestDataAsset.generated.h"
 
-USTRUCT()
-struct FQuestObjective
+USTRUCT(Blueprintable)
+struct FObjectiveDefaults
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag ObjectiveTag;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 GoalValue;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText DisplayName;
 
 };
@@ -33,6 +33,12 @@ class TPROGUELIKE_API USQuestDataAsset : public UDataAsset
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere)
-	TMap<FGameplayTag, int32> ObjectiveState;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FObjectiveDefaults> ObjectivesGoal;
+
+	UFUNCTION()
+	int32 GetGoalValueOfObjective(FGameplayTag ObjectiveTag);
+
+	UFUNCTION()
+	bool IsObjectiveFinished(FGameplayTag ObjectiveTag, int32 CurrentValue);
 };
