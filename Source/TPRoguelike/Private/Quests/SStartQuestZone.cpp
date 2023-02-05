@@ -47,7 +47,7 @@ void ASStartQuestZone::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AA
 				TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
 				if (QuestManager)
 				{
-					QuestManager->ServerStartQuestByClass(QuestToStartOnEnter);
+					//QuestManager->ServerStartQuestByClass(QuestToStartOnEnter);
 				}
 			}
 		}

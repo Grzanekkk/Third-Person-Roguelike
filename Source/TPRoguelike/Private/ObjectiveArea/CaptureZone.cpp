@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/SQuestManagerComponent.h"
 #include "GameState/SGameState.h"
 
 
@@ -47,14 +48,14 @@ void ACaptureZone::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UKismetSystemLibrary::IsServer(GetWorld()))
-	{
-		TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (GameState)
-		{
-			GameState->ServerOnlyAddCaptureZoneToActiveList(this);
-		}
-	}
+	//if (UKismetSystemLibrary::IsServer(GetWorld()))
+	//{
+	//	TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	//	if (GameState)
+	//	{
+	//		GameState->ServerOnlyAddCaptureZoneToActiveList(this);
+	//	}
+	//}
 }
 
 
@@ -67,7 +68,6 @@ void ACaptureZone::Tick(float DeltaTime)
 		if (IsBeingCaptured())
 		{
 			CalculateCapturePoints();
-			//IsCaptured();
 		}
 	}
 }
@@ -109,15 +109,14 @@ void ACaptureZone::CalculateCapturePoints()
 	// We need to call it directly on the server
 	OnRep_CurrentCapPoints();
 
-	if (!bIsCaptured)
-	{
-		if (CurrentCapPoints >= MaxCapPoints)
-		{
-			// We just captured the zone
-			bIsCaptured = true;
-			MulticastOnZoneCaptured();
-		}
-	}
+	//if (!bIsCaptured)
+	//{
+	//	if (CurrentCapPoints >= MaxCapPoints)
+	//	{
+	//		// We just captured the zone
+	//		bIsCaptured = true;
+	//	}
+	//}
 }
 
 
@@ -153,36 +152,32 @@ void ACaptureZone::SetFlagHight()
 	FlagMesh->SetRelativeLocation(FlagLocation);
 }
 
-
-void ACaptureZone::ServerOnlyAssginedQuestFinished()
+void ACaptureZone::OnZoneCaptured()
 {
-	MulticastAssginedQuestFinished();
-}
+	OnZoneCapturedEvent.Broadcast(this, PlayersInsideZone);
 
-void ACaptureZone::MulticastAssginedQuestFinished_Implementation()
-{
-	QuestIndicatorMesh->SetHiddenInGame(true);
-}
-
-void ACaptureZone::ServerOnlyInitializeForQuest()
-{
-	// Maybe add variable like bHasBeeninitializedForQuest?
-	MulticastInitializeForQuest();
-}
-
-void ACaptureZone::MulticastInitializeForQuest_Implementation()
-{
-	QuestIndicatorMesh->SetHiddenInGame(false);
-}
-
-void ACaptureZone::MulticastOnZoneCaptured_Implementation()
-{
-	OnZoneCaptured.Broadcast(this, PlayersInsideZone);
+	// For Quests
+	TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	if (GameState)
+	{
+		TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
+		if (QuestManager)
+		{
+			QuestManager->AddObjectiveStat(ObjectiveTag.GetByIndex(0), 1);
+		}
+	}
 }
 
 void ACaptureZone::OnRep_CurrentCapPoints()
 {
 	// update progress bar of smth (or some visual state)
+	if (!bIsCaptured && CurrentCapPoints >= MaxCapPoints)
+	{
+		bIsCaptured = true;
+		QuestIndicatorMesh->SetHiddenInGame(false);
+		OnZoneCaptured();
+	}
+
 	SetFlagHight();
 }
 

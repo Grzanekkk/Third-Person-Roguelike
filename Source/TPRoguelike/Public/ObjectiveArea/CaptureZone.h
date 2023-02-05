@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "ObjectiveArea/ObjectiveArea.h"
+#include "GameplayTagContainer.h"
 #include "CaptureZone.generated.h"
 
 class UCapsuleComponent;
 class ASCharacter;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnZoneCaptured, ACaptureZone*, CapturedZone, TArray<ASCharacter*>, PlayersResponsibleForCapture);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnZoneCapturedEvent, ACaptureZone*, CapturedZone, TArray<ASCharacter*>, PlayersResponsibleForCapture);
 
 /**
  * 
@@ -54,14 +55,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Rogue|CaptureZone")
 	float GetCaptureSpeedMultiplier();
 
-	UFUNCTION()
-	void ServerOnlyInitializeForQuest();
-
-	UFUNCTION()
-	void ServerOnlyAssginedQuestFinished();
-
 	UPROPERTY()
-	FOnZoneCaptured OnZoneCaptured;
+	FOnZoneCapturedEvent OnZoneCapturedEvent;
 
 protected:
 
@@ -78,17 +73,14 @@ protected:
 	UFUNCTION()
 	virtual void StopOverlapingZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOnZoneCaptured();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastInitializeForQuest();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastAssginedQuestFinished();
+	UFUNCTION()
+	void OnZoneCaptured();
 
 	UFUNCTION()
 	void OnRep_CurrentCapPoints();
+
+	UFUNCTION()
+	void SetFlagHight();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|CaptureZone")
 	float MaxCapPoints = 1000.f;
@@ -108,5 +100,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|CaptureZone")
 	TArray<TObjectPtr<ASCharacter>> PlayersInsideZone;
 
-	void SetFlagHight();
+	UPROPERTY(EditAnywhere, Category = "Rogue|CaptureZone|Quest")
+	FGameplayTagContainer ObjectiveTag;
 };

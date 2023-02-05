@@ -14,9 +14,9 @@ class TPROGUELIKE_API USQuest_CaptureZone : public USQuestBase
 {
 	GENERATED_BODY()
 	
-public:
+//public:
 
-	USQuest_CaptureZone();
+	//USQuest_CaptureZone();
 	
 	//virtual void ServerOnlyStartQuest() override;
 	//
@@ -26,7 +26,7 @@ public:
 
 	// virtual void ServerOnlyOnAllObjectivesFinished() override;
 
-protected:
+//protected:
 	//UFUNCTION()
 	//void OnZoneCaptured(ACaptureZone* CapturedZone, TArray<ASCharacter*> PlayersResponsibleForCapture);
 };

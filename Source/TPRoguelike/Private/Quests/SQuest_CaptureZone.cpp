@@ -8,12 +8,12 @@
 #include "ObjectiveArea/CaptureZone.h"
 
 
-USQuest_CaptureZone::USQuest_CaptureZone()
-{
-	QuestName = FText::FromString("Conquer this funny area :>");
-
-	StartingObjectives.Add(USObjective_CaptureZone::StaticClass());
-}
+//USQuest_CaptureZone::USQuest_CaptureZone()
+//{
+//	QuestName = FText::FromString("Conquer this funny area :>");
+//
+//	StartingObjectives.Add(USObjective_CaptureZone::StaticClass());
+//}
 
 //void USQuest_CaptureZone::ServerOnlyStartQuest()
 //{

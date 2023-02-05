@@ -40,22 +40,22 @@ public:
 	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Getters")
 	FORCEINLINE USQuestManagerComponent* GetQuestManager() { return QuestManagerComponent; }
 
-	TObjectPtr<ACaptureZone> GetCaptureZoneForQuest();
+	//TObjectPtr<ACaptureZone> GetCaptureZoneForQuest();
 
-	UFUNCTION()
-	void ServerOnlyAddCaptureZoneToActiveList(ACaptureZone* CaptureZone);
-
-	UFUNCTION()
-	void ServerOnlyRemoveCaptureZoneFromActiveList(ACaptureZone* CaptureZone);
-
-	UFUNCTION()
-	bool IsAnyCaptureZoneAvalibleForQuest();
+	//UFUNCTION()
+	//void ServerOnlyAddCaptureZoneToActiveList(ACaptureZone* CaptureZone);
+	//
+	//UFUNCTION()
+	//void ServerOnlyRemoveCaptureZoneFromActiveList(ACaptureZone* CaptureZone);
+	//
+	//UFUNCTION()
+	//bool IsAnyCaptureZoneAvalibleForQuest();
 	
 protected:
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USQuestManagerComponent> QuestManagerComponent = nullptr;
 
-	UPROPERTY(Replicated)
-	TArray<TObjectPtr<ACaptureZone>> CaptureZonesAvalibeForQuests;
+	//UPROPERTY(Replicated)
+	//TArray<TObjectPtr<ACaptureZone>> CaptureZonesAvalibeForQuests;
 
 };
