@@ -13,6 +13,7 @@ class USQuestDataAsset;
 enum class EQuestState : uint8;
 enum class EObjectiveState : uint8;
 
+USTRUCT(Blueprintable)
 struct FObjectiveReplicationData
 {
 	GENERATED_BODY();
@@ -26,6 +27,8 @@ public:
 
 	UPROPERTY()
 	EObjectiveState ObjectiveState;
+
+	FObjectiveReplicationData() {};
 
 	FObjectiveReplicationData(FGameplayTag _Tag, int32 _Value, EObjectiveState _ObjectiveState)
 	{
@@ -67,6 +70,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
 	TObjectPtr<USQuestDataAsset> DefalutObjectivesGoals;
 
+	UPROPERTY()
 	TArray<FObjectiveReplicationData> LocalObjectiveData;
 
 	UPROPERTY(ReplicatedUsing="OnRep_ServerObjectiveData")

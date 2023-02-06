@@ -10,6 +10,8 @@
 USQuestManagerComponent::USQuestManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	SetIsReplicatedByDefault(true);
 }
 
 void USQuestManagerComponent::BeginPlay()
@@ -29,7 +31,8 @@ void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveT
 	// We check if this objective is active
 	if (ActiveObjectivesState.Contains(ObjectiveTag))
 	{
-		ActiveObjectivesState.Add(ObjectiveTag, Stat);
+		int32 OldObjectiveValue = *ActiveObjectivesState.Find(ObjectiveTag);
+		ActiveObjectivesState.Add(ObjectiveTag, OldObjectiveValue + Stat);
 		
 		int32 CurrentObjectiveValue = *ActiveObjectivesState.Find(ObjectiveTag);
 
@@ -42,7 +45,7 @@ void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveT
 			}
 		}
 
-		OnObjectiveValueChanged.Broadcast(ObjectiveTag, CurrentObjectiveValue);
+		OnObjectiveValueChanged.Broadcast(ObjectiveTag, CurrentObjectiveValue, Stat);
 		
 		if (DefalutObjectivesGoals->IsObjectiveFinished(ObjectiveTag, CurrentObjectiveValue))
 		{
@@ -62,6 +65,11 @@ void USQuestManagerComponent::ServerOnlyStartObjective(FGameplayTag ObjectiveTag
 
 		OnObjectiveStateChangedEvent.Broadcast(ObjectiveTag, EObjectiveState::IN_PROGRESS);
 	}
+	else
+	{
+		FString DebugMsg = "Failed to run: " + ObjectiveTag.ToString();
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+	}
 }
 
 void USQuestManagerComponent::OnRep_ServerObjectiveData()
@@ -72,13 +80,16 @@ void USQuestManagerComponent::OnRep_ServerObjectiveData()
 		{
 			if (ServerObjectiveReplicationData.Tag == LocalObjectiveReplicationData.Tag)
 			{
+				// We found same objectives
+
+				// Checking for state change
 				if (ServerObjectiveReplicationData.ObjectiveState != LocalObjectiveReplicationData.ObjectiveState)
 				{
 					LocalObjectiveReplicationData.ObjectiveState = ServerObjectiveReplicationData.ObjectiveState;
 					OnObjectiveStateChangedEvent.Broadcast(LocalObjectiveReplicationData.Tag, LocalObjectiveReplicationData.ObjectiveState);
 				}
 
-				// We found same objectives
+				// Checking for value change
 				if (ServerObjectiveReplicationData.Value != LocalObjectiveReplicationData.Value)
 				{
 					// Value changed
@@ -91,6 +102,10 @@ void USQuestManagerComponent::OnRep_ServerObjectiveData()
 				break;
 			}
 		}
+
+		// if we didnt find matching Tag it means that this objective was just added
+		LocalObjectiveData.Add(FObjectiveReplicationData(ServerObjectiveReplicationData.Tag, ServerObjectiveReplicationData.Value, ServerObjectiveReplicationData.ObjectiveState));
+		OnObjectiveStateChangedEvent.Broadcast(ServerObjectiveReplicationData.Tag, ServerObjectiveReplicationData.ObjectiveState);
 	}
 }
 
