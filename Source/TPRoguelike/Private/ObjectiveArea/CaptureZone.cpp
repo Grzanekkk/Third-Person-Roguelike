@@ -130,19 +130,16 @@ float ACaptureZone::GetCaptureSpeedMultiplier()
 	return CapPointPerPlayerMultiplier[PlayersInsideZone.Num()];
 }
 
-
 bool ACaptureZone::IsBeingCaptured()
 {
 	// If there is at least one player inside the zone its is being captured
 	return PlayersInsideZone.Num() > 0;
 }
 
-
 float ACaptureZone::GetZoneCapturePercent()
 {
 	return (CurrentCapPoints / MaxCapPoints) * 100;
 }
-
 
 void ACaptureZone::SetFlagHight()
 {
@@ -157,13 +154,16 @@ void ACaptureZone::OnZoneCaptured()
 	OnZoneCapturedEvent.Broadcast(this, PlayersInsideZone);
 
 	// For Quests
-	TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	if (GameState)
+	if (UKismetSystemLibrary::IsServer(GetWorld()))
 	{
-		TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
-		if (QuestManager)
+		TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (GameState)
 		{
-			QuestManager->ServerOnlyAddObjectiveStat(ObjectiveTag, 1);
+			TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
+			if (QuestManager)
+			{
+				QuestManager->ServerOnlyAddObjectiveStat(ObjectiveTag, 1);
+			}
 		}
 	}
 }

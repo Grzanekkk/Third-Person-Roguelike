@@ -58,6 +58,21 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void ChangeObjectiveStateByRef(FObjectiveReplicationData& ObjectiveData, EObjectiveState NewState);
+
+	UFUNCTION()
+	void ChangeObjectiveStateByTag(FGameplayTag ObjectiveTag, EObjectiveState NewState);
+
+	UFUNCTION()
+	void ChangeObjectiveValueByRef(FObjectiveReplicationData& ObjectiveData, int32 NewValue);
+
+	UFUNCTION()
+	void ChangeObjectiveValueByTag(FGameplayTag ObjectiveTag, int32 NewValue);
+
+	UFUNCTION()
+	int32 GetValueOfActiveObjective(FGameplayTag ObjectiveTag);
+
 	UPROPERTY(BlueprintAssignable)
 	FOnObjectiveStateChanged OnObjectiveStateChangedEvent;
 
@@ -65,14 +80,16 @@ protected:
 	FOnObjectiveValueChanged OnObjectiveValueChanged;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
-	TMap<FGameplayTag, int32> ActiveObjectivesState;
+	TArray<FGameplayTag> ActiveObjectivesState;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
 	TObjectPtr<USQuestDataAsset> DefalutObjectivesGoals;
 
+	// Z tego pobieramy informacje
 	UPROPERTY()
 	TArray<FObjectiveReplicationData> LocalObjectiveData;
 
+	// Tutaj ustawiamy informacje
 	UPROPERTY(ReplicatedUsing="OnRep_ServerObjectiveData")
 	TArray<FObjectiveReplicationData> ServerObjectiveData;
 

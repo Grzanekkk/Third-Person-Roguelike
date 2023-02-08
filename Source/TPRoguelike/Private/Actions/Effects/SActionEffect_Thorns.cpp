@@ -30,15 +30,20 @@ void USActionEffect_Thorns::StopAction_Implementation(AActor* Instigator)
 
 void USActionEffect_Thorns::OnOwnerHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float DeltaHealth)
 {
-	TObjectPtr<AActor> Owner = GetOwningComponent()->GetOwner();
-	if (InstigatorActor != Owner)
-	{
-		int32 ThornsDamage = FMath::RoundToInt32(DeltaHealth * ThornsMultiplier);
+	int32 ThornsDamage = FMath::RoundToInt32(DeltaHealth * ThornsMultiplier);
 
-		TObjectPtr<USAttributeComponent> InstigatorAttributeComponent = Cast<USAttributeComponent>(InstigatorActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+	if (ThornsDamage > 0)
+	{
+		TObjectPtr<AActor> Owner = GetOwningComponent()->GetOwner();
+		if (InstigatorActor != Owner)
 		{
-			InstigatorAttributeComponent->ApplyHealthChange(Owner, ThornsDamage);
-			UE_LOG(LogTemp, Warning, TEXT("%s delt %i Thorns Damage to %s"), *GetNameSafe(Owner), -ThornsDamage, *GetNameSafe(InstigatorActor));
+
+
+			TObjectPtr<USAttributeComponent> InstigatorAttributeComponent = Cast<USAttributeComponent>(InstigatorActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+			{
+				InstigatorAttributeComponent->ApplyHealthChange(Owner, ThornsDamage);
+				UE_LOG(LogTemp, Warning, TEXT("%s delt %i Thorns Damage to %s"), *GetNameSafe(Owner), -ThornsDamage, *GetNameSafe(InstigatorActor));
+			}
 		}
 	}
 }

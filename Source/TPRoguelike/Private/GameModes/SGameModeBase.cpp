@@ -14,6 +14,9 @@
 #include "Pickups/SPickupBase.h"
 #include "PlayerStates/SPlayerState.h"
 #include "SaveSystem/SSaveGame.h"
+#include "Components/SQuestManagerComponent.h"
+#include "GameState/SGameState.h"
+#include "GameplayTagContainer.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 
@@ -306,6 +309,22 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		if (VictimAttribComp)
 		{
 			PlayerKiller->GetPlayerState<ASPlayerState>()->ApplyCreditsChange(VictimAttribComp->GetCreditsAmountForKill());
+
+			if (VictimAttribComp->ObjectivesAffectedOnDeath.Num() > 0)
+			{
+				TObjectPtr<ASGameState> SGameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+				if (SGameState)
+				{
+					TObjectPtr<USQuestManagerComponent> QuestManager = SGameState->GetQuestManager();
+					if (QuestManager)
+					{
+						for (int32 i = 0; i < VictimAttribComp->ObjectivesAffectedOnDeath.Num(); i++)
+						{
+							QuestManager->ServerOnlyAddObjectiveStat(VictimAttribComp->ObjectivesAffectedOnDeath.GetByIndex(i), 1);
+						}
+					}
+				}
+			}
 		}
 	}
 
