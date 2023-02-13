@@ -12,6 +12,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SActionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
 
 
 ASAICharacter::ASAICharacter()
@@ -64,23 +65,26 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 
 bool ASAICharacter::SetTargetActor(AActor* TargetActor)
 {
-	// If this ai ware hit by another ai it will start shooting this ai (its kinda fun)
-	if (TargetActor != this)
+	if (AttributeComponent->IsAlive())
 	{
-		TObjectPtr<AAIController> AIController = Cast<AAIController>(GetController());
-		if (AIController)
+		// If this ai ware hit by another ai it will start shooting this ai (its kinda fun)
+		if (TargetActor != this)
 		{
-			TObjectPtr<UBlackboardComponent> BBCComp = AIController->GetBlackboardComponent();
-
-			TObjectPtr<AActor> CurrentTargetActor = Cast<AActor>(BBCComp->GetValueAsObject(BBV_TargetActor));
-			if (TargetActor != CurrentTargetActor)
+			TObjectPtr<AAIController> AIController = Cast<AAIController>(GetController());
+			if (AIController)
 			{
-				MulticastSpawnPlayerSpottedWidget();
+				TObjectPtr<UBlackboardComponent> BBCComp = AIController->GetBlackboardComponent();
+
+				TObjectPtr<AActor> CurrentTargetActor = Cast<AActor>(BBCComp->GetValueAsObject(BBV_TargetActor));
+				if (TargetActor != CurrentTargetActor)
+				{
+					MulticastSpawnPlayerSpottedWidget();
+				}
+
+				BBCComp->SetValueAsObject(BBV_TargetActor, TargetActor);
+
+				return true;
 			}
-
-			BBCComp->SetValueAsObject(BBV_TargetActor, TargetActor);
-
-			return true;
 		}
 	}
 
@@ -98,6 +102,9 @@ void ASAICharacter::MulticastSpawnPlayerSpottedWidget_Implementation()
 
 	if (PlayerSpottedWidgetInstance && !PlayerSpottedWidgetInstance->IsInViewport())
 	{
+		FString ActionMsg = FString::Printf(TEXT("Adding Widget"));
+		ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetWorld(), ActionMsg, FColor::Red, 2.0f);
+
 		PlayerSpottedWidgetInstance->AttachedActor = this;
 		PlayerSpottedWidgetInstance->AddToViewport();
 		PlayerSpottedWidgetInstance->PlayIconShakeAnimation();
@@ -113,6 +120,8 @@ void ASAICharacter::MulticastSpawnPlayerSpottedWidget_Implementation()
 
 void ASAICharacter::RemovePlayerSpottedWidget()
 {
+	FString ActionMsg = FString::Printf(TEXT("Removing Widget"));
+	ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetWorld(), ActionMsg, FColor::Red, 2.0f);
 	PlayerSpottedWidgetInstance->RemoveFromViewport();
 }
 
@@ -120,7 +129,10 @@ void ASAICharacter::RemovePlayerSpottedWidget()
 /// Health + Death
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float DeltaHealth)
 {
-	SetTargetActor(InstigatorActor);
+	if (HasAuthority())
+	{
+		SetTargetActor(InstigatorActor);
+	}
 
 	if (DeltaHealth < 0.0f)
 	{
@@ -137,7 +149,7 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 		}
 	}
 
-	if (DeltaHealth < 0 && !AttributeComponent->IsAlive())
+	if (DeltaHealth < 0 && NewHealth <= 0.f)
 	{
 		OnDeath();
 	}
@@ -145,11 +157,14 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 
 void ASAICharacter::OnDeath()
 {
-	// Stoping Logic
-	TObjectPtr<AAIController> AIController = Cast<AAIController>(GetController());
-	if (ensure(AIController))
+	if (HasAuthority())
 	{
-		AIController->GetBrainComponent()->StopLogic("Killed");
+		// Stoping Logic
+		TObjectPtr<AAIController> AIController = Cast<AAIController>(GetController());
+		if (ensure(AIController))
+		{
+			AIController->GetBrainComponent()->StopLogic("Killed");
+		}
 	}
 
 	// Set Ragdoll
@@ -166,6 +181,7 @@ void ASAICharacter::OnDeath()
 
 	HealthBarWidgetInstance->RemoveFromViewport();
 	PlayerSpottedWidgetInstance->RemoveFromViewport();
+	RemovePlayerSpottedWidget();
 
 	// Destroy Actor in 10s
 	SetLifeSpan(10.f);

@@ -37,8 +37,6 @@ void USActionEffect_Thorns::OnOwnerHealthChanged(AActor* InstigatorActor, USAttr
 		TObjectPtr<AActor> Owner = GetOwningComponent()->GetOwner();
 		if (InstigatorActor != Owner)
 		{
-
-
 			TObjectPtr<USAttributeComponent> InstigatorAttributeComponent = Cast<USAttributeComponent>(InstigatorActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 			{
 				InstigatorAttributeComponent->ApplyHealthChange(Owner, ThornsDamage);
