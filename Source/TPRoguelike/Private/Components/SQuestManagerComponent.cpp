@@ -64,7 +64,7 @@ void USQuestManagerComponent::ServerOnlyStartObjective(FGameplayTag ObjectiveTag
 	}
 	else
 	{
-		FString DebugMsg = "Failed to run objective: " + ObjectiveTag.ToString();
+		FString DebugMsg = "Objective: " + ObjectiveTag.ToString() + " is already active";
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
 	}
 }

@@ -93,6 +93,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Rogue|Effects")
 	FName TimeToHitParamName = "TimeToHit";
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Debug")
+	bool bDrawDebugPlayerCameraRotationArrows = false;
+
 public:	
 	virtual void Tick(float DeltaTime) override;
 

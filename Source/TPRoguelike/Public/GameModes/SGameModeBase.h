@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
+#include "GameplayTagContainer.h"
 #include "SGameModeBase.generated.h"
 
 
@@ -19,6 +20,26 @@ class TPROGUELIKE_API ASGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+
+public:
+	ASGameModeBase();
+
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage);
+
+	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
+	virtual void StartPlay() override;
+
+	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
+
+	////////////////////////////////////////////////////
+	/// Cheats*
+	UFUNCTION(Exec)
+	void KillAllAI();
+
+	UFUNCTION(Exec)
+	void GiveCredits(int32 Amount);
+
 protected:
 
 	////////////////////////////////////////////////////
@@ -93,25 +114,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|SaveSystem")
 	TObjectPtr<USSaveGame> CurrentSaveGame;
 
-
-public:
-	ASGameModeBase();
-
-	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage);
-
-	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
-
-	virtual void StartPlay() override;
-
 	////////////////////////////////////////////////////
-	/// OnActorKilled
-	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
+	/// Quests
 
-	////////////////////////////////////////////////////
-	/// Cheats*
-	UFUNCTION(Exec)
-	void KillAllAI();
+	UFUNCTION()
+	void StartStartingObjectives();
 
-	UFUNCTION(Exec)
-	void GiveCredits(int32 Amount);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
+	FGameplayTagContainer StartingObjectives;
 };

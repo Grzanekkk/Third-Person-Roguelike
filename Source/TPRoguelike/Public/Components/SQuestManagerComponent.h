@@ -79,7 +79,7 @@ protected:
 	UPROPERTY(BlueprintAssignable)
 	FOnObjectiveValueChanged OnObjectiveValueChanged;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
 	TArray<FGameplayTag> ActiveObjectivesState;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")

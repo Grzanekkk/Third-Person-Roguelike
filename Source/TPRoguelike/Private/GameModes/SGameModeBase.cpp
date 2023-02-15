@@ -17,6 +17,7 @@
 #include "Components/SQuestManagerComponent.h"
 #include "GameState/SGameState.h"
 #include "GameplayTagContainer.h"
+#include "Components/SQuestManagerComponent.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 
@@ -59,6 +60,8 @@ void ASGameModeBase::StartPlay()
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBot, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
 
 	SpawnPickups();
+
+	StartStartingObjectives();
 }
 
 ////////////////////////////////////////////////////
@@ -283,6 +286,22 @@ void ASGameModeBase::LoadSaveGame()
 		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
 
 		UE_LOG(LogTemp, Log, TEXT("Successfully created new SaveGame Object"));
+	}
+}
+
+void ASGameModeBase::StartStartingObjectives()
+{
+	TObjectPtr<ASGameState> SGameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	if (SGameState)
+	{
+		TObjectPtr<USQuestManagerComponent> QuestManager = SGameState->GetQuestManager();
+		if (QuestManager)
+		{	
+			for (int32 i = 0; i < StartingObjectives.Num(); i++)
+			{
+				QuestManager->ServerOnlyStartObjective(StartingObjectives.GetByIndex(i));
+			}
+		}
 	}
 }
 
