@@ -1,0 +1,48 @@
+// Made by Jan Puto 2023 :D
+
+
+#include "Objectives/SObjectiveSequenceDataAsset.h"
+
+FGameplayTagContainer& USObjectiveSequenceDataAsset::GetFirstObjectives()
+{
+	return ObjectivesOrder[0];
+}
+
+FGameplayTagContainer& USObjectiveSequenceDataAsset::GetNextObjectives(FGameplayTag CurrentObjective)
+{
+	// We are providing one of the Objectives in current step
+	for (int32 ContainerIndex = 0; ContainerIndex < ObjectivesOrder.Num(); ContainerIndex++)
+	{
+		for(int32 TagIndex = 0; TagIndex < ObjectivesOrder[ContainerIndex].Num(); TagIndex++)
+		{
+			if (ObjectivesOrder[ContainerIndex].GetByIndex(TagIndex) == CurrentObjective)
+			{
+				if (ObjectivesOrder.Num() > ContainerIndex + 1)
+				{
+					return ObjectivesOrder[ContainerIndex + 1];
+				}
+			}
+		}
+	}
+
+	FString DebugMsg = "NO NEXT OBJECTIVE FOUND IN: USObjectiveSequenceDataAsset! Returning first objective!";
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+
+	return ObjectivesOrder[0];
+}
+
+bool USObjectiveSequenceDataAsset::IsNextStepAvalible(FGameplayTag CurrentObjective)
+{
+	for (int32 ContainerIndex = 0; ContainerIndex < ObjectivesOrder.Num(); ContainerIndex++)
+	{
+		for (int32 TagIndex = 0; TagIndex < ObjectivesOrder[ContainerIndex].Num(); TagIndex++)
+		{
+			if (ObjectivesOrder[ContainerIndex].GetByIndex(TagIndex) == CurrentObjective)
+			{
+				return ObjectivesOrder.Num() > ContainerIndex + 1;
+			}
+		}
+	}
+
+	return false;
+}

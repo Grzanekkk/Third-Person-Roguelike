@@ -30,10 +30,8 @@ ACaptureZone::ACaptureZone()
 	QuestIndicatorMesh->SetupAttachment(RootComponent);
 	QuestIndicatorMesh->SetHiddenInGame(true);
 
-	SetReplicates(true);
+	bReplicates = true;
 }
-
-
 
 void ACaptureZone::PostInitializeComponents()
 {
@@ -42,7 +40,6 @@ void ACaptureZone::PostInitializeComponents()
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ACaptureZone::StartOverlapingZone);
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &ACaptureZone::StopOverlapingZone);
 }
-
 
 void ACaptureZone::BeginPlay()
 {

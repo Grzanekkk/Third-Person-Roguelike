@@ -10,6 +10,7 @@
 class USQuestBase;
 class USObjectiveBase;
 class USQuestDataAsset;
+class USObjectiveSequenceDataAsset;
 enum class EQuestState : uint8;
 enum class EObjectiveState : uint8;
 
@@ -26,14 +27,35 @@ public:
 	int32 Value;
 
 	UPROPERTY()
-	EObjectiveState ObjectiveState;
+	TEnumAsByte<EObjectiveState> ObjectiveState;
 
 	FObjectiveReplicationData() {};
 
-	FObjectiveReplicationData(FGameplayTag _Tag, int32 _Value, EObjectiveState _ObjectiveState)
+	FObjectiveReplicationData(FGameplayTag _Tag, int32 _Value, TEnumAsByte<EObjectiveState> _ObjectiveState)
 	{
 		Tag = _Tag;
 		Value = _Value;
+		ObjectiveState = _ObjectiveState;
+	}
+};
+
+USTRUCT(Blueprintable)
+struct FObjectiveSquanceStep
+{
+	GENERATED_BODY();
+
+public:
+	UPROPERTY()
+	FGameplayTag ObjectiveTag;
+
+	UPROPERTY()
+	TEnumAsByte<EObjectiveState> ObjectiveState;
+
+	FObjectiveSquanceStep() {};
+
+	FObjectiveSquanceStep(FGameplayTag _ObjectiveTag, TEnumAsByte<EObjectiveState> _ObjectiveState)
+	{
+		ObjectiveTag = _ObjectiveTag;
 		ObjectiveState = _ObjectiveState;
 	}
 };
@@ -55,11 +77,18 @@ public:
 
 	void ServerOnlyStartObjective(FGameplayTag ObjectiveTag);
 
+	void ServerOnlyFinishObjectiveByRef(FObjectiveReplicationData& ObjectiveData);
+
+	void ServerOnlyStartObjectiveSequance(TObjectPtr<USObjectiveSequenceDataAsset> ObjectiveSequance);
+
 	UFUNCTION()
 	bool IsObjectiveActive(FGameplayTag ObjectiveTag);
 
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void ServerOnlyStartNextObjectiveInSequanceIfPossible(FGameplayTag FinishedObjectiveTag);
 
 	UFUNCTION()
 	void ChangeObjectiveStateByRef(FObjectiveReplicationData& ObjectiveData, EObjectiveState NewState);
@@ -69,7 +98,7 @@ protected:
 
 	UFUNCTION()
 	void ChangeObjectiveValueByRef(FObjectiveReplicationData& ObjectiveData, int32 NewValue);
-
+	
 	UFUNCTION()
 	void ChangeObjectiveValueByTag(FGameplayTag ObjectiveTag, int32 NewValue);
 
@@ -87,6 +116,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
 	TObjectPtr<USQuestDataAsset> DefalutObjectivesGoals;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
+	TObjectPtr<USObjectiveSequenceDataAsset> ActiveObjectiveSequance;
+
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
+	//TArray<FObjectiveSquanceStep> CurrentObjectiveSequanceStep;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
+	TArray<FGameplayTag> CurrentObjectiveSequanceStep;
 
 	// Z tego pobieramy informacje
 	UPROPERTY()

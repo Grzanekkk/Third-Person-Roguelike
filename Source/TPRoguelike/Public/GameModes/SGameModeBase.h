@@ -14,6 +14,7 @@ class UCurveFloat;
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class USSaveGame;
+class USObjectiveSequenceDataAsset;
 
 UCLASS()
 class TPROGUELIKE_API ASGameModeBase : public AGameModeBase
@@ -120,6 +121,15 @@ protected:
 	UFUNCTION()
 	void StartStartingObjectives();
 
+	UFUNCTION()
+	void StartStartingObjectiveSequance();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
 	FGameplayTagContainer StartingObjectives;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
+	TObjectPtr<USObjectiveSequenceDataAsset> StartingObjectiveSequance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
+	bool bStartObjectiveSequanceInsteadOfSingleObjective = true;
 };

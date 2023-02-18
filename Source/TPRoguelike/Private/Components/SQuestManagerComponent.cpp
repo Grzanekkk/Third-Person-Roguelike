@@ -4,6 +4,7 @@
 #include "Components/SQuestManagerComponent.h"
 #include "Objectives/SQuestDataAsset.h"
 #include "Enums/SEnums_Objectives.h"
+#include "Objectives/SObjectiveSequenceDataAsset.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -46,7 +47,7 @@ void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveT
 		
 		if (DefalutObjectivesGoals->IsObjectiveFinished(ObjectiveTag, NewObjectiveValue))
 		{
-			ChangeObjectiveStateByRef(ServerObjectiveData[Index], EObjectiveState::FINISHED);
+			ServerOnlyFinishObjectiveByRef(ServerObjectiveData[Index]);
 		}
 	}
 }
@@ -66,6 +67,86 @@ void USQuestManagerComponent::ServerOnlyStartObjective(FGameplayTag ObjectiveTag
 	{
 		FString DebugMsg = "Objective: " + ObjectiveTag.ToString() + " is already active";
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+	}
+}
+
+void USQuestManagerComponent::ServerOnlyFinishObjectiveByRef(FObjectiveReplicationData& FinishedObjectiveData)
+{
+	check(GetOwner()->HasAuthority());
+
+	ChangeObjectiveStateByRef(FinishedObjectiveData, EObjectiveState::FINISHED);
+
+	ServerOnlyStartNextObjectiveInSequanceIfPossible(FinishedObjectiveData.Tag);
+}
+
+void USQuestManagerComponent::ServerOnlyStartNextObjectiveInSequanceIfPossible(FGameplayTag FinishedObjectiveTag)
+{
+	check(GetOwner()->HasAuthority());
+
+	bool bIsObjectiveInCurrentSequance = false;
+	bool bIsAnyObjectiveInSequanceInProgress = false;
+
+	for (FGameplayTag ObjectiveInSquanceStep : CurrentObjectiveSequanceStep)
+	{
+		if (ObjectiveInSquanceStep == FinishedObjectiveTag)
+		{
+			bIsObjectiveInCurrentSequance = true;
+		}
+	}
+
+	if (bIsObjectiveInCurrentSequance)
+	{
+		for (FGameplayTag ObjectiveInSquanceStep : CurrentObjectiveSequanceStep)
+		{
+			for (const FObjectiveReplicationData& FObjectiveReplicationData : ServerObjectiveData)
+			{
+				if (FObjectiveReplicationData.Tag == ObjectiveInSquanceStep)
+				{
+					if (FObjectiveReplicationData.ObjectiveState == EObjectiveState::IN_PROGRESS)
+					{
+						bIsAnyObjectiveInSequanceInProgress = true;
+					}
+				}
+			}
+		}
+	}
+
+	if (bIsObjectiveInCurrentSequance && !bIsAnyObjectiveInSequanceInProgress)
+	{
+		// Now we know that we can start next step of the sequance
+		if (ActiveObjectiveSequance->IsNextStepAvalible(FinishedObjectiveTag))
+		{
+			CurrentObjectiveSequanceStep.Empty();
+
+			const FGameplayTagContainer& ObjectivesInNextStep = ActiveObjectiveSequance->GetNextObjectives(FinishedObjectiveTag);
+			for (int32 i = 0; i < ObjectivesInNextStep.Num(); i++)
+			{
+				FGameplayTag ObjectiveTag = ObjectivesInNextStep.GetByIndex(i);
+				CurrentObjectiveSequanceStep.Add(ObjectiveTag);
+				ServerOnlyStartObjective(ObjectiveTag);
+			}
+		}
+		else
+		{
+			FString DebugMsg = "You finished all objectives in this sequance! Good job.";
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, DebugMsg);
+		}
+	}
+}
+
+void USQuestManagerComponent::ServerOnlyStartObjectiveSequance(TObjectPtr<USObjectiveSequenceDataAsset> ObjectiveSequance)
+{
+	check(GetOwner()->HasAuthority());
+
+	CurrentObjectiveSequanceStep.Empty();
+	ActiveObjectiveSequance = ObjectiveSequance;
+
+	const FGameplayTagContainer& StartingObjectivesFromSequance = ActiveObjectiveSequance->GetFirstObjectives();
+	for (int32 i = 0; i < StartingObjectivesFromSequance.Num(); i++)
+	{
+		FGameplayTag ObjectiveTag = StartingObjectivesFromSequance.GetByIndex(i);
+		CurrentObjectiveSequanceStep.Add(ObjectiveTag);
+		ServerOnlyStartObjective(ObjectiveTag);
 	}
 }
 
@@ -119,7 +200,7 @@ void USQuestManagerComponent::OnRep_ServerObjectiveData()
 
 void USQuestManagerComponent::ChangeObjectiveStateByRef(FObjectiveReplicationData& ObjectiveData, EObjectiveState NewState)
 {
-	// if we call this on the server ObjectiveData should be "ServerObjectiveData", and if we call it from the clien we should pass "LocalObjectiveData"
+	// if we call this on the server FinishedObjectiveData should be "ServerObjectiveData", and if we call it from the clien we should pass "LocalObjectiveData"
 	ObjectiveData.ObjectiveState = NewState;
 	
 	OnObjectiveStateChangedEvent.Broadcast(ObjectiveData.Tag, NewState);

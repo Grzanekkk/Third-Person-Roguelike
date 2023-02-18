@@ -61,7 +61,14 @@ void ASGameModeBase::StartPlay()
 
 	SpawnPickups();
 
-	StartStartingObjectives();
+	if (bStartObjectiveSequanceInsteadOfSingleObjective)
+	{
+		StartStartingObjectiveSequance();
+	}
+	else
+	{
+		StartStartingObjectives();
+	}
 }
 
 ////////////////////////////////////////////////////
@@ -291,6 +298,12 @@ void ASGameModeBase::LoadSaveGame()
 
 void ASGameModeBase::StartStartingObjectives()
 {
+	if (StartingObjectiveSequance.IsNull())
+	{
+		UE_LOG(LogTemp, Error, TEXT("StartingObjectives is NULLPTR in SGameModeBase!!"));
+		return;
+	}
+
 	TObjectPtr<ASGameState> SGameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
 	if (SGameState)
 	{
@@ -301,6 +314,25 @@ void ASGameModeBase::StartStartingObjectives()
 			{
 				QuestManager->ServerOnlyStartObjective(StartingObjectives.GetByIndex(i));
 			}
+		}
+	}
+}
+
+void ASGameModeBase::StartStartingObjectiveSequance()
+{
+	if (StartingObjectiveSequance.IsNull())
+	{
+		UE_LOG(LogTemp, Error, TEXT("StartingObjectiveSequance is NULLPTR in SGameModeBase!!"));
+		return;
+	}
+
+	TObjectPtr<ASGameState> SGameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	if (SGameState)
+	{
+		TObjectPtr<USQuestManagerComponent> QuestManager = SGameState->GetQuestManager();
+		if (QuestManager)
+		{
+			QuestManager->ServerOnlyStartObjectiveSequance(StartingObjectiveSequance);
 		}
 	}
 }

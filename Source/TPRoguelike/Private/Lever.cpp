@@ -46,6 +46,19 @@ void ALever::Interact_Implementation(APawn* InstigatorPawn)
 	{
 		bIsSwitched = true;
 		SwitchLever();
+
+		if (ObjectiveTag.IsValid())
+		{
+			TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (GameState)
+			{
+				TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
+				if (QuestManager)
+				{
+					QuestManager->ServerOnlyAddObjectiveStat(ObjectiveTag, 1);
+				}
+			}
+		}
 	}
 }
 

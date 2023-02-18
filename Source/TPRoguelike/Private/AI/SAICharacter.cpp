@@ -120,9 +120,12 @@ void ASAICharacter::MulticastSpawnPlayerSpottedWidget_Implementation()
 
 void ASAICharacter::RemovePlayerSpottedWidget()
 {
-	FString ActionMsg = FString::Printf(TEXT("Removing Widget"));
-	ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetWorld(), ActionMsg, FColor::Red, 2.0f);
-	PlayerSpottedWidgetInstance->RemoveFromViewport();
+	if (PlayerSpottedWidgetInstance)
+	{
+		FString ActionMsg = FString::Printf(TEXT("Removing Widget"));
+		ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetWorld(), ActionMsg, FColor::Red, 2.0f);
+		PlayerSpottedWidgetInstance->RemoveFromViewport();
+	}
 }
 
 ////////////////////////////////////////////////////
@@ -180,7 +183,6 @@ void ASAICharacter::OnDeath()
 	}
 
 	HealthBarWidgetInstance->RemoveFromViewport();
-	PlayerSpottedWidgetInstance->RemoveFromViewport();
 	RemovePlayerSpottedWidget();
 
 	// Destroy Actor in 10s
