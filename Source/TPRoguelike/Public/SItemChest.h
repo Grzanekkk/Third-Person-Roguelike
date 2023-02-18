@@ -53,7 +53,6 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
 	TObjectPtr<UParticleSystemComponent> ParticleComp;
-	
 
 public:	
 	// Called every frame

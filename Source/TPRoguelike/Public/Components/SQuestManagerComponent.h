@@ -55,6 +55,9 @@ public:
 
 	void ServerOnlyStartObjective(FGameplayTag ObjectiveTag);
 
+	UFUNCTION()
+	bool IsObjectiveActive(FGameplayTag ObjectiveTag);
+
 protected:
 	virtual void BeginPlay() override;
 

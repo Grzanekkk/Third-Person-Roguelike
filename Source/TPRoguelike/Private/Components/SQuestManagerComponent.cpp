@@ -69,6 +69,11 @@ void USQuestManagerComponent::ServerOnlyStartObjective(FGameplayTag ObjectiveTag
 	}
 }
 
+bool USQuestManagerComponent::IsObjectiveActive(FGameplayTag ObjectiveTag)
+{
+	return ActiveObjectivesState.Contains(ObjectiveTag);
+}
+
 void USQuestManagerComponent::OnRep_ServerObjectiveData()
 {
 	for (const FObjectiveReplicationData& ServerObjectiveReplicationData : ServerObjectiveData)
