@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameState/SGameState.h"
 #include "Components/SQuestManagerComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -13,16 +14,26 @@ ALever::ALever()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
+	RootComponent = BaseMesh;
+
+	OnSwitchParticleComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("OnSwitchParticleComp"));
+	OnSwitchParticleComp->SetupAttachment(RootComponent);
+	OnSwitchParticleComp->SetAutoActivate(false);
+
+	LeverMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
+	LeverMesh->SetupAttachment(BaseMesh);
+	LeverMesh->SetRelativeRotation(FRotator(NotSwitchedLeverPitch, 0.0f, 0.0f));
+
+	bReplicates = true;
 }
 
-// Called when the game starts or when spawned
 void ALever::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void ALever::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -31,27 +42,66 @@ void ALever::Tick(float DeltaTime)
 
 void ALever::Interact_Implementation(APawn* InstigatorPawn)
 {
-
+	if (!bIsSwitched)
+	{
+		bIsSwitched = true;
+		SwitchLever();
+	}
 }
 
 bool ALever::CanInteract_Implementation(APawn* InstigatorPawn)
 {
-	TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	if (GameState)
+	bool bCanInteract = false;
+	if (!bIsSwitched)
 	{
-		TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
-		if (QuestManager)
+		if (ObjectiveTag.IsValid())
 		{
-			return QuestManager->IsObjectiveActive(ObjectiveTag);
+			TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+			if (GameState)
+			{
+				TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
+				if (QuestManager)
+				{
+					bCanInteract = QuestManager->IsObjectiveActive(ObjectiveTag);
+
+					if (!bCanInteract)
+					{
+						FString DebugMsg = "Objective: " + ObjectiveTag.ToString() + " is not active. You cannot interact with the lever right now.";
+						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+					}
+				}
+			}
+		}
+		else
+		{
+			// If we dont have ObjectiveTag assigned we can always interact
+			bCanInteract = true;
+
+			FString DebugMsg = "No ObjectiveTag assigned. You can interact.";
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, DebugMsg);
 		}
 	}
 
-	return false;
+	return bCanInteract;
 }
 
 bool ALever::IsEnabled_Implementation()
 {
 	return true;
+}
+
+void ALever::SwitchLever()
+{
+	LeverMesh->SetRelativeRotation(FRotator(SwitchedLeverPitch, 0.0f, 0.0f));
+	OnSwitchParticleComp->Activate();
+}
+
+void ALever::OnRep_bIsSwitched()
+{
+	if (bIsSwitched)
+	{
+		SwitchLever();
+	}
 }
 
 void ALever::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

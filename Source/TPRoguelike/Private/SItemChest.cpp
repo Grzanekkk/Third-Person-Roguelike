@@ -47,7 +47,7 @@ void ASItemChest::Tick(float DeltaTime)
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// Opening Lid animation in Blueprint
-	//ParticleComp->Activate(true);
+	//OnSwitchParticleComp->Activate(true);
 
 	bIsOpened = !bIsOpened;
 

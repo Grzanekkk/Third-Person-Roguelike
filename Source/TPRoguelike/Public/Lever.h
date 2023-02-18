@@ -29,6 +29,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Components")
+	TObjectPtr<UParticleSystemComponent> OnSwitchParticleComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
+	TObjectPtr<UStaticMeshComponent> BaseMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rogue|Components")
+	TObjectPtr<UStaticMeshComponent> LeverMesh;
+
+	UFUNCTION()
+	void SwitchLever();
+
 	UFUNCTION()
 	void OnRep_bIsSwitched();
 
