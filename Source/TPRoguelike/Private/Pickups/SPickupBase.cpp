@@ -11,10 +11,10 @@
 // Sets default values
 ASPickupBase::ASPickupBase() 
 {
-	RootSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
+	RootSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("RootSphere"));
 	RootSphereComp->SetSphereRadius(0.f);
 	RootSphereComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RootComponent = RootSphereComp;
+	SetRootComponent(RootSphereComp);
 
 	CollisionSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionSphereComp->SetSphereRadius(64.f);
