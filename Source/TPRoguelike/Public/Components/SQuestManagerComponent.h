@@ -27,11 +27,11 @@ public:
 	int32 Value;
 
 	UPROPERTY()
-	TEnumAsByte<EObjectiveState> ObjectiveState;
+	EObjectiveState ObjectiveState;
 
 	FObjectiveReplicationData() {};
 
-	FObjectiveReplicationData(FGameplayTag _Tag, int32 _Value, TEnumAsByte<EObjectiveState> _ObjectiveState)
+	FObjectiveReplicationData(FGameplayTag _Tag, int32 _Value, EObjectiveState _ObjectiveState)
 	{
 		Tag = _Tag;
 		Value = _Value;
@@ -49,11 +49,11 @@ public:
 	FGameplayTag ObjectiveTag;
 
 	UPROPERTY()
-	TEnumAsByte<EObjectiveState> ObjectiveState;
+	EObjectiveState ObjectiveState;
 
 	FObjectiveSquanceStep() {};
 
-	FObjectiveSquanceStep(FGameplayTag _ObjectiveTag, TEnumAsByte<EObjectiveState> _ObjectiveState)
+	FObjectiveSquanceStep(FGameplayTag _ObjectiveTag, EObjectiveState _ObjectiveState)
 	{
 		ObjectiveTag = _ObjectiveTag;
 		ObjectiveState = _ObjectiveState;

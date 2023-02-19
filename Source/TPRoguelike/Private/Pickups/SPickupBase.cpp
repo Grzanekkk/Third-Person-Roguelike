@@ -29,7 +29,7 @@ ASPickupBase::ASPickupBase()
 	IdleParticleComponent->SetupAttachment(CollisionSphereComp);
 
 	bReplicates = true;
-	SetReplicateMovement(true);
+	//SetReplicateMovement(true);
 }
 
 void ASPickupBase::Interact_Implementation(APawn* InstigatorPawn)
