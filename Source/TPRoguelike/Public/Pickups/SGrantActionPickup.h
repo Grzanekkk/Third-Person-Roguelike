@@ -14,7 +14,7 @@ class TPROGUELIKE_API ASGrantActionPickup : public ASPickupBase
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RL|Pickup|Action")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Pickup|Action")
 	TSubclassOf<USAction> ActionToGrant = nullptr;
 
 	virtual void UsePickupItem(APawn* InstigatorPawn) override;
