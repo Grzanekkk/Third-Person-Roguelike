@@ -29,10 +29,10 @@ FGameplayTagContainer& USObjectiveSequenceDataAsset::GetNextObjectives(FGameplay
 		}
 	}
 
-	FString DebugMsg = "NO NEXT OBJECTIVE FOUND IN: USObjectiveSequenceDataAsset!";
+	FString DebugMsg = "NO NEXT OBJECTIVE FOUND IN: USObjectiveSequenceDataAsset! Returning LAST objecitve in sequance!";
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
 
-	return ;
+	return ObjectivesOrder.Last();
 }
 
 bool USObjectiveSequenceDataAsset::IsNextStepAvalible(FGameplayTag CurrentObjective)
