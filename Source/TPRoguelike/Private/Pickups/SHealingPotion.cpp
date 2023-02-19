@@ -9,11 +9,6 @@ ASHealingPotion::ASHealingPotion()
 
 }
 
-void ASHealingPotion::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void ASHealingPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
 	UsePickupItem(InstigatorPawn);

@@ -9,11 +9,14 @@ void ASGrantActionPickup::UsePickupItem(APawn* InstigatorPawn)
 {
 	Super::UsePickupItem(InstigatorPawn);
 
-	TObjectPtr<USActionComponent> ActionComponent = Cast<USActionComponent>(InstigatorPawn->GetComponentByClass(USActionComponent::StaticClass()));
-	if (ActionComponent)
+	if (InstigatorPawn->HasAuthority())
 	{
-		ActionComponent->AddAction(InstigatorPawn, ActionToGrant);
+		TObjectPtr<USActionComponent> ActionComponent = Cast<USActionComponent>(InstigatorPawn->GetComponentByClass(USActionComponent::StaticClass()));
+		if (ActionComponent)
+		{
+			ActionComponent->AddAction(InstigatorPawn, ActionToGrant);
 
-		Destroy();
+			Destroy();
+		}
 	}
 }

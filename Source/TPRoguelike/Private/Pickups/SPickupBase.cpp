@@ -11,8 +11,6 @@
 // Sets default values
 ASPickupBase::ASPickupBase() 
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	RootSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
 	RootSphereComp->SetSphereRadius(0.f);
 	RootSphereComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -31,29 +29,14 @@ ASPickupBase::ASPickupBase()
 	IdleParticleComponent->SetupAttachment(CollisionSphereComp);
 
 	bReplicates = true;
+	SetReplicateMovement(true);
 }
-
-
-void ASPickupBase::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-
-void ASPickupBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 
 void ASPickupBase::Interact_Implementation(APawn* InstigatorPawn)
 {
 	//UsePickupItem(InstigatorPawn);
 	MulticastUsePickupItem(InstigatorPawn);
 }
-
 
 bool ASPickupBase::CanInteract_Implementation(APawn* InstigatorPawn)
 {

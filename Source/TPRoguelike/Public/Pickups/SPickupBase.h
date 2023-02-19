@@ -18,8 +18,6 @@ class TPROGUELIKE_API ASPickupBase : public AActor, public ISGameplayInterface
 public:	
 	ASPickupBase();
 
-	virtual void Tick(float DeltaTime) override;
-
 	virtual void Interact_Implementation(APawn* InstigatorPawn);
 
 	virtual bool CanInteract_Implementation(APawn* InstigatorPawn);
@@ -30,7 +28,6 @@ public:
 	int32 UseCost = 0;
 
 protected:
-	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	virtual void UsePickupItem(APawn* InstigatorPawn);

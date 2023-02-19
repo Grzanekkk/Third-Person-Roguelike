@@ -22,7 +22,6 @@ public:
 	float HealingAmount = 50;
 
 protected:
-	virtual void BeginPlay() override;
 
 	virtual void UsePickupItem(APawn* InstigatorPawn) override;
 };
