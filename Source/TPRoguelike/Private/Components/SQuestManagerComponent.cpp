@@ -29,8 +29,7 @@ void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveT
 {
 	check(GetOwner()->HasAuthority());
 
-	// We check if this objective is active
-	if (ActiveObjectivesState.Contains(ObjectiveTag))
+	if (IsObjectiveActive(ObjectiveTag))
 	{
 		int32 OldObjectiveValue = GetValueOfActiveObjective(ObjectiveTag);		
 		int32 NewObjectiveValue = OldObjectiveValue + Stat;
@@ -86,6 +85,7 @@ void USQuestManagerComponent::ServerOnlyStartNextObjectiveInSequanceIfPossible(F
 	bool bIsObjectiveInCurrentSequance = false;
 	bool bIsAnyObjectiveInSequanceInProgress = false;
 
+	// Checking if finished objective is a part of CurrentObjectiveSequanceStep
 	for (FGameplayTag ObjectiveInSquanceStep : CurrentObjectiveSequanceStep)
 	{
 		if (ObjectiveInSquanceStep == FinishedObjectiveTag)
@@ -94,6 +94,7 @@ void USQuestManagerComponent::ServerOnlyStartNextObjectiveInSequanceIfPossible(F
 		}
 	}
 
+	// Checking if after finishing objective that is a part of CurrentSequance, this sequanace has any objective in progress. If not we know that we just finished this sequance.
 	if (bIsObjectiveInCurrentSequance)
 	{
 		for (FGameplayTag ObjectiveInSquanceStep : CurrentObjectiveSequanceStep)
@@ -113,9 +114,10 @@ void USQuestManagerComponent::ServerOnlyStartNextObjectiveInSequanceIfPossible(F
 
 	if (bIsObjectiveInCurrentSequance && !bIsAnyObjectiveInSequanceInProgress)
 	{
-		// Now we know that we can start next step of the sequance
+		// Checking if there are any further steps in this sequance
 		if (ActiveObjectiveSequance->IsNextStepAvalible(FinishedObjectiveTag))
 		{
+			// Now we know that we can start next step of the sequance
 			CurrentObjectiveSequanceStep.Empty();
 
 			const FGameplayTagContainer& ObjectivesInNextStep = ActiveObjectiveSequance->GetNextObjectives(FinishedObjectiveTag);
@@ -153,6 +155,11 @@ void USQuestManagerComponent::ServerOnlyStartObjectiveSequance(TObjectPtr<USObje
 bool USQuestManagerComponent::IsObjectiveActive(FGameplayTag ObjectiveTag)
 {
 	return ActiveObjectivesState.Contains(ObjectiveTag);
+}
+
+bool USQuestManagerComponent::IsObjectiveFinished(FGameplayTag ObjectiveTag)
+{
+	return DefalutObjectivesGoals->IsObjectiveFinished(ObjectiveTag, GetValueOfActiveObjective(ObjectiveTag));
 }
 
 void USQuestManagerComponent::OnRep_ServerObjectiveData()

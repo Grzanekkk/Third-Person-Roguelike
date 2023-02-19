@@ -84,6 +84,9 @@ public:
 	UFUNCTION()
 	bool IsObjectiveActive(FGameplayTag ObjectiveTag);
 
+	UFUNCTION()
+	bool IsObjectiveFinished(FGameplayTag ObjectiveTag);
+
 protected:
 	virtual void BeginPlay() override;
 
