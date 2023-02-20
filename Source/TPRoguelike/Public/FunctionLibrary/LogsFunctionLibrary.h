@@ -6,6 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "LogsFunctionLibrary.generated.h"
 
+enum class ERogueLogCategory : uint8;
+
 /**
  * 
  */
@@ -18,4 +20,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Rogue|Logs")
 	static void LogOnScreen_IsClientServer(UObject* WorldContext, FString Msg, FColor Color = FColor::White, float Duration = 5.0f);
 
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Logs")
+	static void LogOnScreen(UObject* WorldContext, FString Msg, ERogueLogCategory LogCategory, bool bWriteToOutputLog = true, float Duration = 3.0f);
 };
