@@ -2,6 +2,8 @@
 
 
 #include "Objectives/SObjectiveSequenceDataAsset.h"
+#include "Enums/SEnums_Logs.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
 
 FGameplayTagContainer& USObjectiveSequenceDataAsset::GetFirstObjectives()
 {
@@ -30,7 +32,7 @@ FGameplayTagContainer& USObjectiveSequenceDataAsset::GetNextObjectives(FGameplay
 	}
 
 	FString DebugMsg = "NO NEXT OBJECTIVE FOUND IN: USObjectiveSequenceDataAsset! Returning LAST objecitve in sequance!";
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+	ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::ERROR);
 
 	return ObjectivesOrder.Last();
 }

@@ -19,6 +19,8 @@
 #include "GameplayTagContainer.h"
 #include "Components/SQuestManagerComponent.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+#include "Enums/SEnums_Logs.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
 
 
 
@@ -159,7 +161,7 @@ void ASGameModeBase::SpawnPickups()
 
 	if (!CVarSpawnPickups.GetValueOnGameThread())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Spawning bots disabled via CVarSpawnBots command"));
+		//UE_LOG(LogTemp, Warning, TEXT("Spawning pickups disabled via CVarSpawnBots command"));
 		return;
 	}
 
@@ -175,13 +177,15 @@ void ASGameModeBase::OnSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* Qu
 {
 	if (QueryStatus != EEnvQueryStatus::Success)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Spawn Pickups EQS failed!"));
+		ULogsFunctionLibrary::LogOnScreen(GetWorld(), "Spawn Pickups EQS failed!", ERogueLogCategory::ERROR);
+
 		return;
 	}
 
 	if (PickUpsAvalibleToSpawn.Num() == 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("PickUpsAvalibleToSpawn is Empty! Failed to Spawn Any Pickups"));
+		ULogsFunctionLibrary::LogOnScreen(GetWorld(), "PickUpsAvalibleToSpawn is Empty! Failed to Spawn Any Pickups", ERogueLogCategory::ERROR);
+
 		return;
 	}
 
@@ -251,6 +255,7 @@ void ASGameModeBase::LoadSaveGame()
 		if (CurrentSaveGame == nullptr)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Failed to load SaveGame Data"));
+
 			return;
 		}
 

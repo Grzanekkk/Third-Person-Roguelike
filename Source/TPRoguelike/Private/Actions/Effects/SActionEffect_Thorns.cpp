@@ -4,6 +4,8 @@
 #include "Actions/Effects/SActionEffect_Thorns.h"
 #include "Components/SActionComponent.h"
 #include "Components/SAttributeComponent.h"
+#include "Enums/SEnums_Logs.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
 
 void USActionEffect_Thorns::StartAction_Implementation(AActor* Instigator)
 {
@@ -15,7 +17,7 @@ void USActionEffect_Thorns::StartAction_Implementation(AActor* Instigator)
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Trying to run SActionEffect_Thorns on Actor with on USAttributeComponent. This Action will not work here!"));
+		ULogsFunctionLibrary::LogOnScreen(GetWorld(), TEXT("Trying to run SActionEffect_Thorns on Actor with on USAttributeComponent. This Action will not work here!"), ERogueLogCategory::WARNING);
 	}
 }
 
@@ -40,7 +42,8 @@ void USActionEffect_Thorns::OnOwnerHealthChanged(AActor* InstigatorActor, USAttr
 			TObjectPtr<USAttributeComponent> InstigatorAttributeComponent = Cast<USAttributeComponent>(InstigatorActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 			{
 				InstigatorAttributeComponent->ApplyHealthChange(Owner, ThornsDamage);
-				UE_LOG(LogTemp, Warning, TEXT("%s delt %i Thorns Damage to %s"), *GetNameSafe(Owner), -ThornsDamage, *GetNameSafe(InstigatorActor));
+				FString Msg = FString::Printf(TEXT("%s delt %i Thorns Damage to %s"), *GetNameSafe(Owner), -ThornsDamage, *GetNameSafe(InstigatorActor));
+				ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, ERogueLogCategory::WARNING);
 			}
 		}
 	}

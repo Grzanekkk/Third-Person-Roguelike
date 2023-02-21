@@ -12,6 +12,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SActionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Enums/SEnums_Logs.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 
 
@@ -102,8 +103,8 @@ void ASAICharacter::MulticastSpawnPlayerSpottedWidget_Implementation()
 
 	if (PlayerSpottedWidgetInstance && !PlayerSpottedWidgetInstance->IsInViewport())
 	{
-		FString ActionMsg = FString::Printf(TEXT("Adding Widget"));
-		ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetWorld(), ActionMsg, FColor::Red, 2.0f);
+		//FString ActionMsg = FString::Printf(TEXT("Adding Widget"));
+		//ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetWorld(), ActionMsg, FColor::Red, 2.0f);
 
 		PlayerSpottedWidgetInstance->AttachedActor = this;
 		PlayerSpottedWidgetInstance->AddToViewport();
@@ -122,8 +123,8 @@ void ASAICharacter::RemovePlayerSpottedWidget()
 {
 	if (PlayerSpottedWidgetInstance)
 	{
-		FString ActionMsg = FString::Printf(TEXT("Removing Widget"));
-		ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetWorld(), ActionMsg, FColor::Red, 2.0f);
+		//FString ActionMsg = FString::Printf(TEXT("Removing Widget"));
+		//ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetWorld(), ActionMsg, FColor::Red, 2.0f);
 		PlayerSpottedWidgetInstance->RemoveFromViewport();
 	}
 }
@@ -194,14 +195,16 @@ void ASAICharacter::Heal(float HealingAmount)
 	// For now waiting is implemented in Behaviur Tree
 	if (HealingAmount > 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s Healed for %f HP"), *this->GetName(), HealingAmount);
+		FString Msg = FString::Printf(TEXT("%s Healed for %f HP"), *this->GetName(), HealingAmount);
+		ULogsFunctionLibrary::LogToOutputLog(GetWorld(), Msg, ERogueLogCategory::LOG);
 		AttributeComponent->ApplyHealthChange(this, HealingAmount);
 	}
 }
 
 void ASAICharacter::StartHealingOverTime(float _HealthPerSecond, float _SecondsOfHealing)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s Started Healing"), *this->GetName());
+	FString Msg = FString::Printf(TEXT("%s Started Healing"), *this->GetName());
+	ULogsFunctionLibrary::LogToOutputLog(GetWorld(), Msg, ERogueLogCategory::LOG);
 
 	SecondsOfHealing = _SecondsOfHealing;
 	HealthPerSecond = _HealthPerSecond;
@@ -215,7 +218,8 @@ void ASAICharacter::StartHealingOverTime(float _HealthPerSecond, float _SecondsO
 
 void ASAICharacter::StopHealingOverTime()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s Stopped Healing"), *this->GetName());
+	FString Msg = FString::Printf(TEXT("%s Stopped Healing"), *this->GetName());
+	ULogsFunctionLibrary::LogToOutputLog(GetWorld(), Msg, ERogueLogCategory::LOG);
 
 	SecondsOfHealing = 0;
 	HealthPerSecond = 0;

@@ -6,6 +6,8 @@
 #include "GameState/SGameState.h"
 #include "Components/SQuestManagerComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Enums/SEnums_Logs.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -31,13 +33,11 @@ ALever::ALever()
 void ALever::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ALever::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ALever::Interact_Implementation(APawn* InstigatorPawn)
@@ -80,7 +80,7 @@ bool ALever::CanInteract_Implementation(APawn* InstigatorPawn)
 					if (!bCanInteract)
 					{
 						FString DebugMsg = "Objective: " + ObjectiveTag.ToString() + " is not active. You cannot interact with the lever right now.";
-						GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+						ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::WARNING);
 					}
 				}
 			}
@@ -91,7 +91,7 @@ bool ALever::CanInteract_Implementation(APawn* InstigatorPawn)
 			bCanInteract = true;
 
 			FString DebugMsg = "No ObjectiveTag assigned. You can interact.";
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, DebugMsg);
+			ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::LOG);
 		}
 	}
 

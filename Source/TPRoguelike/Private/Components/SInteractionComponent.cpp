@@ -4,6 +4,8 @@
 #include "Components/SInteractionComponent.h"
 #include "DrawDebugHelpers.h"
 #include "SGameplayInterface.h"
+#include "Enums/SEnums_Logs.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
 #include "UI/SWorldUserWidget.h"
 
 static TAutoConsoleVariable<bool> CVarDrawInteractionDebug(TEXT("jp.DrawInteractionDebug"), false, TEXT("Draw Debug Shapes for Interaction Component."), ECVF_Cheat);
@@ -121,7 +123,7 @@ void USInteractionComponent::ServerPrimaryInteract_Implementation(AActor* InFocu
 {
 	if (InFocusedActor == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focused Actreo to Interact.");
+		ULogsFunctionLibrary::LogOnScreen(GetWorld(), "No Focused Actreo to Interact.", ERogueLogCategory::WARNING);
 		return;
 	}
 

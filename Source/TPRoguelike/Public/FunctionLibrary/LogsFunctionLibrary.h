@@ -18,8 +18,15 @@ class TPROGUELIKE_API ULogsFunctionLibrary : public UBlueprintFunctionLibrary
 	
 public:
 	UFUNCTION(BlueprintCallable, Category = "Rogue|Logs")
-	static void LogOnScreen_IsClientServer(UObject* WorldContext, FString Msg, FColor Color = FColor::White, float Duration = 5.0f);
+	static void LogOnScreen_IsClientServer(UObject* WorldContext, FString Msg, ERogueLogCategory LogCategory, float Duration = 5.0f, bool bWriteToOutputLog = true);
 
 	UFUNCTION(BlueprintCallable, Category = "Rogue|Logs")
 	static void LogOnScreen(UObject* WorldContext, FString Msg, ERogueLogCategory LogCategory, bool bWriteToOutputLog = true, float Duration = 3.0f);
+	
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Logs")
+	static void LogToOutputLog(UObject* WorldContext, FString Msg, ERogueLogCategory LogCategory);
+
+protected:
+	UFUNCTION()
+	static FColor GetLogColorByCategory(ERogueLogCategory LogCategory);
 };

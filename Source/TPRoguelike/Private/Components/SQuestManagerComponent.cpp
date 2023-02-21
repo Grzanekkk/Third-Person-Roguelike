@@ -5,6 +5,8 @@
 #include "Objectives/SQuestDataAsset.h"
 #include "Enums/SEnums_Objectives.h"
 #include "Objectives/SObjectiveSequenceDataAsset.h"
+#include "Enums/SEnums_Logs.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -65,7 +67,7 @@ void USQuestManagerComponent::ServerOnlyStartObjective(FGameplayTag ObjectiveTag
 	else
 	{
 		FString DebugMsg = "Objective: " + ObjectiveTag.ToString() + " is already active";
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+		ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::WARNING);
 	}
 }
 
@@ -131,7 +133,7 @@ void USQuestManagerComponent::ServerOnlyStartNextObjectiveInSequanceIfPossible(F
 		else
 		{
 			FString DebugMsg = "You finished all objectives in this sequance! Good job.";
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, DebugMsg);
+			ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::SUCCESS);
 		}
 	}
 }
@@ -285,7 +287,7 @@ int32 USQuestManagerComponent::GetValueOfActiveObjective(FGameplayTag ObjectiveT
 	}
 
 	FString DebugMsg = "Objective: " + ObjectiveTag.ToString() + " is not active!";
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+	ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::ERROR);
 
 	return -1;
 }

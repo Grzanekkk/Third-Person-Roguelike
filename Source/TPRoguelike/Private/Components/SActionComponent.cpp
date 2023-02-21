@@ -3,6 +3,7 @@
 
 #include "Components/SActionComponent.h"
 #include "Actions/SAction.h"
+#include "Enums/SEnums_Logs.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
@@ -54,8 +55,7 @@ void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> Acti
 	if (!GetOwner()->HasAuthority())
 	{
 		FString ActionMsg = FString::Printf(TEXT("Client: %s tried to AddAction: Class: [%s]"), *GetNameSafe(GetOwner()), *GetNameSafe(ActionClass));
-		UE_LOG(LogTemp, Warning, TEXT("Client: %s tried to AddAction: Class: [%s]"), *GetNameSafe(GetOwner()), *GetNameSafe(ActionClass));
-		ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetOwner(), ActionMsg, FColor::Red, 2.0f);
+		ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetOwner(), ActionMsg, ERogueLogCategory::ERROR, 2.0f);
 	}
 
 	TObjectPtr<USAction> NewAction = NewObject<USAction>(GetOwner(), ActionClass);
@@ -92,7 +92,7 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 			if (!Action->CanStart(Instigator))
 			{
 				FString DebugMsg = GetNameSafe(GetOwner()) + ": " + "Failed to run: " + GetNameSafe(Action);
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, DebugMsg);
+				ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::WARNING);
 				return false;
 			}
 

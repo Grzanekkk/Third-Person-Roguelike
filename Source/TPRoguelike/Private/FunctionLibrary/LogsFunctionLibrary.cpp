@@ -5,7 +5,7 @@
 #include "Enums/SEnums_Logs.h"
 #include "Logging/LogVerbosity.h"
 
-void ULogsFunctionLibrary::LogOnScreen_IsClientServer(UObject* WorldContext, FString Msg, FColor Color, float Duration)
+void ULogsFunctionLibrary::LogOnScreen_IsClientServer(UObject* WorldContext, FString Msg, ERogueLogCategory LogCategory, float Duration, bool bWriteToOutputLog)
 {
 	if (!ensure(WorldContext))
 	{
@@ -21,7 +21,8 @@ void ULogsFunctionLibrary::LogOnScreen_IsClientServer(UObject* WorldContext, FSt
 	FString NetPrefix = World->IsNetMode(NM_Client) ? "[CLIENT] " : "[SERVER ]";
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, Duration, Color, NetPrefix + Msg);
+		FColor LogColor = GetLogColorByCategory(LogCategory);
+		GEngine->AddOnScreenDebugMessage(-1, Duration, LogColor, NetPrefix + Msg);
 	}
 }
 
@@ -29,57 +30,62 @@ void ULogsFunctionLibrary::LogOnScreen(UObject* WorldContext, FString Msg, ERogu
 {
 	if (GEngine)
 	{
-		FColor LogColor = FColor::White;
-		//ELogVerbosity::Type LogVerbosityType = ELogVerbosity::Type::Log;
-		switch (LogCategory)
-		{
-			case ERogueLogCategory::LOG :
-			{
-				LogColor = FColor::White;
-				//LogVerbosityType = ELogVerbosity::Type::Log;
-			}
-			case ERogueLogCategory::WARNING :
-			{
-				LogColor = FColor::Orange;
-				//LogVerbosityType = ELogVerbosity::Type::Warning;
-			}
-			case ERogueLogCategory::SUCCESS:
-			{
-				LogColor = FColor::Green;
-				//LogVerbosityType = ELogVerbosity::Type::Display;
-			}
-			case ERogueLogCategory::ERROR:
-			{
-				LogColor = FColor::Red;
-				//LogVerbosityType = ELogVerbosity::Type::Error;
-			}
-		}
+		FColor LogColor = GetLogColorByCategory(LogCategory);
 
 		GEngine->AddOnScreenDebugMessage(-1, Duration, LogColor, Msg);
 
 		if (bWriteToOutputLog)
 		{
-			//UE_LOG(LogTemp, LogVerbosityType, TEXT("%s"), *Msg);
-
-			switch (LogCategory)
-			{
-				case ERogueLogCategory::LOG:
-				{
-					UE_LOG(LogTemp, Log, TEXT("%s"), *Msg);
-				}
-				case ERogueLogCategory::WARNING:
-				{
-					UE_LOG(LogTemp, Warning, TEXT("%s"), *Msg);
-				}
-				case ERogueLogCategory::SUCCESS:
-				{
-					UE_LOG(LogTemp, Display, TEXT("%s"), *Msg);
-				}
-				case ERogueLogCategory::ERROR:
-				{
-					UE_LOG(LogTemp, Error, TEXT("%s"), *Msg);
-				}
-			}
+			LogToOutputLog(WorldContext, Msg, LogCategory);
 		}
 	}
+}
+
+void ULogsFunctionLibrary::LogToOutputLog(UObject* WorldContext, FString Msg, ERogueLogCategory LogCategory)
+{
+	switch (LogCategory)
+	{
+		case ERogueLogCategory::LOG:
+		{
+			UE_LOG(LogTemp, Log, TEXT("%s"), *Msg);
+		}
+		case ERogueLogCategory::WARNING:
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *Msg);
+		}
+		case ERogueLogCategory::SUCCESS:
+		{
+			UE_LOG(LogTemp, Display, TEXT("%s"), *Msg);
+		}
+		case ERogueLogCategory::ERROR:
+		{
+			UE_LOG(LogTemp, Error, TEXT("%s"), *Msg);
+		}
+	}
+}
+
+FColor ULogsFunctionLibrary::GetLogColorByCategory(ERogueLogCategory LogCategory)
+{
+	FColor LogColor = FColor::White;
+	switch (LogCategory)
+	{
+		case ERogueLogCategory::LOG:
+		{
+			LogColor = FColor::White;
+		}
+		case ERogueLogCategory::WARNING:
+		{
+			LogColor = FColor::Orange;
+		}
+		case ERogueLogCategory::SUCCESS:
+		{
+			LogColor = FColor::Green;
+		}
+		case ERogueLogCategory::ERROR:
+		{
+			LogColor = FColor::Red;
+		}
+	}
+
+	return LogColor;
 }

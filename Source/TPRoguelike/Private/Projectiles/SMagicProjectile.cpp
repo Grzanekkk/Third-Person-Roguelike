@@ -10,13 +10,14 @@
 #include "FunctionLibrary/GameplayFunctionLibrary.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Enums/SEnums_Logs.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
 
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
 {
 	Damage = 20.f;
 }
-
 
 void ASMagicProjectile::BeginPlay()
 {
@@ -30,12 +31,10 @@ void ASMagicProjectile::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
-
 void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
 }
-
 
 void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -61,7 +60,8 @@ void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor
 			}
 			else
 			{
-				UE_LOG(LogTemp, Error, TEXT("This projectile has no owner!"));
+				FString Msg = FString::Printf(TEXT("This projectile has no owner!"));
+				ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, ERogueLogCategory::ERROR);
 			}
 		}
 

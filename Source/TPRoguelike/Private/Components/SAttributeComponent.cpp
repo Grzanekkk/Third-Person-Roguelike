@@ -4,6 +4,8 @@
 #include "Components/SAttributeComponent.h"
 #include "GameModes/SGameModeBase.h"
 #include "Net/UnrealNetwork.h"
+#include "Enums/SEnums_Logs.h"
+#include "FunctionLibrary/LogsFunctionLibrary.h"
 
 
 static TAutoConsoleVariable<float> CVarDamageMultipler(TEXT("jp.DamageMultipler"), 1.0f, TEXT("Global damage multiplier in AttributeComponent."), ECVF_Cheat);
@@ -43,7 +45,9 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Heal
 {
 	if (!GetOwner()->CanBeDamaged())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s cannot be damaged!"), *GetNameSafe(GetOwner()));
+		FString Msg = FString::Printf(TEXT("%s cannot be damaged!"), *GetNameSafe(GetOwner()));
+		ULogsFunctionLibrary::LogToOutputLog(GetWorld(), Msg, ERogueLogCategory::WARNING);
+
 		return false;
 	}
 
