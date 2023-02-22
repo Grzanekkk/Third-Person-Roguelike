@@ -71,6 +71,7 @@ void ASGate::OpeningGateTick()
 	}
 }
 
+
 void ASGate::Interact_Implementation(APawn* InstigatorPawn)
 {
 	OpenGate();

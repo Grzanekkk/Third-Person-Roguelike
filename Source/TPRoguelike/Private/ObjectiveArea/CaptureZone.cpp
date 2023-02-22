@@ -14,12 +14,6 @@
 
 ACaptureZone::ACaptureZone()
 {
-	TriggerBox = CreateDefaultSubobject<UCapsuleComponent>("Zone Area");
-	RootComponent = TriggerBox;
-
-	AreaIndicatorMesh = CreateDefaultSubobject<UStaticMeshComponent>("AreaIndicatorMesh");
-	AreaIndicatorMesh->SetupAttachment(RootComponent);
-
 	FlagPoleMesh = CreateDefaultSubobject<UStaticMeshComponent>("FlagPoleMesh");
 	FlagPoleMesh->SetupAttachment(RootComponent);
 
@@ -33,28 +27,10 @@ ACaptureZone::ACaptureZone()
 	bReplicates = true;
 }
 
-void ACaptureZone::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ACaptureZone::StartOverlapingZone);
-	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &ACaptureZone::StopOverlapingZone);
-}
-
 void ACaptureZone::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//if (UKismetSystemLibrary::IsServer(GetWorld()))
-	//{
-	//	TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	//	if (GameState)
-	//	{
-	//		GameState->ServerOnlyAddCaptureZoneToActiveList(this);
-	//	}
-	//}
 }
-
 
 void ACaptureZone::Tick(float DeltaTime)
 {
@@ -69,35 +45,6 @@ void ACaptureZone::Tick(float DeltaTime)
 	}
 }
 
-
-void ACaptureZone::StartOverlapingZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (UKismetSystemLibrary::IsServer(GetWorld()))
-	{
-		TObjectPtr<ASCharacter> PlayerCharacter = Cast<ASCharacter>(OtherActor);
-		if (PlayerCharacter && !PlayersInsideZone.Contains(PlayerCharacter))
-		{
-			// We know new player entered the zone
-			PlayersInsideZone.Add(PlayerCharacter);
-		}
-	}
-}
-
-
-void ACaptureZone::StopOverlapingZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (UKismetSystemLibrary::IsServer(GetWorld()))
-	{
-		TObjectPtr<ASCharacter> PlayerCharacter = Cast<ASCharacter>(OtherActor);
-		if (PlayerCharacter && PlayersInsideZone.Contains(PlayerCharacter))
-		{
-			// We know player left the zone
-			PlayersInsideZone.Remove(PlayerCharacter);
-		}
-	}
-}
-
-
 void ACaptureZone::CalculateCapturePoints()
 {
 	// This runs only on the server
@@ -105,17 +52,7 @@ void ACaptureZone::CalculateCapturePoints()
 
 	// We need to call it directly on the server
 	OnRep_CurrentCapPoints();
-
-	//if (!bIsCaptured)
-	//{
-	//	if (CurrentCapPoints >= MaxCapPoints)
-	//	{
-	//		// We just captured the zone
-	//		bIsCaptured = true;
-	//	}
-	//}
 }
-
 
 float ACaptureZone::GetCaptureSpeedMultiplier()
 {

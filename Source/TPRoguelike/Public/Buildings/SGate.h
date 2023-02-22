@@ -36,6 +36,9 @@ protected:
 	UFUNCTION()
 	void OpeningGateTick();
 
+	//UFUNCTION()
+	//void OnRep_IsGateOpened();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<USphereComponent> RootSphere;
 
@@ -63,7 +66,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Gate")
 	float CurrentGateAngle = 0.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Gate")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Gate"/*, ReplicatedUsing = "OnRep_IsGateOpened"*/)
 	bool bIsGateOpened;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Gate", Replicated)

@@ -5,10 +5,8 @@
 #include "CoreMinimal.h"
 #include "ObjectiveArea/ObjectiveArea.h"
 #include "GameplayTagContainer.h"
+#include "Zones/SZone_Capsule.h"
 #include "CaptureZone.generated.h"
-
-class UCapsuleComponent;
-class ASCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnZoneCapturedEvent, ACaptureZone*, CapturedZone, TArray<ASCharacter*>, PlayersResponsibleForCapture);
 
@@ -16,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnZoneCapturedEvent, ACaptureZone*
  * 
  */
 UCLASS()
-class TPROGUELIKE_API ACaptureZone : public AObjectiveArea
+class TPROGUELIKE_API ACaptureZone : public ASZone_Capsule
 {
 	GENERATED_BODY()
 	
@@ -24,12 +22,6 @@ public:
 	ACaptureZone();
 
 	virtual void Tick(float DeltaTime) override;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Rogue|Components")
-	TObjectPtr<UCapsuleComponent> TriggerBox = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
-	TObjectPtr<UStaticMeshComponent> AreaIndicatorMesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
 	TObjectPtr<UStaticMeshComponent> FlagPoleMesh = nullptr;
@@ -56,19 +48,10 @@ public:
 	FOnZoneCapturedEvent OnZoneCapturedEvent;
 
 protected:
-
-	virtual void PostInitializeComponents() override;
-
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void CalculateCapturePoints();
-
-	UFUNCTION()
-	virtual void StartOverlapingZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void StopOverlapingZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION()
 	void OnZoneCaptured();
@@ -94,9 +77,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|CaptureZone")
 	bool bIsCaptured = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|CaptureZone")
-	TArray<TObjectPtr<ASCharacter>> PlayersInsideZone;
-
 	UPROPERTY(EditAnywhere, Category = "Rogue|CaptureZone|Quest")
 	FGameplayTag ObjectiveTag;
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
