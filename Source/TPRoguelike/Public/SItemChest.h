@@ -29,6 +29,8 @@ public:
 
 	virtual void OnActorLoaded_Implementation();
 
+	virtual bool CanBeInteractedByPlayerCharacter_Implementation();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

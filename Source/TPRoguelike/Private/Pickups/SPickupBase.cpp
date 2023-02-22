@@ -59,12 +59,15 @@ bool ASPickupBase::CanInteract_Implementation(APawn* InstigatorPawn)
 	}
 }
 
-
 bool ASPickupBase::IsEnabled_Implementation()
 {
 	return IsEnabled;
 }
 
+bool ASPickupBase::CanBeInteractedByPlayerCharacter_Implementation()
+{
+	return true;
+}
 
 void ASPickupBase::UsePickupItem(APawn* InstigatorPawn)
 {
@@ -79,12 +82,10 @@ void ASPickupBase::UsePickupItem(APawn* InstigatorPawn)
 	}
 }
 
-
 void ASPickupBase::MulticastUsePickupItem_Implementation(APawn* InstigatorPawn)
 {
 	UsePickupItem(InstigatorPawn);
 }
-
 
 void ASPickupBase::AllowInteraction()
 {
@@ -92,7 +93,6 @@ void ASPickupBase::AllowInteraction()
 
 	OnRep_IsEnabled();
 }
-
 
 void ASPickupBase::OnRep_IsEnabled()
 {

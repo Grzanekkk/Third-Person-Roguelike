@@ -34,6 +34,10 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool IsEnabled();
 
+	// If set to false this interactable can only be interacted by non player objects fe: levers, zones
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool CanBeInteractedByPlayerCharacter();
+
 	// Function called after loading actor from save
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OnActorLoaded();

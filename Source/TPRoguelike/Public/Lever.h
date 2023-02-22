@@ -25,9 +25,17 @@ public:
 
 	virtual bool IsEnabled_Implementation();
 
+	virtual bool CanBeInteractedByPlayerCharacter_Implementation();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void SwitchLever();
+
+	UFUNCTION()
+	void OnRep_bIsSwitched();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Components")
 	TObjectPtr<UParticleSystemComponent> OnSwitchParticleComp;
@@ -38,19 +46,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rogue|Components")
 	TObjectPtr<UStaticMeshComponent> LeverMesh;
 
-	UFUNCTION()
-	void SwitchLever();
-
-	UFUNCTION()
-	void OnRep_bIsSwitched();
+	UPROPERTY(EditAnywhere, Category = "Rogue|Lever")
+	TObjectPtr<AActor> ActorToInteractOnSwitch;
 
 	UPROPERTY(ReplicatedUsing = "OnRep_bIsSwitched", BlueprintReadOnly, Category = "Rogue|Lever")
 	bool bIsSwitched = false;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Rogue|Lever")
 	float SwitchedLeverPitch = -30.f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Rogue|Lever")
 	float NotSwitchedLeverPitch = 30.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Lever|Quest")

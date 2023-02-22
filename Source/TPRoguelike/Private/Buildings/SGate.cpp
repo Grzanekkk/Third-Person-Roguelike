@@ -86,6 +86,11 @@ bool ASGate::IsEnabled_Implementation()
 	return true;
 }
 
+bool ASGate::CanBeInteractedByPlayerCharacter_Implementation()
+{
+	return false;
+}
+
 void ASGate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

@@ -24,6 +24,8 @@ public:
 
 	virtual bool IsEnabled_Implementation();
 
+	virtual bool CanBeInteractedByPlayerCharacter_Implementation();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Rogue|Pickup")
 	int32 UseCost = 0;
 

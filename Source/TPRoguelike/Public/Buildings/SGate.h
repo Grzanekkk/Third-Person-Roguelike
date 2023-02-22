@@ -25,6 +25,8 @@ public:
 
 	virtual bool IsEnabled_Implementation();
 
+	virtual bool CanBeInteractedByPlayerCharacter_Implementation();
+
 	UFUNCTION()
 	void OpenGate();
 

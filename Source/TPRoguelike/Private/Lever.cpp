@@ -7,6 +7,7 @@
 #include "Components/SQuestManagerComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Enums/SEnums_Logs.h"
+#include "SGameplayInterface.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
@@ -14,20 +15,20 @@
 ALever::ALever()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+PrimaryActorTick.bCanEverTick = true;
 
-	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
-	RootComponent = BaseMesh;
+BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
+RootComponent = BaseMesh;
 
-	OnSwitchParticleComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("OnSwitchParticleComp"));
-	OnSwitchParticleComp->SetupAttachment(RootComponent);
-	OnSwitchParticleComp->SetAutoActivate(false);
+OnSwitchParticleComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("OnSwitchParticleComp"));
+OnSwitchParticleComp->SetupAttachment(RootComponent);
+OnSwitchParticleComp->SetAutoActivate(false);
 
-	LeverMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
-	LeverMesh->SetupAttachment(BaseMesh);
-	LeverMesh->SetRelativeRotation(FRotator(NotSwitchedLeverPitch, 0.0f, 0.0f));
+LeverMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
+LeverMesh->SetupAttachment(BaseMesh);
+LeverMesh->SetRelativeRotation(FRotator(NotSwitchedLeverPitch, 0.0f, 0.0f));
 
-	bReplicates = true;
+bReplicates = true;
 }
 
 void ALever::BeginPlay()
@@ -57,6 +58,14 @@ void ALever::Interact_Implementation(APawn* InstigatorPawn)
 				{
 					QuestManager->ServerOnlyAddObjectiveStat(ObjectiveTag, 1);
 				}
+			}
+		}
+
+		if (ActorToInteractOnSwitch->Implements<USGameplayInterface>() && ISGameplayInterface::Execute_IsEnabled(ActorToInteractOnSwitch))
+		{
+			if (ISGameplayInterface::Execute_CanInteract(ActorToInteractOnSwitch, nullptr))
+			{
+				ISGameplayInterface::Execute_Interact(ActorToInteractOnSwitch, nullptr);
 			}
 		}
 	}
@@ -103,8 +112,15 @@ bool ALever::IsEnabled_Implementation()
 	return true;
 }
 
+bool ALever::CanBeInteractedByPlayerCharacter_Implementation()
+{
+	return true;
+}
+
 void ALever::SwitchLever()
 {
+	// Visual Only
+
 	LeverMesh->SetRelativeRotation(FRotator(SwitchedLeverPitch, 0.0f, 0.0f));
 	OnSwitchParticleComp->Activate();
 }

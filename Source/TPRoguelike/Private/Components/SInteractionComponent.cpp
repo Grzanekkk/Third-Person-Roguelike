@@ -74,7 +74,7 @@ void USInteractionComponent::FindBestInteractable()
 		AActor* HitActor = Hit.GetActor();
 		if (HitActor)
 		{
-			if (HitActor->Implements<USGameplayInterface>() && ISGameplayInterface::Execute_IsEnabled(HitActor))
+			if (HitActor->Implements<USGameplayInterface>() && ISGameplayInterface::Execute_IsEnabled(HitActor) && ISGameplayInterface::Execute_CanBeInteractedByPlayerCharacter(HitActor))
 			{
 				FocusedActor = HitActor;
 				break;

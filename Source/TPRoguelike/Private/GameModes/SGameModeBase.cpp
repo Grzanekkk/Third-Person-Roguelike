@@ -155,7 +155,7 @@ void ASGameModeBase::SpawnPickups()
 {
 	if (!bCanSpawnPickups)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Spawning bots disabled via bCanSpawnBots in GameMode"));
+		//UE_LOG(LogTemp, Warning, TEXT("Spawning bots disabled via bCanSpawnBots in GameMode"));
 		return;
 	}
 

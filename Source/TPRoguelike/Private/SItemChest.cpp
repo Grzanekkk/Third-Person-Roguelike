@@ -83,6 +83,11 @@ void ASItemChest::OnActorLoaded_Implementation()
 	LidMesh->SetRelativeRotation(FRotator(LidRotation, 0.f, 0.f));
 }
 
+bool ASItemChest::CanBeInteractedByPlayerCharacter_Implementation()
+{
+	return true;
+}
+
 
 void ASItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
