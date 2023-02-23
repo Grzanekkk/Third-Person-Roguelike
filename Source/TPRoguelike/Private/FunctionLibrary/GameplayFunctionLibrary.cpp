@@ -33,3 +33,8 @@ bool UGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AAct
 	}
 	return false;
 }
+
+bool UGameplayFunctionLibrary::AddObjectiveStat(const UObject* WorldContextObject, FGameplayTag ObjectiveTag, int32 Stat)
+{
+	return false;
+}

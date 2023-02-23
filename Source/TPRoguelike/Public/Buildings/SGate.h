@@ -47,10 +47,16 @@ protected:
 	TObjectPtr<USphereComponent> RightWingPivot;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Components")
-	TObjectPtr<UStaticMeshComponent> LeftWing;
+	TObjectPtr<UStaticMeshComponent> LeftWingMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Components")
-	TObjectPtr<UStaticMeshComponent> RightWing;
+	TObjectPtr<UStaticMeshComponent> RightWingMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Components")
+	TObjectPtr<UStaticMeshComponent> LeftWingColumn;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Components")
+	TObjectPtr<UStaticMeshComponent> RightWingColumn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Gate|Settings")
 	float GateOpeningSpeed = 50.0f;

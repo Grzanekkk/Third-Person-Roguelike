@@ -14,6 +14,4 @@ class TPROGUELIKE_API UNetworkFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	
-public:
-
 };

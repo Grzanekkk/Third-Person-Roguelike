@@ -14,17 +14,23 @@ ASGate::ASGate()
 	RootSphere = CreateDefaultSubobject<USphereComponent>(TEXT("RootSphere"));
 	SetRootComponent(RootSphere);
 
+	LeftWingColumn = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftWingColumn"));
+	LeftWingColumn->SetupAttachment(RootComponent);
+
+	RightWingColumn = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightWingColumn"));
+	RightWingColumn->SetupAttachment(RootComponent);
+
 	LeftWingPivot = CreateDefaultSubobject<USphereComponent>(TEXT("LeftWingPivot"));
-	LeftWingPivot->SetupAttachment(RootComponent);
+	LeftWingPivot->SetupAttachment(LeftWingColumn);
 
 	RightWingPivot = CreateDefaultSubobject<USphereComponent>(TEXT("RightWingPivot"));
-	RightWingPivot->SetupAttachment(RootComponent);
+	RightWingPivot->SetupAttachment(RightWingColumn);
 
-	LeftWing = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftWing"));
-	LeftWing->SetupAttachment(LeftWingPivot);
+	LeftWingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftWing"));
+	LeftWingMesh->SetupAttachment(LeftWingPivot);
 
-	RightWing = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightWing"));
-	RightWing->SetupAttachment(RightWingPivot);
+	RightWingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightWing"));
+	RightWingMesh->SetupAttachment(RightWingPivot);
 
 	bIsGateOpened = false;
 	bIsGateOpening = false;

@@ -22,14 +22,29 @@ void ASZone_AllPlayersInside::CheckIfAllPlayersAreInside(int32 PlayersInside)
 		{
 			if (UKismetSystemLibrary::IsServer(GetWorld()))
 			{
-				if (ActorToInteractOnSwitch->Implements<USGameplayInterface>() && ISGameplayInterface::Execute_IsEnabled(ActorToInteractOnSwitch))
+				if (ActorToInteractOnSwitch && ActorToInteractOnSwitch->Implements<USGameplayInterface>() && ISGameplayInterface::Execute_IsEnabled(ActorToInteractOnSwitch))
 				{
 					if (ISGameplayInterface::Execute_CanInteract(ActorToInteractOnSwitch, nullptr))
 					{
 						ISGameplayInterface::Execute_Interact(ActorToInteractOnSwitch, nullptr);
 					}
 				}
+
+				//// For Quests
+				//if (UKismetSystemLibrary::IsServer(GetWorld()))
+				//{
+				//	TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+				//	if (GameState)
+				//	{
+				//		TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
+				//		if (QuestManager)
+				//		{
+				//			QuestManager->ServerOnlyAddObjectiveStat(ObjectiveTag, 1);
+				//		}
+				//	}
+				//}
 			}
+
 
 			// we might do some visuals here
 		}
