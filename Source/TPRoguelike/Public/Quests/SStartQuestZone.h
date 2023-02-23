@@ -22,8 +22,6 @@ public:
 	TObjectPtr<UBoxComponent> OverlapBox = nullptr;
 
 protected:
-	virtual void BeginPlay() override;
-
 	void PostInitializeComponents() override;
 
 	UFUNCTION()

@@ -17,8 +17,6 @@ class TPROGUELIKE_API USActionComponent : public UActorComponent
 public:	
 	USActionComponent();
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	/** We need this to be able to replicate SActions */
 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
