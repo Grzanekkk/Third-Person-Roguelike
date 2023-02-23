@@ -37,25 +37,15 @@ class TPROGUELIKE_API ASGameState : public AGameStateBase
 public:
 	ASGameState();
 
-	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Getters")
-	FORCEINLINE USQuestManagerComponent* GetQuestManager() { return QuestManagerComponent; }
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Rogue|Getters")
+	FORCEINLINE USQuestManagerComponent* GetQuestManager() const { return QuestManagerComponent; }
 
-	//TObjectPtr<ACaptureZone> GetCaptureZoneForQuest();
-
-	//UFUNCTION()
-	//void ServerOnlyAddCaptureZoneToActiveList(ACaptureZone* CaptureZone);
-	//
-	//UFUNCTION()
-	//void ServerOnlyRemoveCaptureZoneFromActiveList(ACaptureZone* CaptureZone);
-	//
-	//UFUNCTION()
-	//bool IsAnyCaptureZoneAvalibleForQuest();
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Rogue|Getters")
+	int32 GetNumberOfConnectedPlayers() const;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<USQuestManagerComponent> QuestManagerComponent = nullptr;
 
-	//UPROPERTY(Replicated)
-	//TArray<TObjectPtr<ACaptureZone>> CaptureZonesAvalibeForQuests;
 
 };

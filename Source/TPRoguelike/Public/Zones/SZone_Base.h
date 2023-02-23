@@ -14,6 +14,10 @@ class USphereComponent;
 
 enum class EZoneShape : uint8;
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNumberOfPlayersInsideZoneChanged, int32, PlayersInsideZone);
+
+
 UCLASS()
 class TPROGUELIKE_API ASZone_Base : public AActor
 {
@@ -22,12 +26,11 @@ class TPROGUELIKE_API ASZone_Base : public AActor
 public:	
 	ASZone_Base();
 
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY()
+	FOnNumberOfPlayersInsideZoneChanged OnNumberOfPlayersInsideZoneChanged;
 
 protected:
 	virtual void PostInitializeComponents() override;
-
-	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	virtual void StartOverlapingZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

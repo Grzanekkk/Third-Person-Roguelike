@@ -2,26 +2,42 @@
 
 
 #include "Zones/SZone_AllPlayersInside.h"
+#include "Kismet/GameplayStatics.h"
+#include "SGameplayInterface.h"
+#include "GameState/SGameState.h"
 
 // Sets default values
 ASZone_AllPlayersInside::ASZone_AllPlayersInside()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-// Called when the game starts or when spawned
-void ASZone_AllPlayersInside::BeginPlay()
+void ASZone_AllPlayersInside::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
+
+	OnNumberOfPlayersInsideZoneChanged.AddDynamic(this, &ASZone_AllPlayersInside::CheckIfAllPlayersAreInside);
 }
 
-// Called every frame
-void ASZone_AllPlayersInside::Tick(float DeltaTime)
+void ASZone_AllPlayersInside::CheckIfAllPlayersAreInside(int32 PlayersInside)
 {
-	Super::Tick(DeltaTime);
+	TObjectPtr<ASGameState> SGameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	if (SGameState)
+	{
+		if (PlayersInside >= SGameState->GetNumberOfConnectedPlayers())
+		{
+			if (UKismetSystemLibrary::IsServer(GetWorld()))
+			{
+				if (ActorToInteractOnSwitch->Implements<USGameplayInterface>() && ISGameplayInterface::Execute_IsEnabled(ActorToInteractOnSwitch))
+				{
+					if (ISGameplayInterface::Execute_CanInteract(ActorToInteractOnSwitch, nullptr))
+					{
+						ISGameplayInterface::Execute_Interact(ActorToInteractOnSwitch, nullptr);
+					}
+				}
+			}
 
+			// we might do some visuals here
+		}
+	}
 }
-

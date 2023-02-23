@@ -3,22 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Zones/SZone_Box.h"
 #include "SZone_AllPlayersInside.generated.h"
 
 UCLASS()
-class TPROGUELIKE_API ASZone_AllPlayersInside : public AActor
+class TPROGUELIKE_API ASZone_AllPlayersInside : public ASZone_Box
 {
 	GENERATED_BODY()
 	
 public:	
 	ASZone_AllPlayersInside();
 
-	virtual void Tick(float DeltaTime) override;
-
 protected:
-	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
+	UFUNCTION()
+	void CheckIfAllPlayersAreInside(int32 PlayersInside);
 
-
+	UPROPERTY(EditAnywhere, Category = "Rogue|Zone")
+	TObjectPtr<AActor> ActorToInteractOnSwitch;
 };

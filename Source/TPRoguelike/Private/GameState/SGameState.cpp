@@ -11,6 +11,11 @@ ASGameState::ASGameState()
 	QuestManagerComponent = CreateDefaultSubobject<USQuestManagerComponent>(TEXT("Objective Manager Component"));
 }
 
+int32 ASGameState::GetNumberOfConnectedPlayers() const
+{
+	return PlayerArray.Num();
+}
+
 //TObjectPtr<ACaptureZone> ASGameState::GetCaptureZoneForQuest()
 //{
 //	bool bZoneFound = false;
