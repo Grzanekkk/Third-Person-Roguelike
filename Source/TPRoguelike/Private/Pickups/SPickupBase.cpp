@@ -8,7 +8,6 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Net/UnrealNetwork.h"
 
-// Sets default values
 ASPickupBase::ASPickupBase() 
 {
 	RootSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("RootSphere"));
@@ -29,12 +28,10 @@ ASPickupBase::ASPickupBase()
 	IdleParticleComponent->SetupAttachment(CollisionSphereComp);
 
 	bReplicates = true;
-	//SetReplicateMovement(true);
 }
 
 void ASPickupBase::Interact_Implementation(APawn* InstigatorPawn)
 {
-	//UsePickupItem(InstigatorPawn);
 	MulticastUsePickupItem(InstigatorPawn);
 }
 

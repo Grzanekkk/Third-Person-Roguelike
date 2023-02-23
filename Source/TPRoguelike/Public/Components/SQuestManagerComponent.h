@@ -71,8 +71,6 @@ class TPROGUELIKE_API USQuestManagerComponent : public UActorComponent
 public:	
 	USQuestManagerComponent();
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	void ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveTag, int32 Stat);
 
 	void ServerOnlyStartObjective(FGameplayTag ObjectiveTag);
@@ -88,8 +86,6 @@ public:
 	bool IsObjectiveFinished(FGameplayTag ObjectiveTag);
 
 protected:
-	virtual void BeginPlay() override;
-
 	UFUNCTION()
 	void ServerOnlyStartNextObjectiveInSequanceIfPossible(FGameplayTag FinishedObjectiveTag);
 

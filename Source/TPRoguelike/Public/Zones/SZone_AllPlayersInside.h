@@ -10,9 +10,6 @@ UCLASS()
 class TPROGUELIKE_API ASZone_AllPlayersInside : public ASZone_Box
 {
 	GENERATED_BODY()
-	
-public:	
-	ASZone_AllPlayersInside();
 
 protected:
 	virtual void PostInitializeComponents() override;

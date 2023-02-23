@@ -10,8 +10,6 @@
 
 USActionComponent::USActionComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-
 	SetIsReplicatedByDefault(true);
 }
 
@@ -27,22 +25,6 @@ void USActionComponent::BeginPlay()
 			AddAction(GetOwner(), DefaultActionClass);
 		}
 	}
-}
-
-void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	//FString DebugMsg = GetNameSafe(GetOwner()) + ": " + ActiveGameplayTags.ToStringSimple();
-	//GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
-
-	// Draw all actions
-	//for (TObjectPtr<USAction> Action : Actions)
-	//{
-	//	FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
-	//	FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s"), *GetNameSafe(GetOwner()), *GetNameSafe(Action));
-	//	ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetOwner(), ActionMsg, TextColor, 0.0f);
-	//}
 }
 
 void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> ActionClass)
@@ -143,6 +125,19 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 void USActionComponent::ServerStopActionByName_Implementation(AActor* Instigator, FName ActionName)
 {
 	StopActionByName(Instigator, ActionName);
+}
+
+void USActionComponent::DrawAllActionsOnScreen()
+{
+	FString DebugMsg = GetNameSafe(GetOwner()) + ": " + ActiveGameplayTags.ToStringSimple();
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
+
+	for (TObjectPtr<USAction> Action : Actions)
+	{
+		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s"), *GetNameSafe(GetOwner()), *GetNameSafe(Action));
+		ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetOwner(), ActionMsg, ERogueLogCategory::LOG, 0.0f);
+	}
 }
 
 bool USActionComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)

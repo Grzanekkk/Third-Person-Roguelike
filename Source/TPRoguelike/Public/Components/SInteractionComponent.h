@@ -25,8 +25,6 @@ public:
 	void ServerPrimaryInteract(AActor* InFocusedActor);
 
 protected:
-	virtual void BeginPlay() override;
-
 	UFUNCTION()
 	void FindBestInteractable();
 

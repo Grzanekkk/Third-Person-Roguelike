@@ -6,12 +6,6 @@
 #include "SGameplayInterface.h"
 #include "GameState/SGameState.h"
 
-// Sets default values
-ASZone_AllPlayersInside::ASZone_AllPlayersInside()
-{
-
-}
-
 void ASZone_AllPlayersInside::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();

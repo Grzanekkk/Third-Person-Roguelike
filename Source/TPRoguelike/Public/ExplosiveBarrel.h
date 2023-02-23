@@ -23,10 +23,10 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	float Radius;
+	float Radius = 420.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	float Damage;
+	float Damage = 50.f;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UParticleSystemComponent> ParticleComp;
@@ -54,9 +54,4 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ExplodeBP();
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 };

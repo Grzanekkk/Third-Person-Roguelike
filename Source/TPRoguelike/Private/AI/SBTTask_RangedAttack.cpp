@@ -41,19 +41,12 @@ EBTNodeResult::Type USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& O
 		MuzzleRotation.Pitch += FMath::RandRange(-0.2f, MaxBulletSpread);
 		MuzzleRotation.Yaw += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
 
-		//FActorSpawnParameters SpawnParams;
-		//SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		//SpawnParams.Instigator = AIPawn;
-
-		//TObjectPtr<AActor> NewProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-		
 		FTransform SpawnTM;
 		SpawnTM.SetLocation(MuzzleLocation);
 		SpawnTM.SetRotation(MuzzleRotation.Quaternion());
 
 		TObjectPtr<AActor> NewProjectile = GetWorld()->SpawnActorDeferred<ASProjectileBase>(ProjectileClass, SpawnTM, AIPawn, AIPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		NewProjectile->SetInstigator(AIPawn);
-		//NewProjectile->bReplic
 		NewProjectile->FinishSpawning(SpawnTM);
 
 		return NewProjectile ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;

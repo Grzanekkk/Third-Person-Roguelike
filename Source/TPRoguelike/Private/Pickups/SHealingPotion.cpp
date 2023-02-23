@@ -4,11 +4,6 @@
 #include "Pickups/SHealingPotion.h"
 #include "Components/SAttributeComponent.h"
 
-ASHealingPotion::ASHealingPotion()
-{
-
-}
-
 void ASHealingPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
 	UsePickupItem(InstigatorPawn);

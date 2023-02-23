@@ -31,8 +31,6 @@ public:
 	void OpenGate();
 
 protected:
-	virtual void BeginPlay() override;
-
 	UFUNCTION()
 	void OpeningGateTick();
 

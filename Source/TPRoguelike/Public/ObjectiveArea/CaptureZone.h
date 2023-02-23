@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ObjectiveArea/ObjectiveArea.h"
 #include "GameplayTagContainer.h"
 #include "Zones/SZone_Capsule.h"
 #include "CaptureZone.generated.h"

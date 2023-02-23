@@ -19,14 +19,6 @@ ABlackhole::ABlackhole()
 	
 	MovementComp->InitialSpeed = 1500.f;
 
-
-	//RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
-	//RadialForceComp->SetupAttachment(RootComponent);
-	//RadialForceComp->bImpulseVelChange = true;
-	//RadialForceComp->Radius = 420.f;
-	//RadialForceComp->ForceStrength = 1200;
-	//RadialForceComp->bIgnoreOwningActor = true;
-
 	InitialLifeSpan = 5.f;
 }
 

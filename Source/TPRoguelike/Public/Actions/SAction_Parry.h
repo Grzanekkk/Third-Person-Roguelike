@@ -15,9 +15,6 @@ class TPROGUELIKE_API USAction_Parry : public USAction
 	GENERATED_BODY()
 	
 public:
-
-	USAction_Parry();
-
 	virtual void StartAction_Implementation(AActor* Instigator) override;
 
 	virtual void StopAction_Implementation(AActor* Instigator) override;

@@ -32,8 +32,6 @@ public:
 	virtual bool CanBeInteractedByPlayerCharacter_Implementation();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnRep_bIsOpened();
@@ -55,9 +53,4 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Rogue|Components")
 	TObjectPtr<UParticleSystemComponent> ParticleComp;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 };

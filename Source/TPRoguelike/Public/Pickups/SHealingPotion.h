@@ -12,8 +12,6 @@ class TPROGUELIKE_API ASHealingPotion : public ASPickupBase
 	GENERATED_BODY()
 	
 public:
-	ASHealingPotion();
-
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 	virtual bool CanInteract_Implementation(APawn* InstigatorPawn) override;

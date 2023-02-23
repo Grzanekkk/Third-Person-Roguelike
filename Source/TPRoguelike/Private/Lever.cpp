@@ -11,34 +11,20 @@
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
-// Sets default values
 ALever::ALever()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-PrimaryActorTick.bCanEverTick = true;
-
-BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
-RootComponent = BaseMesh;
-
-OnSwitchParticleComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("OnSwitchParticleComp"));
-OnSwitchParticleComp->SetupAttachment(RootComponent);
-OnSwitchParticleComp->SetAutoActivate(false);
-
-LeverMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
-LeverMesh->SetupAttachment(BaseMesh);
-LeverMesh->SetRelativeRotation(FRotator(NotSwitchedLeverPitch, 0.0f, 0.0f));
-
-bReplicates = true;
-}
-
-void ALever::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void ALever::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+{	
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
+	RootComponent = BaseMesh;
+	
+	OnSwitchParticleComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("OnSwitchParticleComp"));
+	OnSwitchParticleComp->SetupAttachment(RootComponent);
+	OnSwitchParticleComp->SetAutoActivate(false);
+	
+	LeverMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
+	LeverMesh->SetupAttachment(BaseMesh);
+	LeverMesh->SetRelativeRotation(FRotator(NotSwitchedLeverPitch, 0.0f, 0.0f));
+	
+	bReplicates = true;
 }
 
 void ALever::Interact_Implementation(APawn* InstigatorPawn)

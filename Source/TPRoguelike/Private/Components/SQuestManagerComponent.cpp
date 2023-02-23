@@ -12,19 +12,7 @@
 
 USQuestManagerComponent::USQuestManagerComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-
 	SetIsReplicatedByDefault(true);
-}
-
-void USQuestManagerComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void USQuestManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveTag, int32 Stat)

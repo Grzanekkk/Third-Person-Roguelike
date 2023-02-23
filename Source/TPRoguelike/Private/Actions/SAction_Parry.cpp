@@ -7,11 +7,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Particles/ParticleSystemComponent.h"
 
-USAction_Parry::USAction_Parry()
-{
-
-}
-
 void USAction_Parry::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);

@@ -5,8 +5,6 @@
 #include "SaveSystem/SSaveGame.h"
 #include "Net/UnrealNetwork.h"
 
-
-
 bool ASPlayerState::ApplyCreditsChange(int32 CreditsDelta)
 {
 	if (CreditsDelta != 0)
@@ -25,20 +23,16 @@ bool ASPlayerState::ApplyCreditsChange(int32 CreditsDelta)
 
 			AActor* ControlledActor = Cast<AActor>(GetPlayerController()->GetPawn());
 			MulticastOnCreditsChanged(ControlledActor, AvalibleCredits, CreditsDelta);
-			//OnCreditsChanged.Broadcast(ControlledActor, AvalibleCredits, CreditsDelta);
 		}
 	}
-	
 
 	return true;
 }
-
 
 void ASPlayerState::MulticastOnCreditsChanged_Implementation(AActor* InstigatorActor, float NewCredits, float CreditsDelta)
 {
 	OnCreditsChanged.Broadcast(InstigatorActor, NewCredits, CreditsDelta);
 }
-
 
 void ASPlayerState::SavePlayerState(USSaveGame* SaveObject)
 {
@@ -47,7 +41,6 @@ void ASPlayerState::SavePlayerState(USSaveGame* SaveObject)
 		SaveObject->Credits = AvalibleCredits;
 	}
 }
-
 
 void ASPlayerState::LoadPlayerState(USSaveGame* SaveObject)
 {
@@ -63,5 +56,3 @@ void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 
 	DOREPLIFETIME(ASPlayerState, AvalibleCredits);
 }
-
-#undef AUTHORITY_ONLY_FUNCTION

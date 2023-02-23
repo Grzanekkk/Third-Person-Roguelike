@@ -28,21 +28,6 @@ ASItemChest::ASItemChest()
 	BaseMesh->SetIsReplicated(true);
 }
 
-
-void ASItemChest::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-
-void ASItemChest::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// Opening Lid animation in Blueprint

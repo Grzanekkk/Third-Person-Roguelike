@@ -31,14 +31,6 @@ ASGate::ASGate()
 	bReplicates = true;
 }
 
-// Called when the game starts or when spawned
-void ASGate::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
 void ASGate::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

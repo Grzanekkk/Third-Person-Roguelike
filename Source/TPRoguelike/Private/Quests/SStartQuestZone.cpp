@@ -18,21 +18,12 @@ ASStartQuestZone::ASStartQuestZone()
 	RootComponent = OverlapBox;
 }
 
-
 void ASStartQuestZone::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
 	OverlapBox->OnComponentBeginOverlap.AddDynamic(this, &ASStartQuestZone::OnBoxOverlap);
 }
-
-
-void ASStartQuestZone::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
 
 void ASStartQuestZone::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

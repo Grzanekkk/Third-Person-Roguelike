@@ -7,10 +7,6 @@
 #include "Enums/SEnums_Logs.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 
-ASDashProjectile::ASDashProjectile()
-{
-
-}
 
 void ASDashProjectile::BeginPlay()
 {
@@ -28,13 +24,9 @@ void ASDashProjectile::PostInitializeComponents()
 
 void ASDashProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	//Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 
-}
-
-void ASDashProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	FString Msg = FString::Printf(TEXT("Hit Actor: %s, Component: %s"), *GetNameSafe(OtherActor), *GetNameSafe(OverlappedComponent));
+	FString Msg = FString::Printf(TEXT("Hit Actor: %s, Component: %s"), *GetNameSafe(OtherActor), *GetNameSafe(HitComponent));
 	ULogsFunctionLibrary::LogToOutputLog(GetWorld(), Msg, ERogueLogCategory::LOG);
 
 	if (OtherActor && OtherActor != GetInstigator() && !OtherActor->IsA(ASProjectileBase::StaticClass()))

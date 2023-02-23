@@ -17,8 +17,6 @@ public:
 	// Sets default values for this actor's properties
 	ALever();
 
-	virtual void Tick(float DeltaTime) override;
-
 	virtual void Interact_Implementation(APawn* InstigatorPawn);
 
 	virtual bool CanInteract_Implementation(APawn* InstigatorPawn);
@@ -28,9 +26,6 @@ public:
 	virtual bool CanBeInteractedByPlayerCharacter_Implementation();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	UFUNCTION()
 	void SwitchLever();
 

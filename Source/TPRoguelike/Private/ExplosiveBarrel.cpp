@@ -10,14 +10,9 @@
 #include "Components/SAttributeComponent.h"
 #include "Components/SphereComponent.h"
 
-// Sets default values
 AExplosiveBarrel::AExplosiveBarrel()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	Radius = 420;
-	Damage = 50;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetSimulatePhysics(true);
@@ -39,7 +34,6 @@ AExplosiveBarrel::AExplosiveBarrel()
 	ExplosionRadiusSphere->SetSphereRadius(Radius);
 }
 
-// Called when the game starts or when spawned
 void AExplosiveBarrel::BeginPlay()
 {
 	Super::BeginPlay();
@@ -69,11 +63,3 @@ void AExplosiveBarrel::Explode()
 	ParticleComp->Activate(true);
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, ParticleComp->GetComponentTransform());
 }
-
-// Called every frame
-void AExplosiveBarrel::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
