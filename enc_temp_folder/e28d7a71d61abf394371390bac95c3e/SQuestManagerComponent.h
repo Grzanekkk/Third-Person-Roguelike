@@ -71,9 +71,6 @@ class TPROGUELIKE_API USQuestManagerComponent : public UActorComponent
 public:	
 	USQuestManagerComponent();
 
-	UFUNCTION()
-	void ServerOnlySetObjectiveDataAndStart();
-
 	void ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveTag, int32 Stat);
 
 	void ServerOnlyStartObjective(FGameplayTag ObjectiveTag);
@@ -116,11 +113,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
 	TArray<FGameplayTag> ActiveObjectivesState;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Rogue|Quests")
 	TObjectPtr<USQuestDataAsset> DefalutObjectivesGoals;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Rogue|Quests")
 	TObjectPtr<USObjectiveSequenceDataAsset> ActiveObjectiveSequance;
+
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
+	//TArray<FObjectiveSquanceStep> CurrentObjectiveSequanceStep;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
 	TArray<FGameplayTag> CurrentObjectiveSequanceStep;

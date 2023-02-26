@@ -15,6 +15,10 @@ USQuestManagerComponent::USQuestManagerComponent()
 	SetIsReplicatedByDefault(true);
 }
 
+void USQuestManagerComponent::ServerOnlySetObjectiveDataForLevelAndStart()
+{
+}
+
 void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveTag, int32 Stat)
 {
 	check(GetOwner()->HasAuthority());

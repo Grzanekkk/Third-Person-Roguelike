@@ -10,6 +10,7 @@
 #include "SGameplayInterface.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "FunctionLibrary/GameplayFunctionLibrary.h"
 
 ALever::ALever()
 {	
@@ -34,26 +35,9 @@ void ALever::Interact_Implementation(APawn* InstigatorPawn)
 		bIsSwitched = true;
 		SwitchLever();
 
-		if (ObjectiveTag.IsValid())
-		{
-			TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-			if (GameState)
-			{
-				TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
-				if (QuestManager)
-				{
-					QuestManager->ServerOnlyAddObjectiveStat(ObjectiveTag, 1);
-				}
-			}
-		}
+		UGameplayFunctionLibrary::AddObjectiveStat(GetWorld(), ObjectiveTag, 1);
 
-		if (ActorToInteractOnSwitch->Implements<USGameplayInterface>() && ISGameplayInterface::Execute_IsEnabled(ActorToInteractOnSwitch))
-		{
-			if (ISGameplayInterface::Execute_CanInteract(ActorToInteractOnSwitch, nullptr))
-			{
-				ISGameplayInterface::Execute_Interact(ActorToInteractOnSwitch, nullptr);
-			}
-		}
+		UGameplayFunctionLibrary::IntaractIfPossible(GetWorld(), ActorToInteractOnSwitch, nullptr);
 	}
 }
 
@@ -64,19 +48,15 @@ bool ALever::CanInteract_Implementation(APawn* InstigatorPawn)
 	{
 		if (ObjectiveTag.IsValid())
 		{
-			TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-			if (GameState)
+			TObjectPtr<USQuestManagerComponent> QuestManager = UGameplayFunctionLibrary::GetQuestManager(GetWorld());
+			if (QuestManager)
 			{
-				TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
-				if (QuestManager)
-				{
-					bCanInteract = QuestManager->IsObjectiveActive(ObjectiveTag);
+				bCanInteract = QuestManager->IsObjectiveActive(ObjectiveTag);
 
-					if (!bCanInteract)
-					{
-						FString DebugMsg = "Objective: " + ObjectiveTag.ToString() + " is not active. You cannot interact with the lever right now.";
-						ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::WARNING);
-					}
+				if (!bCanInteract)
+				{
+					FString DebugMsg = "Objective: " + ObjectiveTag.ToString() + " is not active. You cannot interact with the lever right now.";
+					ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::WARNING);
 				}
 			}
 		}

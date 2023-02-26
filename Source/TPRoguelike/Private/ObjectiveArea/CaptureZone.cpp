@@ -4,12 +4,10 @@
 #include "ObjectiveArea/CaptureZone.h"
 #include "Components/CapsuleComponent.h"
 #include "Characters/SCharacter.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
-#include "Kismet/GameplayStatics.h"
-#include "Components/SQuestManagerComponent.h"
-#include "GameState/SGameState.h"
+#include "FunctionLibrary/GameplayFunctionLibrary.h"
 
 
 ACaptureZone::ACaptureZone()
@@ -87,19 +85,7 @@ void ACaptureZone::OnZoneCaptured()
 {
 	OnZoneCapturedEvent.Broadcast(this, PlayersInsideZone);
 
-	// For Quests
-	if (UKismetSystemLibrary::IsServer(GetWorld()))
-	{
-		TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (GameState)
-		{
-			TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
-			if (QuestManager)
-			{
-				QuestManager->ServerOnlyAddObjectiveStat(ObjectiveTag, 1);
-			}
-		}
-	}
+	UGameplayFunctionLibrary::AddObjectiveStat(GetWorld(), ObjectiveTag, 1);
 }
 
 void ACaptureZone::OnRep_CurrentCapPoints()

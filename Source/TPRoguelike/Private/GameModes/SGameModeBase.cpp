@@ -14,13 +14,13 @@
 #include "Pickups/SPickupBase.h"
 #include "PlayerStates/SPlayerState.h"
 #include "SaveSystem/SSaveGame.h"
-#include "Components/SQuestManagerComponent.h"
 #include "GameState/SGameState.h"
 #include "GameplayTagContainer.h"
-#include "Components/SQuestManagerComponent.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "Enums/SEnums_Logs.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
+#include "FunctionLibrary/GameplayFunctionLibrary.h"
+#include "Components/SQuestManagerComponent.h"
 
 
 
@@ -309,16 +309,12 @@ void ASGameModeBase::StartStartingObjectives()
 		return;
 	}
 
-	TObjectPtr<ASGameState> SGameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	if (SGameState)
-	{
-		TObjectPtr<USQuestManagerComponent> QuestManager = SGameState->GetQuestManager();
-		if (QuestManager)
-		{	
-			for (int32 i = 0; i < StartingObjectives.Num(); i++)
-			{
-				QuestManager->ServerOnlyStartObjective(StartingObjectives.GetByIndex(i));
-			}
+	TObjectPtr<USQuestManagerComponent> QuestManager = UGameplayFunctionLibrary::GetQuestManager(GetWorld());
+	if (QuestManager)
+	{	
+		for (int32 i = 0; i < StartingObjectives.Num(); i++)
+		{
+			QuestManager->ServerOnlyStartObjective(StartingObjectives.GetByIndex(i));
 		}
 	}
 }
@@ -331,14 +327,10 @@ void ASGameModeBase::StartStartingObjectiveSequance()
 		return;
 	}
 
-	TObjectPtr<ASGameState> SGameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	if (SGameState)
+	TObjectPtr<USQuestManagerComponent> QuestManager = UGameplayFunctionLibrary::GetQuestManager(GetWorld());
+	if (QuestManager)
 	{
-		TObjectPtr<USQuestManagerComponent> QuestManager = SGameState->GetQuestManager();
-		if (QuestManager)
-		{
-			QuestManager->ServerOnlyStartObjectiveSequance(StartingObjectiveSequance);
-		}
+		QuestManager->ServerOnlyStartObjectiveSequance(StartingObjectiveSequance);
 	}
 }
 
@@ -368,17 +360,9 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 
 			if (VictimAttribComp->ObjectivesAffectedOnDeath.Num() > 0)
 			{
-				TObjectPtr<ASGameState> SGameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-				if (SGameState)
+				for (int32 i = 0; i < VictimAttribComp->ObjectivesAffectedOnDeath.Num(); i++)
 				{
-					TObjectPtr<USQuestManagerComponent> QuestManager = SGameState->GetQuestManager();
-					if (QuestManager)
-					{
-						for (int32 i = 0; i < VictimAttribComp->ObjectivesAffectedOnDeath.Num(); i++)
-						{
-							QuestManager->ServerOnlyAddObjectiveStat(VictimAttribComp->ObjectivesAffectedOnDeath.GetByIndex(i), 1);
-						}
-					}
+					UGameplayFunctionLibrary::AddObjectiveStat(GetWorld(), VictimAttribComp->ObjectivesAffectedOnDeath.GetByIndex(i), 1);
 				}
 			}
 		}

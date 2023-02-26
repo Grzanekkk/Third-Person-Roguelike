@@ -8,6 +8,7 @@
 #include "GameState/SGameState.h"
 #include "Components/SQuestManagerComponent.h"
 #include "Characters/SCharacter.h"
+#include "FunctionLibrary/GameplayFunctionLibrary.h"
 
 
 ASStartQuestZone::ASStartQuestZone()
@@ -32,14 +33,10 @@ void ASStartQuestZone::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		TObjectPtr<ASCharacter> ACharacter = Cast<ASCharacter>(OtherActor);
 		if (ACharacter)
 		{
-			TObjectPtr<ASGameState> GameState = Cast<ASGameState>(UGameplayStatics::GetGameState(GetWorld()));
-			if (GameState)
+			TObjectPtr<USQuestManagerComponent> QuestManager = UGameplayFunctionLibrary::GetQuestManager(GetWorld());
+			if (QuestManager)
 			{
-				TObjectPtr<USQuestManagerComponent> QuestManager = GameState->GetQuestManager();
-				if (QuestManager)
-				{
-					QuestManager->ServerOnlyStartObjective(ObjectiveTag.GetByIndex(0));
-				}
+				QuestManager->ServerOnlyStartObjective(ObjectiveTag.GetByIndex(0));
 			}
 		}
 	}

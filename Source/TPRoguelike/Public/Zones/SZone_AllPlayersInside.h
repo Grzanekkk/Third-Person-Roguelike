@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Zones/SZone_Box.h"
+#include "GameplayTagContainer.h"
 #include "SZone_AllPlayersInside.generated.h"
 
 UCLASS()
@@ -18,5 +19,8 @@ protected:
 	void CheckIfAllPlayersAreInside(int32 PlayersInside);
 
 	UPROPERTY(EditAnywhere, Category = "Rogue|Zone")
-	TObjectPtr<AActor> ActorToInteractOnSwitch;
+	TObjectPtr<AActor> ActorToInteractOnCapture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Zone|Quest")
+	FGameplayTag ObjectiveTag;
 };
