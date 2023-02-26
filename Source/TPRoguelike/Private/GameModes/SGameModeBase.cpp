@@ -303,35 +303,35 @@ void ASGameModeBase::LoadSaveGame()
 
 void ASGameModeBase::StartStartingObjectives()
 {
-	if (StartingObjectiveSequance.IsNull())
-	{
-		UE_LOG(LogTemp, Error, TEXT("StartingObjectives is NULLPTR in SGameModeBase!!"));
-		return;
-	}
-
-	TObjectPtr<USQuestManagerComponent> QuestManager = UGameplayFunctionLibrary::GetQuestManager(GetWorld());
-	if (QuestManager)
-	{	
-		for (int32 i = 0; i < StartingObjectives.Num(); i++)
-		{
-			QuestManager->ServerOnlyStartObjective(StartingObjectives.GetByIndex(i));
-		}
-	}
+	//if (StartingObjectiveSequance.IsNull())
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("StartingObjectives is NULLPTR in SGameModeBase!!"));
+	//	return;
+	//}
+	//
+	//TObjectPtr<USQuestManagerComponent> QuestManager = UGameplayFunctionLibrary::GetQuestManager(GetWorld());
+	//if (QuestManager)
+	//{	
+	//	for (int32 i = 0; i < StartingObjectives.Num(); i++)
+	//	{
+	//		QuestManager->ServerOnlyStartObjective(StartingObjectives.GetByIndex(i));
+	//	}
+	//}
 }
 
 void ASGameModeBase::StartStartingObjectiveSequance()
 {
-	if (StartingObjectiveSequance.IsNull())
-	{
-		UE_LOG(LogTemp, Error, TEXT("StartingObjectiveSequance is NULLPTR in SGameModeBase!!"));
-		return;
-	}
-
-	TObjectPtr<USQuestManagerComponent> QuestManager = UGameplayFunctionLibrary::GetQuestManager(GetWorld());
-	if (QuestManager)
-	{
-		QuestManager->ServerOnlyStartObjectiveSequance(StartingObjectiveSequance);
-	}
+	//if (StartingObjectiveSequance.IsNull())
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("StartingObjectiveSequance is NULLPTR in SGameModeBase!!"));
+	//	return;
+	//}
+	//
+	//TObjectPtr<USQuestManagerComponent> QuestManager = UGameplayFunctionLibrary::GetQuestManager(GetWorld());
+	//if (QuestManager)
+	//{
+	//	QuestManager->ServerOnlyStartObjectiveSequance(StartingObjectiveSequance);
+	//}
 }
 
 ////////////////////////////////////////////////////

@@ -15,6 +15,6 @@ class TPROGUELIKE_API USWorldSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION()
-	void SetObjectiveDataForLevelAndStart();
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Objectives")
+	void SetObjectiveDataForLevelAndStart(USObjectiveSequenceDataAsset* StartingObjectiveSequance, USQuestDataAsset* NewObjectivesGoals);
 };

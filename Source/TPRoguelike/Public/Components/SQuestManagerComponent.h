@@ -72,7 +72,7 @@ public:
 	USQuestManagerComponent();
 
 	UFUNCTION()
-	void ServerOnlySetObjectiveDataAndStart();
+	void ServerOnlySetObjectiveDataAndStart(USObjectiveSequenceDataAsset* StartingObjectiveSequance, USQuestDataAsset* NewObjectivesGoals);
 
 	void ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveTag, int32 Stat);
 
@@ -116,8 +116,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
 	TArray<FGameplayTag> ActiveObjectivesState;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
-	TObjectPtr<USQuestDataAsset> DefalutObjectivesGoals;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests", Replicated)
+	TObjectPtr<USQuestDataAsset> ObjectivesGoals;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Quests")
 	TObjectPtr<USObjectiveSequenceDataAsset> ActiveObjectiveSequance;

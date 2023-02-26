@@ -15,8 +15,15 @@ USQuestManagerComponent::USQuestManagerComponent()
 	SetIsReplicatedByDefault(true);
 }
 
-void USQuestManagerComponent::ServerOnlySetObjectiveDataForLevelAndStart()
+void USQuestManagerComponent::ServerOnlySetObjectiveDataAndStart(USObjectiveSequenceDataAsset* StartingObjectiveSequance, USQuestDataAsset* NewObjectivesGoals)
 {
+	check(GetOwner()->HasAuthority());
+
+	if (StartingObjectiveSequance && NewObjectivesGoals)
+	{
+		ObjectivesGoals = NewObjectivesGoals;
+		ServerOnlyStartObjectiveSequance(StartingObjectiveSequance);
+	}
 }
 
 void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveTag, int32 Stat)
@@ -38,7 +45,7 @@ void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveT
 			}
 		}
 		
-		if (DefalutObjectivesGoals->IsObjectiveFinished(ObjectiveTag, NewObjectiveValue))
+		if (ObjectivesGoals->IsObjectiveFinished(ObjectiveTag, NewObjectiveValue))
 		{
 			ServerOnlyFinishObjectiveByRef(ServerObjectiveData[Index]);
 		}
@@ -153,7 +160,7 @@ bool USQuestManagerComponent::IsObjectiveActive(FGameplayTag ObjectiveTag)
 
 bool USQuestManagerComponent::IsObjectiveFinished(FGameplayTag ObjectiveTag)
 {
-	return DefalutObjectivesGoals->IsObjectiveFinished(ObjectiveTag, GetValueOfActiveObjective(ObjectiveTag));
+	return ObjectivesGoals->IsObjectiveFinished(ObjectiveTag, GetValueOfActiveObjective(ObjectiveTag));
 }
 
 void USQuestManagerComponent::OnRep_ServerObjectiveData()
@@ -289,4 +296,5 @@ void USQuestManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(USQuestManagerComponent, ServerObjectiveData);
+	DOREPLIFETIME(USQuestManagerComponent, ObjectivesGoals);
 }

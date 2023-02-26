@@ -33,8 +33,8 @@ public:
 	// ----------------------------------
 
 	UFUNCTION(BlueprintCallable, Category = "Rogue|Getters")
-	static TObjectPtr<ASGameState> GetSGameState(const UObject* WorldContextObject);
+	static ASGameState* GetSGameState(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "Rogue|Getters")
-	static TObjectPtr<USQuestManagerComponent> GetQuestManager(const UObject* WorldContextObject);
+	static USQuestManagerComponent* GetQuestManager(const UObject* WorldContextObject);
 };

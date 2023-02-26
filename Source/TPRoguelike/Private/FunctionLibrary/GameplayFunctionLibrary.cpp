@@ -74,12 +74,12 @@ bool UGameplayFunctionLibrary::IntaractIfPossible(const UObject* WorldContextObj
 	return false;
 }
 
-TObjectPtr<ASGameState> UGameplayFunctionLibrary::GetSGameState(const UObject* WorldContextObject)
+ASGameState* UGameplayFunctionLibrary::GetSGameState(const UObject* WorldContextObject)
 {
 	return Cast<ASGameState>(UGameplayStatics::GetGameState(WorldContextObject));
 }
 
-TObjectPtr<USQuestManagerComponent> UGameplayFunctionLibrary::GetQuestManager(const UObject* WorldContextObject)
+USQuestManagerComponent* UGameplayFunctionLibrary::GetQuestManager(const UObject* WorldContextObject)
 {
 	TObjectPtr<ASGameState> GameState = GetSGameState(WorldContextObject);
 	if (GameState)
