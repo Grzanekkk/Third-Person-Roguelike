@@ -76,7 +76,8 @@ bool UGameplayFunctionLibrary::IntaractIfPossible(const UObject* WorldContextObj
 
 ASGameState* UGameplayFunctionLibrary::GetSGameState(const UObject* WorldContextObject)
 {
-	return Cast<ASGameState>(UGameplayStatics::GetGameState(WorldContextObject));
+	AGameStateBase* GS = UGameplayStatics::GetGameState(WorldContextObject);
+	return Cast<ASGameState>(GS);
 }
 
 USQuestManagerComponent* UGameplayFunctionLibrary::GetQuestManager(const UObject* WorldContextObject)

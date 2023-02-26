@@ -62,6 +62,7 @@ public:
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnObjectiveStateChanged, FGameplayTag, ObjectiveTag, EObjectiveState, ObjectiveState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnObjectiveValueChanged, FGameplayTag, ObjectiveTag, int32, CurrentValue, int32, DeltaValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnQuestSystemActivate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TPROGUELIKE_API USQuestManagerComponent : public UActorComponent
@@ -88,6 +89,15 @@ public:
 	UFUNCTION()
 	bool IsObjectiveFinished(FGameplayTag ObjectiveTag);
 
+	UPROPERTY(BlueprintAssignable)
+	FOnQuestSystemActivate OnQuestSystemActivate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnObjectiveStateChanged OnObjectiveStateChangedEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnObjectiveValueChanged OnObjectiveValueChanged;
+
 protected:
 	UFUNCTION()
 	void ServerOnlyStartNextObjectiveInSequanceIfPossible(FGameplayTag FinishedObjectiveTag);
@@ -107,11 +117,11 @@ protected:
 	UFUNCTION()
 	int32 GetValueOfActiveObjective(FGameplayTag ObjectiveTag);
 
-	UPROPERTY(BlueprintAssignable)
-	FOnObjectiveStateChanged OnObjectiveStateChangedEvent;
+	UFUNCTION()
+	void ActivateQuestSystem();
 
-	UPROPERTY(BlueprintAssignable)
-	FOnObjectiveValueChanged OnObjectiveValueChanged;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests", ReplicatedUsing="OnRep_IsQuestSystemActive")
+	bool bIsQuestSystemActive = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
 	TArray<FGameplayTag> ActiveObjectivesState;
@@ -135,5 +145,8 @@ protected:
 
 	UFUNCTION()
 	void OnRep_ServerObjectiveData();
+
+	UFUNCTION()
+	void OnRep_IsQuestSystemActive();
 
 };

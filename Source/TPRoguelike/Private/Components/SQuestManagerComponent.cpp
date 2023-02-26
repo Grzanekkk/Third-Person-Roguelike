@@ -21,6 +21,8 @@ void USQuestManagerComponent::ServerOnlySetObjectiveDataAndStart(USObjectiveSequ
 
 	if (StartingObjectiveSequance && NewObjectivesGoals)
 	{
+		ActivateQuestSystem();
+
 		ObjectivesGoals = NewObjectivesGoals;
 		ServerOnlyStartObjectiveSequance(StartingObjectiveSequance);
 	}
@@ -206,6 +208,14 @@ void USQuestManagerComponent::OnRep_ServerObjectiveData()
 	}
 }
 
+void USQuestManagerComponent::OnRep_IsQuestSystemActive()
+{
+	if (bIsQuestSystemActive)
+	{
+		ActivateQuestSystem();
+	}
+}
+
 void USQuestManagerComponent::ChangeObjectiveStateByRef(FObjectiveReplicationData& ObjectiveData, EObjectiveState NewState)
 {
 	// if we call this on the server FinishedObjectiveData should be "ServerObjectiveData", and if we call it from the clien we should pass "LocalObjectiveData"
@@ -291,10 +301,17 @@ int32 USQuestManagerComponent::GetValueOfActiveObjective(FGameplayTag ObjectiveT
 	return -1;
 }
 
+void USQuestManagerComponent::ActivateQuestSystem()
+{
+	bIsQuestSystemActive = true;
+	OnQuestSystemActivate.Broadcast();
+}
+
 void USQuestManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(USQuestManagerComponent, ServerObjectiveData);
 	DOREPLIFETIME(USQuestManagerComponent, ObjectivesGoals);
+	DOREPLIFETIME(USQuestManagerComponent, bIsQuestSystemActive);
 }
