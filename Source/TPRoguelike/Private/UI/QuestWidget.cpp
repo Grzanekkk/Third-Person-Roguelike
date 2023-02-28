@@ -17,7 +17,7 @@ void UQuestWidget::OnQuestSystemActivate()
 	}
 }
 
-void UQuestWidget::OnObjectiveStateChanged(FGameplayTag ObjectiveTag, EObjectiveState ObjectiveState)
+void UQuestWidget::OnObjectiveStateChanged(const FGameplayTag& ObjectiveTag, EObjectiveState ObjectiveState)
 {
 	if (ensure(ObjectiveWidgetClass))
 	{

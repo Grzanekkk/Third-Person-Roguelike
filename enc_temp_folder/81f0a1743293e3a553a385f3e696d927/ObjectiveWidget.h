@@ -41,21 +41,9 @@ protected:
 	UFUNCTION()
 	void OnObjectiveStateChanged(const FGameplayTag& ObjectiveTag, EObjectiveState ObjectiveState);
 
-	UFUNCTION()
-	void OnObjectiveValueChanged(const FGameplayTag& ObjectiveTag, int32 CurrentValue, int32 DeltaValue);
-
-	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Settings|Visuals")
-	FSlateColor CompletedObjectiveColor;
-
 	UPROPERTY()
 	FGameplayTag ObjectiveAttached;
 
 	UPROPERTY()
 	bool bFoundMatchingObjectiveGoals = false;
-
-	UPROPERTY()
-	bool bIsStatObjective = false;
-
-	UPROPERTY()
-	int32 StatObjectiveGoalValue = 0;
 };

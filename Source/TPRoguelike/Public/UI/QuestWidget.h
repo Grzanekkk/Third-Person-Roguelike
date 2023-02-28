@@ -28,7 +28,7 @@ public:
 
 protected:
 	UFUNCTION()
-	void OnObjectiveStateChanged(FGameplayTag ObjectiveTag, EObjectiveState ObjectiveState);
+	void OnObjectiveStateChanged(const FGameplayTag& ObjectiveTag, EObjectiveState ObjectiveState);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Rogue|UI")
 	TSubclassOf<UObjectiveWidget> ObjectiveWidgetClass;

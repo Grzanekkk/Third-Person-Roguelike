@@ -60,8 +60,8 @@ public:
 	}
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnObjectiveStateChanged, FGameplayTag, ObjectiveTag, EObjectiveState, ObjectiveState);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnObjectiveValueChanged, FGameplayTag, ObjectiveTag, int32, CurrentValue, int32, DeltaValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnObjectiveStateChanged, const FGameplayTag&, ObjectiveTag, EObjectiveState, ObjectiveState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnObjectiveValueChanged, const FGameplayTag&, ObjectiveTag, int32, CurrentValue, int32, DeltaValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnQuestSystemActivate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -75,19 +75,25 @@ public:
 	UFUNCTION()
 	void ServerOnlySetObjectiveDataAndStart(USObjectiveSequenceDataAsset* StartingObjectiveSequance, USQuestDataAsset* NewObjectivesGoals);
 
-	void ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveTag, int32 Stat);
+	void ServerOnlyAddObjectiveStat(const FGameplayTag& ObjectiveTag, int32 Stat);
 
-	void ServerOnlyStartObjective(FGameplayTag ObjectiveTag);
+	void ServerOnlyStartObjective(const FGameplayTag& ObjectiveTag);
 
 	void ServerOnlyFinishObjectiveByRef(FObjectiveReplicationData& ObjectiveData);
 
 	void ServerOnlyStartObjectiveSequance(TObjectPtr<USObjectiveSequenceDataAsset> ObjectiveSequance);
 
 	UFUNCTION()
-	bool IsObjectiveActive(FGameplayTag ObjectiveTag);
+	bool IsObjectiveActive(const FGameplayTag& ObjectiveTag);
 
 	UFUNCTION()
-	bool IsObjectiveFinished(FGameplayTag ObjectiveTag);
+	bool IsObjectiveFinished(const FGameplayTag& ObjectiveTag);
+
+	UFUNCTION()
+	int32 GetActiveObjectiveValue(const FGameplayTag& ObjectiveTag);
+
+	UFUNCTION()
+	EObjectiveState GetActiveObjectiveState(const FGameplayTag& ObjectiveTag);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnQuestSystemActivate OnQuestSystemActivate;
@@ -96,26 +102,23 @@ public:
 	FOnObjectiveStateChanged OnObjectiveStateChangedEvent;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnObjectiveValueChanged OnObjectiveValueChanged;
+	FOnObjectiveValueChanged OnObjectiveValueChangedEvent;
 
 protected:
 	UFUNCTION()
-	void ServerOnlyStartNextObjectiveInSequanceIfPossible(FGameplayTag FinishedObjectiveTag);
+	void ServerOnlyStartNextObjectiveInSequanceIfPossible(const FGameplayTag& FinishedObjectiveTag);
 
 	UFUNCTION()
 	void ChangeObjectiveStateByRef(FObjectiveReplicationData& ObjectiveData, EObjectiveState NewState);
 
 	UFUNCTION()
-	void ChangeObjectiveStateByTag(FGameplayTag ObjectiveTag, EObjectiveState NewState);
+	void ChangeObjectiveStateByTag(const FGameplayTag& ObjectiveTag, EObjectiveState NewState);
 
 	UFUNCTION()
 	void ChangeObjectiveValueByRef(FObjectiveReplicationData& ObjectiveData, int32 NewValue);
 	
 	UFUNCTION()
-	void ChangeObjectiveValueByTag(FGameplayTag ObjectiveTag, int32 NewValue);
-
-	UFUNCTION()
-	int32 GetValueOfActiveObjective(FGameplayTag ObjectiveTag);
+	void ChangeObjectiveValueByTag(const FGameplayTag& ObjectiveTag, int32 NewValue);
 
 	UFUNCTION()
 	void ActivateQuestSystem();

@@ -28,13 +28,13 @@ void USQuestManagerComponent::ServerOnlySetObjectiveDataAndStart(USObjectiveSequ
 	}
 }
 
-void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveTag, int32 Stat)
+void USQuestManagerComponent::ServerOnlyAddObjectiveStat(const FGameplayTag& ObjectiveTag, int32 Stat)
 {
 	check(GetOwner()->HasAuthority());
 
 	if (IsObjectiveActive(ObjectiveTag))
 	{
-		int32 OldObjectiveValue = GetValueOfActiveObjective(ObjectiveTag);		
+		int32 OldObjectiveValue = GetActiveObjectiveValue(ObjectiveTag);		
 		int32 NewObjectiveValue = OldObjectiveValue + Stat;
 
 		int32 Index = 0;
@@ -54,7 +54,7 @@ void USQuestManagerComponent::ServerOnlyAddObjectiveStat(FGameplayTag ObjectiveT
 	}
 }
 
-void USQuestManagerComponent::ServerOnlyStartObjective(FGameplayTag ObjectiveTag)
+void USQuestManagerComponent::ServerOnlyStartObjective(const FGameplayTag& ObjectiveTag)
 {
 	check(GetOwner()->HasAuthority());
 
@@ -81,7 +81,7 @@ void USQuestManagerComponent::ServerOnlyFinishObjectiveByRef(FObjectiveReplicati
 	ServerOnlyStartNextObjectiveInSequanceIfPossible(FinishedObjectiveData.Tag);
 }
 
-void USQuestManagerComponent::ServerOnlyStartNextObjectiveInSequanceIfPossible(FGameplayTag FinishedObjectiveTag)
+void USQuestManagerComponent::ServerOnlyStartNextObjectiveInSequanceIfPossible(const FGameplayTag& FinishedObjectiveTag)
 {
 	check(GetOwner()->HasAuthority());
 
@@ -155,14 +155,14 @@ void USQuestManagerComponent::ServerOnlyStartObjectiveSequance(TObjectPtr<USObje
 	}
 }
 
-bool USQuestManagerComponent::IsObjectiveActive(FGameplayTag ObjectiveTag)
+bool USQuestManagerComponent::IsObjectiveActive(const FGameplayTag& ObjectiveTag)
 {
 	return ActiveObjectivesState.Contains(ObjectiveTag);
 }
 
-bool USQuestManagerComponent::IsObjectiveFinished(FGameplayTag ObjectiveTag)
+bool USQuestManagerComponent::IsObjectiveFinished(const FGameplayTag& ObjectiveTag)
 {
-	return ObjectivesGoals->IsObjectiveFinished(ObjectiveTag, GetValueOfActiveObjective(ObjectiveTag));
+	return ObjectivesGoals->IsObjectiveFinished(ObjectiveTag, GetActiveObjectiveValue(ObjectiveTag));
 }
 
 void USQuestManagerComponent::OnRep_ServerObjectiveData()
@@ -224,7 +224,7 @@ void USQuestManagerComponent::ChangeObjectiveStateByRef(FObjectiveReplicationDat
 	OnObjectiveStateChangedEvent.Broadcast(ObjectiveData.Tag, NewState);
 }
 
-void USQuestManagerComponent::ChangeObjectiveStateByTag(FGameplayTag ObjectiveTag, EObjectiveState NewState)
+void USQuestManagerComponent::ChangeObjectiveStateByTag(const FGameplayTag& ObjectiveTag, EObjectiveState NewState)
 {
 	if (GetOwner()->HasAuthority())
 	{
@@ -252,13 +252,13 @@ void USQuestManagerComponent::ChangeObjectiveStateByTag(FGameplayTag ObjectiveTa
 
 void USQuestManagerComponent::ChangeObjectiveValueByRef(FObjectiveReplicationData& ObjectiveData, int32 NewValue)
 {
-	int32 OldValue = GetValueOfActiveObjective(ObjectiveData.Tag);
+	int32 OldValue = GetActiveObjectiveValue(ObjectiveData.Tag);
 	int32 DeltaValue = NewValue - OldValue;
 	ObjectiveData.Value = NewValue;
-	OnObjectiveValueChanged.Broadcast(ObjectiveData.Tag, NewValue, DeltaValue);
+	OnObjectiveValueChangedEvent.Broadcast(ObjectiveData.Tag, NewValue, DeltaValue);
 }
 
-void USQuestManagerComponent::ChangeObjectiveValueByTag(FGameplayTag ObjectiveTag, int32 NewValue)
+void USQuestManagerComponent::ChangeObjectiveValueByTag(const FGameplayTag& ObjectiveTag, int32 NewValue)
 {
 	if (GetOwner()->HasAuthority())
 	{
@@ -284,7 +284,7 @@ void USQuestManagerComponent::ChangeObjectiveValueByTag(FGameplayTag ObjectiveTa
 	}
 }
 
-int32 USQuestManagerComponent::GetValueOfActiveObjective(FGameplayTag ObjectiveTag)
+int32 USQuestManagerComponent::GetActiveObjectiveValue(const FGameplayTag& ObjectiveTag)
 {
 	for (const FObjectiveReplicationData& ServerObjectiveReplicationData : ServerObjectiveData)
 	{
@@ -299,6 +299,23 @@ int32 USQuestManagerComponent::GetValueOfActiveObjective(FGameplayTag ObjectiveT
 	ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::ERROR);
 
 	return -1;
+}
+
+EObjectiveState USQuestManagerComponent::GetActiveObjectiveState(const FGameplayTag& ObjectiveTag)
+{
+	for (const FObjectiveReplicationData& ServerObjectiveReplicationData : ServerObjectiveData)
+	{
+		if (ServerObjectiveReplicationData.Tag == ObjectiveTag)
+		{
+			return ServerObjectiveReplicationData.ObjectiveState;
+			break;
+		}
+	}
+
+	FString DebugMsg = "Objective: " + ObjectiveTag.ToString() + " is not active!";
+	ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::ERROR);
+
+	return EObjectiveState::NOT_STARTED;
 }
 
 void USQuestManagerComponent::ActivateQuestSystem()
