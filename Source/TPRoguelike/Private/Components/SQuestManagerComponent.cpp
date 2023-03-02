@@ -76,9 +76,18 @@ void USQuestManagerComponent::ServerOnlyFinishObjectiveByRef(FObjectiveReplicati
 {
 	check(GetOwner()->HasAuthority());
 
-	ChangeObjectiveStateByRef(FinishedObjectiveData, EObjectiveState::FINISHED);
+	if (!FinishedObjectives.Contains(FinishedObjectiveData.Tag))
+	{
+		FinishedObjectives.Add(FinishedObjectiveData.Tag);
+		ChangeObjectiveStateByRef(FinishedObjectiveData, EObjectiveState::FINISHED);
 
-	ServerOnlyStartNextObjectiveInSequanceIfPossible(FinishedObjectiveData.Tag);
+		ServerOnlyStartNextObjectiveInSequanceIfPossible(FinishedObjectiveData.Tag);
+	}
+	else
+	{
+		FString DebugMsg = "Objective: " + FinishedObjectiveData.Tag.ToString() + " has already been finished!!";
+		ULogsFunctionLibrary::LogOnScreen(GetWorld(), DebugMsg, ERogueLogCategory::ERROR);
+	}
 }
 
 void USQuestManagerComponent::ServerOnlyStartNextObjectiveInSequanceIfPossible(const FGameplayTag& FinishedObjectiveTag)

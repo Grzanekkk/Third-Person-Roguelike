@@ -7,12 +7,15 @@
 #include "Components/SQuestManagerComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/CheckBox.h"
+#include "Components/HorizontalBox.h"
+#include "Styling/SlateColor.h"
 #include "Enums/SEnums_Logs.h"
 #include "Enums/SEnums_Objectives.h"
+#include "Objectives/SQuestDataAsset.h"
 
 void UObjectiveWidget::Initialize(const FGameplayTag& _ObjectiveAttached)
 {
-	if (ObjectiveAttached.IsValid())
+	if (_ObjectiveAttached.IsValid())
 	{
 		ObjectiveAttached = _ObjectiveAttached;
 		bFoundMatchingObjectiveGoals = false;
@@ -30,9 +33,11 @@ void UObjectiveWidget::Initialize(const FGameplayTag& _ObjectiveAttached)
 			}
 		}
 	}
-
-	FString Msg = ("Filed to Initialize ObjectiveWidget!");
-	ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, ERogueLogCategory::ERROR);
+	else
+	{
+		FString Msg = ("Filed to Initialize ObjectiveWidget!");
+		ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, ERogueLogCategory::ERROR);
+	}
 }
 
 void UObjectiveWidget::OnObjectiveStateChanged(const FGameplayTag& ObjectiveTag, EObjectiveState ObjectiveState)
@@ -43,15 +48,50 @@ void UObjectiveWidget::OnObjectiveStateChanged(const FGameplayTag& ObjectiveTag,
 		{
 			case EObjectiveState::IN_PROGRESS:
 			{
+				TObjectPtr<USQuestManagerComponent> QuestManager = UGameplayFunctionLibrary::GetQuestManager(GetWorld());
+				if (QuestManager)
+				{
+					for (const FObjectiveDefaults& ObjectiveDefault : QuestManager->GetObjectiveGoals()->ObjectivesGoal)
+					{
+						if (ObjectiveDefault.ObjectiveTag == ObjectiveAttached)
+						{
+							bFoundMatchingObjectiveGoals = true;
+							ObjectiveNameTEXT->SetText(ObjectiveDefault.DisplayName);
+							ObjectiveGoalValue = ObjectiveDefault.GoalValue;
 
+							bIsStatObjective = ObjectiveGoalValue > 1;
+							if (bIsStatObjective)
+							{
+								TriggerObjectiveBox->SetVisibility(ESlateVisibility::Collapsed);
+								StatObjectiveBox->SetVisibility(ESlateVisibility::Visible);
+							}
+							else
+							{
+								TriggerObjectiveBox->SetVisibility(ESlateVisibility::Visible);
+								StatObjectiveBox->SetVisibility(ESlateVisibility::Collapsed);
+							}
+
+							break;
+						}
+					}
+
+					if (!bFoundMatchingObjectiveGoals)
+					{
+						ObjectiveNameTEXT->SetText(FText::FromString("Please fill objective info in DA_Objectives"));
+					}
+				}
+
+				break;
 			}
 			case EObjectiveState::FINISHED:
 			{
-				ObjectiveNameTEXT->SetColorAndOpacity(CompletedObjectiveColor);
+				SetObjectiveObjectiveNameColor(CompletedObjectiveColor);
 				if (!bIsStatObjective)
 				{
 					ObjectiveFinishedCheckBox->SetCheckedState(ECheckBoxState::Checked);
 				}
+
+				break;
 			}
 			default:
 				break;
@@ -63,7 +103,7 @@ void UObjectiveWidget::OnObjectiveValueChanged(const FGameplayTag& ObjectiveTag,
 {
 	if (ObjectiveTag == ObjectiveAttached)
 	{
-		FText Text = FText::FromString(FString::Printf(TEXT("%i/%i"), CurrentValue, StatObjectiveGoalValue));
+		FText Text = FText::FromString(FString::Printf(TEXT("%i/%i"), CurrentValue, ObjectiveGoalValue));
 		StatObjectiveTEXT->SetText(Text);
 	}
 }

@@ -95,6 +95,9 @@ public:
 	UFUNCTION()
 	EObjectiveState GetActiveObjectiveState(const FGameplayTag& ObjectiveTag);
 
+	UFUNCTION()
+	FORCEINLINE	USQuestDataAsset* GetObjectiveGoals() { return ObjectivesGoals; }
+
 	UPROPERTY(BlueprintAssignable)
 	FOnQuestSystemActivate OnQuestSystemActivate;
 
@@ -128,6 +131,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
 	TArray<FGameplayTag> ActiveObjectivesState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests")
+	TArray<FGameplayTag> FinishedObjectives;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Quests", Replicated)
 	TObjectPtr<USQuestDataAsset> ObjectivesGoals;

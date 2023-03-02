@@ -20,14 +20,19 @@ void ASZone_AllPlayersInside::CheckIfAllPlayersAreInside(int32 PlayersInside)
 	{
 		if (PlayersInside >= SGameState->GetNumberOfConnectedPlayers())
 		{
-			if (UKismetSystemLibrary::IsServer(GetWorld()))
+			if (!bHasBeenActivated)
 			{
-				UGameplayFunctionLibrary::AddObjectiveStat(GetWorld(), ObjectiveTag, 1);
+				bHasBeenActivated = true;
 
-				UGameplayFunctionLibrary::IntaractIfPossible(GetWorld(), ActorToInteractOnCapture, nullptr);
+				if (UKismetSystemLibrary::IsServer(GetWorld()))
+				{
+					UGameplayFunctionLibrary::AddObjectiveStat(GetWorld(), ObjectiveTag, 1);
+
+					UGameplayFunctionLibrary::IntaractIfPossible(GetWorld(), ActorToInteractOnCapture, nullptr);
+				}
+
+				// we might do some visuals here
 			}
-
-			// we might do some visuals here
 		}
 	}
 }

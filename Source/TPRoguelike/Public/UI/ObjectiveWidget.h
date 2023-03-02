@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "GameplayTagContainer.h"
+#include "Styling/SlateColor.h"
 #include "ObjectiveWidget.generated.h"
 
 class UTextBlock;
@@ -44,8 +45,11 @@ protected:
 	UFUNCTION()
 	void OnObjectiveValueChanged(const FGameplayTag& ObjectiveTag, int32 CurrentValue, int32 DeltaValue);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetObjectiveObjectiveNameColor(const FLinearColor& Color);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Rogue|Settings|Visuals")
-	FSlateColor CompletedObjectiveColor;
+	FLinearColor CompletedObjectiveColor;
 
 	UPROPERTY()
 	FGameplayTag ObjectiveAttached;
@@ -57,5 +61,5 @@ protected:
 	bool bIsStatObjective = false;
 
 	UPROPERTY()
-	int32 StatObjectiveGoalValue = 0;
+	int32 ObjectiveGoalValue = 0;
 };

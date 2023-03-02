@@ -23,4 +23,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Zone|Quest")
 	FGameplayTag ObjectiveTag;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rogue|Zone")
+	bool bHasBeenActivated = false;
 };

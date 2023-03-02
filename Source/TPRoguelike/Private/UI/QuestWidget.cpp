@@ -21,12 +21,18 @@ void UQuestWidget::OnObjectiveStateChanged(const FGameplayTag& ObjectiveTag, EOb
 {
 	if (ensure(ObjectiveWidgetClass))
 	{
-		TObjectPtr<UObjectiveWidget> ObjectiveWidgetInstance = CreateWidget<UObjectiveWidget>(GetWorld(), ObjectiveWidgetClass);
-		if (ObjectiveWidgetInstance)
+		switch (ObjectiveState)
 		{
-			ObjectiveWidgetInstance->Initialize(ObjectiveTag);
-			ObjectiveBox->AddChild(ObjectiveWidgetInstance);
-			ObjectiveWidgets.Add(ObjectiveWidgetInstance);
+			case EObjectiveState::IN_PROGRESS:
+			{
+				TObjectPtr<UObjectiveWidget> ObjectiveWidgetInstance = CreateWidget<UObjectiveWidget>(GetWorld(), ObjectiveWidgetClass);
+				if (ObjectiveWidgetInstance)
+				{
+					ObjectiveWidgetInstance->Initialize(ObjectiveTag);
+					ObjectiveBox->AddChild(ObjectiveWidgetInstance);
+					ObjectiveWidgets.Add(ObjectiveWidgetInstance);
+				}
+			}
 		}
 	}
 }
