@@ -9,7 +9,6 @@
 #include "Components/CheckBox.h"
 #include "Components/HorizontalBox.h"
 #include "Styling/SlateColor.h"
-#include "Enums/SEnums_Logs.h"
 #include "Enums/SEnums_Objectives.h"
 #include "Objectives/SQuestDataAsset.h"
 

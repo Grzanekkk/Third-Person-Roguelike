@@ -7,7 +7,6 @@
 #include "Components/SAttributeComponent.h"
 #include "Projectiles/SProjectileBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Enums/SEnums_Logs.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 
 EBTNodeResult::Type USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)

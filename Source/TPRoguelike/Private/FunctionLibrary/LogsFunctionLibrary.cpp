@@ -2,7 +2,6 @@
 
 
 #include "FunctionLibrary/LogsFunctionLibrary.h"
-#include "Enums/SEnums_Logs.h"
 #include "Logging/LogVerbosity.h"
 
 void ULogsFunctionLibrary::LogOnScreen_IsClientServer(UObject* WorldContext, FString Msg, ERogueLogCategory LogCategory, float Duration, bool bWriteToOutputLog)

@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Enums/SEnums_Logs.h"
 #include "LogsFunctionLibrary.generated.h"
 
-enum class ERogueLogCategory : uint8;
+//enum class ERogueLogCategory : uint8;
 
 /**
  * 
