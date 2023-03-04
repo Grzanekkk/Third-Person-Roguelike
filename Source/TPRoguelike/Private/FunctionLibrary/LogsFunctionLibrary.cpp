@@ -47,18 +47,22 @@ void ULogsFunctionLibrary::LogToOutputLog(UObject* WorldContext, FString Msg, ER
 		case ERogueLogCategory::LOG:
 		{
 			UE_LOG(LogTemp, Log, TEXT("%s"), *Msg);
+			break;
 		}
 		case ERogueLogCategory::WARNING:
 		{
 			UE_LOG(LogTemp, Warning, TEXT("%s"), *Msg);
+			break;
 		}
 		case ERogueLogCategory::SUCCESS:
 		{
 			UE_LOG(LogTemp, Display, TEXT("%s"), *Msg);
+			break;
 		}
 		case ERogueLogCategory::ERROR:
 		{
 			UE_LOG(LogTemp, Error, TEXT("%s"), *Msg);
+			break;
 		}
 	}
 }
@@ -71,18 +75,22 @@ FColor ULogsFunctionLibrary::GetLogColorByCategory(ERogueLogCategory LogCategory
 		case ERogueLogCategory::LOG:
 		{
 			LogColor = FColor::White;
+			break;
 		}
 		case ERogueLogCategory::WARNING:
 		{
 			LogColor = FColor::Orange;
+			break;
 		}
 		case ERogueLogCategory::SUCCESS:
 		{
 			LogColor = FColor::Green;
+			break;
 		}
 		case ERogueLogCategory::ERROR:
 		{
 			LogColor = FColor::Red;
+			break;
 		}
 	}
 

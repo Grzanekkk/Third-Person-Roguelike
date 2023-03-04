@@ -19,11 +19,18 @@ class TPROGUELIKE_API UEOSSubsystem : public UGameInstanceSubsystem
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
-	UFUNCTION()
+	void Login();
+
+	UFUNCTION(BlueprintCallable)
 	void CreateSession();
 
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessfull);
 
+	void OnLoginComplete(int ControllerIndex, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& ErrorString);
+
 protected:
 	IOnlineSubsystem* OnlineSubsystem;
+
+	UPROPERTY()
+	bool bIsLoggedIn;
 };

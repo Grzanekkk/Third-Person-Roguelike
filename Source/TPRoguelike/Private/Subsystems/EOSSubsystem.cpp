@@ -5,40 +5,67 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Interfaces/OnlineIdentityInterface.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 
 void UEOSSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
+	bIsLoggedIn = false;
+
 	OnlineSubsystem = IOnlineSubsystem::Get();
+	Login();
 }
 
-void UEOSSubsystem::CreateSession()
+void UEOSSubsystem::Login()
 {
 	if (OnlineSubsystem)
 	{
-		if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+		if (IOnlineIdentityPtr Identity = OnlineSubsystem->GetIdentityInterface())
 		{
-			FOnlineSessionSettings SessionSettings;
-			SessionSettings.bIsDedicated = false;
-			SessionSettings.bAllowJoinInProgress = true;
-			SessionSettings.bAllowJoinViaPresence = true;
-			SessionSettings.bIsLANMatch = true; // Might remove
-			SessionSettings.bShouldAdvertise = true;
-			SessionSettings.NumPublicConnections = 5;
-			SessionSettings.bUsesPresence = true;
+			FOnlineAccountCredentials Credentials;
+			Credentials.Id = FString();
+			Credentials.Token = FString();
+			Credentials.Type = FString("accountportal");
 
-			SessionPtr->OnCreateSessionCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnCreateSessionComplete);
-			SessionPtr->CreateSession(0, "Test Session", SessionSettings);
+			Identity->OnLoginCompleteDelegates->AddUObject(this, &UEOSSubsystem::OnLoginComplete);
+			Identity->Login(0, Credentials);
 		}
 	}
 }
 
-void UEOSSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessfull)
+void UEOSSubsystem::CreateSession()
 {
-	FString Msg = bWasSuccessfull ? "Session created successfully" : "Failed to create session!";
-	ERogueLogCategory LogCategory = bWasSuccessfull ? ERogueLogCategory::SUCCESS : ERogueLogCategory::ERROR;
+	if (bIsLoggedIn)
+	{
+		if (OnlineSubsystem)
+		{
+			if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+			{
+				FOnlineSessionSettings SessionSettings;
+				SessionSettings.bIsDedicated = false;
+				SessionSettings.bAllowJoinInProgress = true;
+				SessionSettings.bAllowJoinViaPresence = true;
+				SessionSettings.bIsLANMatch = true; // Might remove
+				SessionSettings.bShouldAdvertise = true;
+				SessionSettings.NumPublicConnections = 5;
+				SessionSettings.bUsesPresence = true;
+
+				SessionPtr->OnCreateSessionCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnCreateSessionComplete);
+				SessionPtr->CreateSession(0, "Test Session", SessionSettings);
+			}
+		}
+	}
+	{
+		ULogsFunctionLibrary::LogOnScreen(GetWorld(), "You need to be logged in to create a session", ERogueLogCategory::WARNING);
+	}
+}
+
+void UEOSSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
+{
+	FString Msg = bWasSuccessful ? "Session created successfully" : "Failed to create session!";
+	ERogueLogCategory LogCategory = bWasSuccessful ? ERogueLogCategory::SUCCESS : ERogueLogCategory::ERROR;
 	ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, LogCategory);
 
 	if (OnlineSubsystem)
@@ -46,6 +73,23 @@ void UEOSSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessf
 		if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
 		{
 			SessionPtr->ClearOnCreateSessionCompleteDelegates(this);
+		}
+	}
+}
+
+void UEOSSubsystem::OnLoginComplete(int ControllerIndex, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& ErrorString)
+{
+	FString Msg = bWasSuccessful ? "LoggedIn successfully" : "Failed to Login!";
+	ERogueLogCategory LogCategory = bWasSuccessful ? ERogueLogCategory::SUCCESS : ERogueLogCategory::ERROR;
+	ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, LogCategory);
+
+	bIsLoggedIn = true;
+
+	if (OnlineSubsystem)
+	{
+		if (IOnlineIdentityPtr Identity = OnlineSubsystem->GetIdentityInterface())
+		{
+			Identity->ClearOnLoginCompleteDelegates(0, this);
 		}
 	}
 }
