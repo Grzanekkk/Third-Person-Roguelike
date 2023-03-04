@@ -57,6 +57,7 @@ void UEOSSubsystem::CreateSession()
 			}
 		}
 	}
+	else
 	{
 		ULogsFunctionLibrary::LogOnScreen(GetWorld(), "You need to be logged in to create a session", ERogueLogCategory::WARNING);
 	}
