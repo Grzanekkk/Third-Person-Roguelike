@@ -26,6 +26,11 @@ public:
 
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessfull);
 
+	UFUNCTION(BlueprintCallable)
+	void DestroySession();
+
+	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessfull);
+
 	void OnLoginComplete(int ControllerIndex, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& ErrorString);
 
 protected:
@@ -33,4 +38,7 @@ protected:
 
 	UPROPERTY()
 	bool bIsLoggedIn;
+
+	UPROPERTY()
+	FName TestSessionName = FName("TestSession");
 };

@@ -55,7 +55,8 @@ void UEOSSubsystem::CreateSession()
 				SessionSettings.bShouldAdvertise = true;
 				SessionSettings.NumPublicConnections = 5;
 				SessionSettings.bUsesPresence = true;
-				SessionSettings.Set()
+				SessionSettings.bUseLobbiesIfAvailable = true;
+				SessionSettings.Set(SEARCH_KEYWORDS, FString("BobTestLobby"), EOnlineDataAdvertisementType::ViaOnlineService);
 
 				SessionPtr->OnCreateSessionCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnCreateSessionComplete);
 				SessionPtr->CreateSession(0, "Test Session", SessionSettings);
@@ -79,6 +80,32 @@ void UEOSSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessf
 		if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
 		{
 			SessionPtr->ClearOnCreateSessionCompleteDelegates(this);
+		}
+	}
+}
+
+void UEOSSubsystem::DestroySession()
+{
+	if (bIsLoggedIn)
+	{
+		if (OnlineSubsystem)
+		{
+			if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+			{
+				SessionPtr->OnDestroySessionCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnDestroySessionComplete);
+				SessionPtr->DestroySession(TestSessionName);
+			}
+		}
+	}
+}
+
+void UEOSSubsystem::OnDestroySessionComplete(FName SessionName, bool bWasSuccessfull)
+{
+	if (OnlineSubsystem)
+	{
+		if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+		{
+			SessionPtr->ClearOnDestroySessionCompleteDelegates(this);
 		}
 	}
 }
