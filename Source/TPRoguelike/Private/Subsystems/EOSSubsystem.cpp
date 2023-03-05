@@ -25,9 +25,13 @@ void UEOSSubsystem::Login()
 		if (IOnlineIdentityPtr Identity = OnlineSubsystem->GetIdentityInterface())
 		{
 			FOnlineAccountCredentials Credentials;
-			Credentials.Id = FString();
-			Credentials.Token = FString();
-			Credentials.Type = FString("accountportal");
+			//Credentials.Id = FString();
+			//Credentials.Token = FString();
+			//Credentials.Type = FString("accountportal");
+			
+			Credentials.Id = FString("127.0.0.1:8081");
+			Credentials.Token = FString("BobBobowski");
+			Credentials.Type = FString("developer");
 
 			Identity->OnLoginCompleteDelegates->AddUObject(this, &UEOSSubsystem::OnLoginComplete);
 			Identity->Login(0, Credentials);
@@ -47,10 +51,11 @@ void UEOSSubsystem::CreateSession()
 				SessionSettings.bIsDedicated = false;
 				SessionSettings.bAllowJoinInProgress = true;
 				SessionSettings.bAllowJoinViaPresence = true;
-				SessionSettings.bIsLANMatch = true; // Might remove
+				SessionSettings.bIsLANMatch = false; 
 				SessionSettings.bShouldAdvertise = true;
 				SessionSettings.NumPublicConnections = 5;
 				SessionSettings.bUsesPresence = true;
+				SessionSettings.Set()
 
 				SessionPtr->OnCreateSessionCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnCreateSessionComplete);
 				SessionPtr->CreateSession(0, "Test Session", SessionSettings);
