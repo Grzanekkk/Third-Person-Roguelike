@@ -6,6 +6,8 @@
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Interfaces/OnlineIdentityInterface.h"
+#include "Interfaces/OnlineFriendsInterface.h"
+#include "Interfaces/OnlineExternalUIInterface.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 
 void UEOSSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -123,6 +125,76 @@ void UEOSSubsystem::OnLoginComplete(int ControllerIndex, bool bWasSuccessful, co
 		if (IOnlineIdentityPtr Identity = OnlineSubsystem->GetIdentityInterface())
 		{
 			Identity->ClearOnLoginCompleteDelegates(0, this);
+		}
+	}
+}
+
+void UEOSSubsystem::GetAllFriends()
+{
+	if (bIsLoggedIn)
+	{
+		if (OnlineSubsystem)
+		{
+			if (IOnlineFriendsPtr FriendsPtr = OnlineSubsystem->GetFriendsInterface())
+			{
+				FriendsPtr->ReadFriendsList(0, FString(""), FOnReadFriendsListComplete::CreateUObject(this, &UEOSSubsystem::OnGetAllFriesdsComplete));
+			}
+		}
+	}
+}
+
+void UEOSSubsystem::OnGetAllFriesdsComplete(int32 LocalUserNum, bool bWasSuccessful, const FString& ListName, const FString& ErrorStr)
+{
+	if (OnlineSubsystem)
+	{
+		if (IOnlineFriendsPtr FriendsPtr = OnlineSubsystem->GetFriendsInterface())
+		{
+			TArray<TSharedRef<FOnlineFriend>> FriendsList;
+			if (FriendsPtr->GetFriendsList(0, ListName, FriendsList))
+			{
+				for (TSharedRef<FOnlineFriend> Friend : FriendsList)
+				{
+					FString FriendName = "Friend:" + Friend.Get().GetRealName();
+					ULogsFunctionLibrary::LogOnScreen(GetWorld(), FriendName, ERogueLogCategory::LOG);
+				}
+			}
+			else
+			{
+				ULogsFunctionLibrary::LogOnScreen(GetWorld(), "Failed to get friends!", ERogueLogCategory::ERROR);
+			}
+		}
+	}
+
+	//FString Msg = bWasSuccessful ? "Successfully got all friends" : "Failed to get all friends!";
+	//ERogueLogCategory LogCategory = bWasSuccessful ? ERogueLogCategory::SUCCESS : ERogueLogCategory::ERROR;
+	//ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, LogCategory);
+}
+
+void UEOSSubsystem::ShowInviteUI()
+{
+	if (bIsLoggedIn)
+	{
+		if (OnlineSubsystem)
+		{
+			if (IOnlineExternalUIPtr ExternalUIPtr = OnlineSubsystem->GetExternalUIInterface())
+			{
+				ULogsFunctionLibrary::LogOnScreen(GetWorld(), "Showing Invite UI!", ERogueLogCategory::LOG);
+				ExternalUIPtr->ShowInviteUI(0, TestSessionName);
+			}
+		}
+	}
+}
+
+void UEOSSubsystem::ShowFriendsUI()
+{
+	if (bIsLoggedIn)
+	{
+		if (OnlineSubsystem)
+		{
+			if (IOnlineExternalUIPtr ExternalUIPtr = OnlineSubsystem->GetExternalUIInterface())
+			{
+				ExternalUIPtr->ShowFriendsUI(0);
+			}
 		}
 	}
 }
