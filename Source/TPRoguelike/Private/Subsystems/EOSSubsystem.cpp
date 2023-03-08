@@ -9,6 +9,8 @@
 #include "Interfaces/OnlineFriendsInterface.h"
 #include "Interfaces/OnlineExternalUIInterface.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
+#include "FunctionLibrary/NetworkFunctionLibrary.h"
+#include "OnlineSessionSettings.h"
 
 void UEOSSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -61,7 +63,7 @@ void UEOSSubsystem::CreateSession()
 				SessionSettings.Set(SEARCH_KEYWORDS, FString("BobTestLobby"), EOnlineDataAdvertisementType::ViaOnlineService);
 
 				SessionPtr->OnCreateSessionCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnCreateSessionComplete);
-				SessionPtr->CreateSession(0, "Test Session", SessionSettings);
+				SessionPtr->CreateSession(0, TestSessionName, SessionSettings);
 			}
 		}
 	}
@@ -112,10 +114,76 @@ void UEOSSubsystem::OnDestroySessionComplete(FName SessionName, bool bWasSuccess
 	}
 }
 
+void UEOSSubsystem::FindSession()
+{
+	if (bIsLoggedIn)
+	{
+		if (OnlineSubsystem)
+		{
+			if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+			{
+				SearchSettings = MakeShareable(new FOnlineSessionSearch());
+				SearchSettings->MaxSearchResults = 8000;
+				SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("BobTestLobby"), EOnlineComparisonOp::Equals);
+				SearchSettings->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
+
+				SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnFindSessionComplete);
+				SessionPtr->FindSessions(0, SearchSettings.ToSharedRef());
+			}
+		}
+	}
+}
+
+void UEOSSubsystem::OnFindSessionComplete(bool bWasSuccessful)
+{
+	if (bWasSuccessful)
+	{
+		FString Msg = FString::Printf(TEXT("Lobbies found: %i"), SearchSettings->SearchResults.Num());
+		ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, ERogueLogCategory::WARNING);
+
+		if (OnlineSubsystem)
+		{
+			if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+			{
+				if (SearchSettings->SearchResults.Num())
+				{
+					SessionPtr->OnJoinSessionCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnJoinSessionComplete);
+					SessionPtr->JoinSession(0, TestSessionName, SearchSettings->SearchResults[0]);
+				}
+			}
+		}
+	}
+
+	if (OnlineSubsystem)
+	{
+		if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+		{
+			SessionPtr->ClearOnFindSessionsCompleteDelegates(this);
+		}
+	}
+}
+
+void UEOSSubsystem::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+{
+	if (OnlineSubsystem)
+	{
+		if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+		{
+			FString ConnectionString = FString();
+			SessionPtr->GetResolvedConnectString(SessionName, ConnectionString);
+			if (!ConnectionString.IsEmpty())
+			{
+				TObjectPtr<APlayerController> LocalController = UNetworkFunctionLibrary::GetLocalPlayerController(GetWorld());
+				LocalController->ClientTravel(ConnectionString, TRAVEL_Absolute);
+			}
+		}
+	}
+}
+
 void UEOSSubsystem::OnLoginComplete(int ControllerIndex, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& ErrorString)
 {
 	FString Msg = bWasSuccessful ? "LoggedIn successfully" : "Failed to Login!";
-	ERogueLogCategory LogCategory = bWasSuccessful ? ERogueLogCategory::SUCCESS : ERogueLogCategory::ERROR;
+	ERogueLogCategory LogCategory = bWasSuccessful ? ERogueLogCategory::WARNING : ERogueLogCategory::ERROR;
 	ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, LogCategory);
 
 	bIsLoggedIn = true;

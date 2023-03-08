@@ -22,7 +22,6 @@
 #include "Components/SQuestManagerComponent.h"
 
 
-
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("jp.SpawnBots"), false, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 static TAutoConsoleVariable<bool> CVarSpawnPickups(TEXT("jp.SpawnPickups"), true, TEXT("Enable spawning of pickups."), ECVF_Cheat);
 static TAutoConsoleVariable<int> CVarGiveCredits(TEXT("jp.GiveCredits"), 0, TEXT("Give credits to every player."), ECVF_Cheat);
