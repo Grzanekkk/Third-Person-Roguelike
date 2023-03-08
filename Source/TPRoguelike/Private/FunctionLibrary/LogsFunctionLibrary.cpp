@@ -56,7 +56,7 @@ void ULogsFunctionLibrary::LogToOutputLog(UObject* WorldContext, FString Msg, ER
 		}
 		case ERogueLogCategory::SUCCESS:
 		{
-			UE_LOG(LogTemp, Display, TEXT("%s"), *Msg);
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *Msg);
 			break;
 		}
 		case ERogueLogCategory::ERROR:
