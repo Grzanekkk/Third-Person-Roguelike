@@ -29,7 +29,7 @@ static TAutoConsoleVariable<int> CVarGiveCredits(TEXT("jp.GiveCredits"), 0, TEXT
 
 ASGameModeBase::ASGameModeBase()
 {
-
+	bUseSeamlessTravel = true;
 }
 
 void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)

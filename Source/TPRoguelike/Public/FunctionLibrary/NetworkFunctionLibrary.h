@@ -15,6 +15,6 @@ class TPROGUELIKE_API UNetworkFunctionLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable, Category="Rogue|Getters")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Rogue|Getters")
 	static APlayerController* GetLocalPlayerController(const UObject* WorldContextObject);
 };

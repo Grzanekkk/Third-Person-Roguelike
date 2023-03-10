@@ -5,14 +5,14 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 
-void UMenuButtonWidget::PreConstruct(UUserWidget* UserWidget, bool IsDesignTime)
-{
-	PreConstruct(UserWidget, IsDesignTime);
-
-	ButtonTextBox->SetText(ButtonText);
-
-	MainButton->OnClicked.AddDynamic(this, &UMenuButtonWidget::OnButtonClicked);
-}
+//void UMenuButtonWidget::PreConstruct(UUserWidget* UserWidget, bool IsDesignTime)
+//{
+//	//Super::PreConstruct(IsDesignTime);
+//	//
+//	//ButtonTextBox->SetText(ButtonText);
+//	//
+//	//MainButton->OnClicked.AddDynamic(this, &UMenuButtonWidget::OnButtonClicked);
+//}
 
 void UMenuButtonWidget::OnButtonClicked()
 {

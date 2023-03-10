@@ -20,9 +20,7 @@ class TPROGUELIKE_API UMenuButtonWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual void PreConstruct(UUserWidget* UserWidget, bool IsDesignTime);
-
-	void OnButtonClicked();
+	//virtual void PreConstruct(UUserWidget* UserWidget, bool IsDesignTime) override;
 
 	UPROPERTY(BlueprintAssignable, Category = "Rogue|Widgets|Events")
 	FOnClickedEvent OnClickedEvent;
@@ -35,4 +33,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Settings")
 	FText ButtonText = FText::FromString("Default Text");
+
+	UFUNCTION(BlueprintCallable, Category = "Rogue|Widgets|Events")
+	void OnButtonClicked();
 };
