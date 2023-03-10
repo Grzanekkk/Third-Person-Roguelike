@@ -5,10 +5,14 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
 #include "EOSSubsystem.generated.h"
 
 class IOnlineSubsystem;
-class FOnlineSessionSearch;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFindSessionStarted);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFindSessionFinished, bool, bWasSuccessful, FOnlineSessionSearch, SearchResults);
+
 
 /**
  * 
@@ -46,6 +50,12 @@ public:
 	void ShowInviteUI();
 	UFUNCTION(BlueprintCallable)
 	void ShowFriendsUI();
+
+	UPROPERTY(BlueprintAssignable);
+	FOnFindSessionStarted OnFindSessionStarted;
+
+	//UPROPERTY(BlueprintAssignable);
+	//FOnFindSessionFinished OnFindSessionFinished;
 
 protected:
 	IOnlineSubsystem* OnlineSubsystem;

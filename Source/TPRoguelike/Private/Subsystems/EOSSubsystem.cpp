@@ -10,7 +10,8 @@
 #include "Interfaces/OnlineExternalUIInterface.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 #include "FunctionLibrary/NetworkFunctionLibrary.h"
-#include "OnlineSessionSettings.h"
+//#include "OnlineSessionSettings.h"
+#include "Kismet/GameplayStatics.h"
 
 void UEOSSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -79,6 +80,12 @@ void UEOSSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessf
 	ERogueLogCategory LogCategory = bWasSuccessful ? ERogueLogCategory::SUCCESS : ERogueLogCategory::ERROR;
 	ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, LogCategory);
 
+	if (bWasSuccessful)
+	{
+		FName LevelName = "Level_1";
+		UGameplayStatics::OpenLevel(GetWorld(), LevelName, true, "?listen");
+	}
+
 	if (OnlineSubsystem)
 	{
 		if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
@@ -127,8 +134,12 @@ void UEOSSubsystem::FindSession()
 				SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("BobTestLobby"), EOnlineComparisonOp::Equals);
 				SearchSettings->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
 
+
 				SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnFindSessionComplete);
-				SessionPtr->FindSessions(0, SearchSettings.ToSharedRef());
+				if (SessionPtr->FindSessions(0, SearchSettings.ToSharedRef()))
+				{
+					OnFindSessionStarted.Broadcast();
+				}
 			}
 		}
 	}
@@ -136,6 +147,8 @@ void UEOSSubsystem::FindSession()
 
 void UEOSSubsystem::OnFindSessionComplete(bool bWasSuccessful)
 {
+	//OnFindSessionFinished.Broadcast(bWasSuccessful, SearchSettings);
+
 	if (bWasSuccessful)
 	{
 		FString Msg = FString::Printf(TEXT("Lobbies found: %i"), SearchSettings->SearchResults.Num());
@@ -174,7 +187,7 @@ void UEOSSubsystem::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompl
 			if (!ConnectionString.IsEmpty())
 			{
 				TObjectPtr<APlayerController> LocalController = UNetworkFunctionLibrary::GetLocalPlayerController(GetWorld());
-				LocalController->ClientTravel(ConnectionString, TRAVEL_Absolute);
+				LocalController->ClientTravel(ConnectionString, TRAVEL_Absolute, false);
 			}
 		}
 	}
