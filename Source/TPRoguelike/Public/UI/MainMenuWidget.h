@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Subsystems/EOSSubsystem.h"
 #include "MainMenuWidget.generated.h"
 
 class UMenuButtonWidget;
+class UVerticalBox;
+//class UEOSSubsystem;
 
 /**
  * 
@@ -17,6 +20,9 @@ class TPROGUELIKE_API UMainMenuWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Widgets", meta = (BindWidget))
+	TObjectPtr<UVerticalBox> VB_Buttons;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Widgets", meta = (BindWidget))
 	TObjectPtr<UMenuButtonWidget> StartSinglePlayerGameButton;
 
@@ -31,4 +37,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Widgets", meta = (BindWidget))
 	TObjectPtr<UMenuButtonWidget> QuitGameButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Widgets", meta = (BindWidget))
+	TObjectPtr<UVerticalBox> VB_SearchResult;
+
+protected:
+	virtual void NativeConstruct() override;
+
+	void OnFindAllSessionsStarted();
+
+	void OnFindAllSessionsFinished(bool bWasSuccessful, const FOnlineSessionSearch_Rogue& SearchResults);
+
+	UPROPERTY()
+	TObjectPtr<UEOSSubsystem> EOSSubsystem;
 };

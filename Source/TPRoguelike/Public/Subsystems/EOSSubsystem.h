@@ -10,8 +10,29 @@
 
 class IOnlineSubsystem;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFindSessionStarted);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFindSessionFinished, bool, bWasSuccessful, FOnlineSessionSearch, SearchResults);
+/**
+ *
+ */
+USTRUCT()
+struct FOnlineSessionSearch_Rogue
+{
+	GENERATED_BODY()
+
+public:
+
+	TArray<FOnlineSessionSearchResult> SearchResults;
+
+	FOnlineSessionSearch_Rogue() { }
+
+	FOnlineSessionSearch_Rogue(TArray<FOnlineSessionSearchResult> _SearchResults)
+	{
+		SearchResults = _SearchResults;
+	}
+};
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFindAllSessionsStarted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFindAllSessionsFinished, bool, bWasSuccessful, const FOnlineSessionSearch_Rogue&, SearchResults);
 
 
 /**
@@ -26,16 +47,26 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	UFUNCTION(BlueprintCallable)
-	void CreateSession();
+	void CreateSession(FName SessionName, int32 MaxPlayers = 4);
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void DestroySession();
+	void DestroySession(FName SessionName);
 	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void FindSession();
-	void OnFindSessionComplete(bool bWasSuccessful);
+	void FindSessionByName(FName SessionName, bool bShouldJoinIfSessionFound = true);
+	void OnFindSessionByNameComplete(bool bWasSuccessful);
+	UPROPERTY()
+	bool bShouldJoinIfSessionFoundByName = false;
+
+	UFUNCTION(BlueprintCallable)
+	void FindAllSessions();
+	void OnFindAllSessionsComplete(bool bWasSuccessful);
+	UPROPERTY(BlueprintAssignable);
+	FOnFindAllSessionsStarted OnFindAllSessionStarted;
+	UPROPERTY(BlueprintAssignable);
+	FOnFindAllSessionsFinished OnFindAllSessionFinished;
 
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
@@ -51,13 +82,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowFriendsUI();
 
-	UPROPERTY(BlueprintAssignable);
-	FOnFindSessionStarted OnFindSessionStarted;
-
-	//UPROPERTY(BlueprintAssignable);
-	//FOnFindSessionFinished OnFindSessionFinished;
-
 protected:
+	UFUNCTION()
+	FORCEINLINE bool IsLoggedIn() const { return bIsLoggedIn && OnlineSubsystem; }
+
 	IOnlineSubsystem* OnlineSubsystem;
 
 	UPROPERTY()
