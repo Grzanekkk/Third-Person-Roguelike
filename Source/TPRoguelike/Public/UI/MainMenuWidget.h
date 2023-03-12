@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Subsystems/EOSSubsystem.h"
+#include "Online/OnlineSessionSearch.h"
 #include "MainMenuWidget.generated.h"
 
 class UMenuButtonWidget;
 class UVerticalBox;
 class ULobbySearchResultWidget;
+class UTextBlock;
+class UEOSSubsystem;
 
 /**
  * 
@@ -40,6 +42,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Widgets", meta = (BindWidget))
 	TObjectPtr<UVerticalBox> VB_SearchResult;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Rogue|Widgets", meta = (BindWidget))
+	TObjectPtr<UTextBlock> T_Loading;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Widgets")
 	TSubclassOf<ULobbySearchResultWidget> LobbySearchResultWidgetClass;

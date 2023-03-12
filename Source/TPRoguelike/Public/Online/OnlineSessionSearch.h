@@ -38,6 +38,18 @@ public:
 		NumOpenPublicConnections(0)
 	{
 	}
+
+	FOnlineSession_Rogue(FUniqueNetIdPtr _OwningUserId, FString _OwningUserName,
+		FOnlineSessionSettings _SessionSettings, TSharedPtr<class FOnlineSessionInfo> _SessionInfo,
+		int32 _NumOpenPrivateConnections, int32 _NumOpenPublicConnections)
+	{
+		OwningUserId = _OwningUserId;
+		OwningUserName = _OwningUserName;
+		SessionSettings = _SessionSettings;
+		SessionInfo = _SessionInfo;
+		NumOpenPrivateConnections = _NumOpenPrivateConnections;
+		NumOpenPublicConnections = _NumOpenPublicConnections;
+	}
 };
 
 /**
@@ -52,6 +64,19 @@ public:
 	TArray<FOnlineSession_Rogue> Sessions;
 
 	FOnlineSessionSearch_Rogue() { }
+
+	FOnlineSessionSearch_Rogue(TArray<FOnlineSessionSearchResult> SearchResults)
+	{
+		for (int32 i = 0; i < SearchResults.Num(); i++)
+		{
+			FOnlineSession_Rogue OnlineSessionR = FOnlineSession_Rogue(SearchResults[i].Session.OwningUserId,
+				SearchResults[i].Session.OwningUserName, SearchResults[i].Session.SessionSettings,
+				SearchResults[i].Session.SessionInfo, SearchResults[i].Session.NumOpenPrivateConnections,
+				SearchResults[i].Session.NumOpenPublicConnections);
+
+			Sessions.Add(OnlineSessionR);
+		}
+	}
 
 	FOnlineSessionSearch_Rogue(TArray<FOnlineSession_Rogue> _Sessions)
 	{

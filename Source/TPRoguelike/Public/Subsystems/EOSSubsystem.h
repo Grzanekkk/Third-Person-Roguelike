@@ -6,6 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
+#include "Online/CoreOnlineFwd.h"
 #include "Online/OnlineSessionSearch.h"
 #include "EOSSubsystem.generated.h"
 
@@ -27,18 +28,16 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	UFUNCTION(BlueprintCallable)
-	void CreateSession(FName SessionName, int32 MaxPlayers = 4);
+	void CreateSession(FName SessionName = "TestSession", int32 MaxPlayers = 4);
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void DestroySession(FName SessionName);
+	void DestroySession(FName SessionName = "TestSession");
 	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
 	void FindSessionByName(FName SessionName = "TestSession", bool bShouldJoinIfSessionFound = true);
 	void OnFindSessionByNameComplete(bool bWasSuccessful);
-	UPROPERTY()
-	bool bShouldJoinIfSessionFoundByName = false;
 
 	UFUNCTION(BlueprintCallable)
 	void FindAllSessions();
@@ -48,6 +47,10 @@ public:
 	UPROPERTY(BlueprintAssignable);
 	FOnFindAllSessionsFinished OnFindAllSessionFinished;
 
+	//UFUNCTION(BlueprintCallable)
+	//void JoinSession(FName SessionName, const FOnlineSessionSearchResult& DesiredSession);
+
+	void JoinSessionByOwnerID(FName SessionName, FUniqueNetIdPtr _OwningUserId);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
 	void Login();
@@ -66,7 +69,10 @@ protected:
 	UFUNCTION()
 	FORCEINLINE bool IsLoggedIn() const { return bIsLoggedIn && OnlineSubsystem; }
 
-	IOnlineSubsystem* OnlineSubsystem;
+	FOnlineSessionSearchResult GetAlreadyFoundSessionByOwnerID(FUniqueNetIdPtr _OwningUserId);
+
+	UPROPERTY()
+	bool bShouldJoinIfSessionFoundByName = false;
 
 	UPROPERTY()
 	bool bIsLoggedIn;
@@ -75,4 +81,6 @@ protected:
 	FName TestSessionName = FName("TestSession");
 
 	TSharedPtr<FOnlineSessionSearch> SearchSettings;
+
+	IOnlineSubsystem* OnlineSubsystem;
 };

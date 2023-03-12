@@ -43,6 +43,8 @@ protected:
 
 	FOnlineSessionSearchResult* OnlineSessionSearchResult;
 
+	FUniqueNetIdPtr OwningUserId;
+
 	UPROPERTY()
 	FString SessionLevelName;
 };

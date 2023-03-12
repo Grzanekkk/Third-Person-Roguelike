@@ -124,10 +124,11 @@ void UEOSSubsystem::FindSessionByName(FName SessionName, bool bShouldJoinIfSessi
 
 			SearchSettings = MakeShareable(new FOnlineSessionSearch());
 			SearchSettings->MaxSearchResults = 8000;
-			SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("BobTestLobby"), EOnlineComparisonOp::Equals);
+			SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, SessionName.ToString(), EOnlineComparisonOp::Equals);
 			SearchSettings->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
 
 			SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnFindSessionByNameComplete);
+			SessionPtr->FindSessions(0, SearchSettings.ToSharedRef());
 		}
 	}
 }
@@ -170,8 +171,8 @@ void UEOSSubsystem::FindAllSessions()
 			SearchSettings = MakeShareable(new FOnlineSessionSearch());
 			SearchSettings->MaxSearchResults = 8000;
 			SearchSettings->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
-			SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("BobTestLobby"), EOnlineComparisonOp::Equals);
-			//SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("RandomNameThanNoOneWillUse"), EOnlineComparisonOp::NotEquals);
+			SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("TestSession"), EOnlineComparisonOp::Equals);
+			//SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("RandomNameThatNoOneWillUse"), EOnlineComparisonOp::NotEquals);
 
 			SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnFindAllSessionsComplete);
 			if (SessionPtr->FindSessions(0, SearchSettings.ToSharedRef()))
@@ -184,11 +185,32 @@ void UEOSSubsystem::FindAllSessions()
 
 void UEOSSubsystem::OnFindAllSessionsComplete(bool bWasSuccessful)
 {
-	//FOnlineSessionSearch_Rogue SearchResult = FOnlineSessionSearch_Rogue(SearchSettings->SearchResults);
-	//OnFindAllSessionFinished.Broadcast(bWasSuccessful, SearchResult);
+	FOnlineSessionSearch_Rogue SearchResult = FOnlineSessionSearch_Rogue(SearchSettings->SearchResults);
+	OnFindAllSessionFinished.Broadcast(bWasSuccessful, SearchResult);
 
 	FString Msg = FString::Printf(TEXT("Lobbies found: %i"), SearchSettings->SearchResults.Num());
 	ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, ERogueLogCategory::WARNING);
+
+	if (OnlineSubsystem)
+	{
+		if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+		{
+			SessionPtr->ClearOnFindSessionsCompleteDelegates(this);
+		}
+	}
+}
+
+void UEOSSubsystem::JoinSessionByOwnerID(FName SessionName, FUniqueNetIdPtr _OwningUserId)
+{
+	if (IsLoggedIn())
+	{
+		if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
+		{
+			FOnlineSessionSearchResult SearchResult = GetAlreadyFoundSessionByOwnerID(_OwningUserId);
+			SessionPtr->OnJoinSessionCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnJoinSessionComplete);
+			SessionPtr->JoinSession(0, TestSessionName, SearchResult);
+		}
+	}
 }
 
 void UEOSSubsystem::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
@@ -284,4 +306,17 @@ void UEOSSubsystem::ShowFriendsUI()
 			ExternalUIPtr->ShowFriendsUI(0);
 		}
 	}
+}
+
+FOnlineSessionSearchResult UEOSSubsystem::GetAlreadyFoundSessionByOwnerID(FUniqueNetIdPtr _OwningUserId)
+{
+	for (int32 i = 0; i < SearchSettings->SearchResults.Num(); i++)
+	{
+		if (SearchSettings->SearchResults[0].Session.OwningUserId == _OwningUserId)
+		{
+			return SearchSettings->SearchResults[0];
+		}
+	}
+
+	return FOnlineSessionSearchResult();
 }
