@@ -12,7 +12,7 @@
 #include "Enums/SEnums_Objectives.h"
 #include "Objectives/SQuestDataAsset.h"
 
-void UObjectiveWidget::Initialize(const FGameplayTag& _ObjectiveAttached)
+void UObjectiveWidget::Init(const FGameplayTag& _ObjectiveAttached)
 {
 	if (_ObjectiveAttached.IsValid())
 	{

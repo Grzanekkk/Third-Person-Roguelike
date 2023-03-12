@@ -124,7 +124,7 @@ void ASAICharacter::RemovePlayerSpottedWidget()
 	{
 		//FString ActionMsg = FString::Printf(TEXT("Removing Widget"));
 		//ULogsFunctionLibrary::LogOnScreen_IsClientServer(GetWorld(), ActionMsg, FColor::Red, 2.0f);
-		PlayerSpottedWidgetInstance->RemoveFromViewport();
+		PlayerSpottedWidgetInstance->RemoveFromParent();
 	}
 }
 
@@ -182,7 +182,7 @@ void ASAICharacter::OnDeath()
 		StopHealingOverTime();
 	}
 
-	HealthBarWidgetInstance->RemoveFromViewport();
+	HealthBarWidgetInstance->RemoveFromParent();
 	RemovePlayerSpottedWidget();
 
 	// Destroy Actor in 10s

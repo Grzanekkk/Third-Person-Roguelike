@@ -28,7 +28,7 @@ void UQuestWidget::OnObjectiveStateChanged(const FGameplayTag& ObjectiveTag, EOb
 				TObjectPtr<UObjectiveWidget> ObjectiveWidgetInstance = CreateWidget<UObjectiveWidget>(GetWorld(), ObjectiveWidgetClass);
 				if (ObjectiveWidgetInstance)
 				{
-					ObjectiveWidgetInstance->Initialize(ObjectiveTag);
+					ObjectiveWidgetInstance->Init(ObjectiveTag);
 					ObjectiveBox->AddChild(ObjectiveWidgetInstance);
 					ObjectiveWidgets.Add(ObjectiveWidgetInstance);
 				}

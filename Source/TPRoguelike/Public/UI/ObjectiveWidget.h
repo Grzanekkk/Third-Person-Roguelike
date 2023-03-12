@@ -21,7 +21,7 @@ class TPROGUELIKE_API UObjectiveWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void Initialize(const FGameplayTag& ObjectiveAttached);
+	void Init(const FGameplayTag& ObjectiveAttached);
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> TriggerObjectiveBox;
