@@ -9,7 +9,7 @@
 
 class UMenuButtonWidget;
 class UVerticalBox;
-//class UEOSSubsystem;
+class ULobbySearchResultWidget;
 
 /**
  * 
@@ -41,11 +41,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Widgets", meta = (BindWidget))
 	TObjectPtr<UVerticalBox> VB_SearchResult;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Widgets")
+	TSubclassOf<ULobbySearchResultWidget> LobbySearchResultWidgetClass;
+
 protected:
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
 	void OnFindAllSessionsStarted();
 
+	UFUNCTION()
 	void OnFindAllSessionsFinished(bool bWasSuccessful, const FOnlineSessionSearch_Rogue& SearchResults);
 
 	UPROPERTY()

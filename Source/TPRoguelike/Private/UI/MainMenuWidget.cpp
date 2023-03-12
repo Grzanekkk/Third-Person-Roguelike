@@ -3,7 +3,7 @@
 
 #include "UI/MainMenuWidget.h"
 #include "Components/VerticalBox.h"
-
+#include "UI/LobbySearchResultWidget.h"
 
 void UMainMenuWidget::NativeConstruct()
 {
@@ -20,10 +20,19 @@ void UMainMenuWidget::NativeConstruct()
 void UMainMenuWidget::OnFindAllSessionsStarted()
 {
 	VB_SearchResult->SetVisibility(ESlateVisibility::Visible);
+	// some loading animation
 }
 
 void UMainMenuWidget::OnFindAllSessionsFinished(bool bWasSuccessful, const FOnlineSessionSearch_Rogue& SearchResults)
 {
+	for (const FOnlineSession_Rogue& OnlineSessionSearchResult : SearchResults.Sessions)
+	{
+		TObjectPtr<ULobbySearchResultWidget> LobbySearchResultWidget = (CreateWidget<ULobbySearchResultWidget>(VB_SearchResult, LobbySearchResultWidgetClass->StaticClass()));
+		if (LobbySearchResultWidget)
+		{
+			LobbySearchResultWidget->Init(OnlineSessionSearchResult);
+		}
+	}
 }
 
 

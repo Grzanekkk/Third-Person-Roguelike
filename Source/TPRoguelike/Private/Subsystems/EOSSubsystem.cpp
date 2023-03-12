@@ -10,7 +10,6 @@
 #include "Interfaces/OnlineExternalUIInterface.h"
 #include "FunctionLibrary/LogsFunctionLibrary.h"
 #include "FunctionLibrary/NetworkFunctionLibrary.h"
-//#include "OnlineSessionSettings.h"
 #include "Kismet/GameplayStatics.h"
 
 void UEOSSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -135,11 +134,11 @@ void UEOSSubsystem::FindSessionByName(FName SessionName, bool bShouldJoinIfSessi
 
 void UEOSSubsystem::OnFindSessionByNameComplete(bool bWasSuccessful)
 {
+	FString Msg = FString::Printf(TEXT("Lobbies found: %i"), SearchSettings->SearchResults.Num());
+	ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, ERogueLogCategory::WARNING);
+
 	if (bWasSuccessful)
 	{
-		FString Msg = FString::Printf(TEXT("Lobbies found: %i"), SearchSettings->SearchResults.Num());
-		ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, ERogueLogCategory::WARNING);
-
 		if (bShouldJoinIfSessionFoundByName && OnlineSubsystem)
 		{
 			if (IOnlineSessionPtr SessionPtr = OnlineSubsystem->GetSessionInterface())
@@ -171,6 +170,8 @@ void UEOSSubsystem::FindAllSessions()
 			SearchSettings = MakeShareable(new FOnlineSessionSearch());
 			SearchSettings->MaxSearchResults = 8000;
 			SearchSettings->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
+			SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("BobTestLobby"), EOnlineComparisonOp::Equals);
+			//SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("RandomNameThanNoOneWillUse"), EOnlineComparisonOp::NotEquals);
 
 			SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnFindAllSessionsComplete);
 			if (SessionPtr->FindSessions(0, SearchSettings.ToSharedRef()))
@@ -183,8 +184,8 @@ void UEOSSubsystem::FindAllSessions()
 
 void UEOSSubsystem::OnFindAllSessionsComplete(bool bWasSuccessful)
 {
-	FOnlineSessionSearch_Rogue SearchResult = FOnlineSessionSearch_Rogue(SearchSettings->SearchResults);
-	OnFindAllSessionFinished.Broadcast(bWasSuccessful, SearchResult);
+	//FOnlineSessionSearch_Rogue SearchResult = FOnlineSessionSearch_Rogue(SearchSettings->SearchResults);
+	//OnFindAllSessionFinished.Broadcast(bWasSuccessful, SearchResult);
 
 	FString Msg = FString::Printf(TEXT("Lobbies found: %i"), SearchSettings->SearchResults.Num());
 	ULogsFunctionLibrary::LogOnScreen(GetWorld(), Msg, ERogueLogCategory::WARNING);

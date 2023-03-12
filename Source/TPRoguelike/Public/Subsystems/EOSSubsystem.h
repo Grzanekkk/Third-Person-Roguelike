@@ -6,30 +6,10 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
+#include "Online/OnlineSessionSearch.h"
 #include "EOSSubsystem.generated.h"
 
 class IOnlineSubsystem;
-
-/**
- *
- */
-USTRUCT()
-struct FOnlineSessionSearch_Rogue
-{
-	GENERATED_BODY()
-
-public:
-
-	TArray<FOnlineSessionSearchResult> SearchResults;
-
-	FOnlineSessionSearch_Rogue() { }
-
-	FOnlineSessionSearch_Rogue(TArray<FOnlineSessionSearchResult> _SearchResults)
-	{
-		SearchResults = _SearchResults;
-	}
-};
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFindAllSessionsStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnFindAllSessionsFinished, bool, bWasSuccessful, const FOnlineSessionSearch_Rogue&, SearchResults);
@@ -55,7 +35,7 @@ public:
 	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void FindSessionByName(FName SessionName, bool bShouldJoinIfSessionFound = true);
+	void FindSessionByName(FName SessionName = "TestSession", bool bShouldJoinIfSessionFound = true);
 	void OnFindSessionByNameComplete(bool bWasSuccessful);
 	UPROPERTY()
 	bool bShouldJoinIfSessionFoundByName = false;
