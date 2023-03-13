@@ -15,6 +15,10 @@ void ULobbySearchResultWidget::Init(const FOnlineSession_Rogue& _OnlineSessionSe
 
 	
 	T_SessionOwnerName->SetText(FText::FromString(_OnlineSessionSearchResult.OwningUserName.LeftChop(20)));
+	int32 Needs;
+	//FString PlayerSlotsText = 
+	_OnlineSessionSearchResult.SessionSettings.Get(SETTING_NEEDS, Needs);
+	//T_PlayerSlots->SetText()
 	//T_LobbyName->SetText()
 
 	B_JoinLobby->OnClickedEvent.AddDynamic(this, &ULobbySearchResultWidget::OnJoinLobbyButtonClicked);

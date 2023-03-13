@@ -28,15 +28,15 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	UFUNCTION(BlueprintCallable)
-	void CreateSession(FName SessionName = "TestSession", int32 MaxPlayers = 4);
+	void CreateSession(FName SessionName = "TestSessionName", int32 MaxPlayers = 4);
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void DestroySession(FName SessionName = "TestSession");
+	void DestroySession(FName SessionName = "TestSessionName");
 	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
-	void FindSessionByName(FName SessionName = "TestSession", bool bShouldJoinIfSessionFound = true);
+	void FindSessionByName(FName SessionName = "TestSessionName", bool bShouldJoinIfSessionFound = true);
 	void OnFindSessionByNameComplete(bool bWasSuccessful);
 
 	UFUNCTION(BlueprintCallable)
@@ -78,7 +78,10 @@ protected:
 	bool bIsLoggedIn;
 
 	UPROPERTY()
-	FName TestSessionName = FName("TestSession");
+	FName TestSessionName = FName("TestSessionName");
+
+	UPROPERTY()
+	FString TestSessionSearchKeyword = "TestSessionSearchKeyword";
 
 	TSharedPtr<FOnlineSessionSearch> SearchSettings;
 

@@ -56,9 +56,11 @@ void UEOSSubsystem::CreateSession(FName SessionName, int32 MaxPlayers)
 			SessionSettings.bIsLANMatch = false; 
 			SessionSettings.bShouldAdvertise = true;
 			SessionSettings.NumPublicConnections = MaxPlayers;
+			SessionSettings.NumPrivateConnections = MaxPlayers;
 			SessionSettings.bUsesPresence = true;
 			SessionSettings.bUseLobbiesIfAvailable = true;
-			SessionSettings.Set(SEARCH_KEYWORDS, SessionName.ToString(), EOnlineDataAdvertisementType::ViaOnlineService);
+			SessionSettings.BuildUniqueId = false;
+			SessionSettings.Set(SEARCH_KEYWORDS, TestSessionSearchKeyword, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 			SessionPtr->OnCreateSessionCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnCreateSessionComplete);
 			SessionPtr->CreateSession(0, SessionName, SessionSettings);
@@ -124,7 +126,7 @@ void UEOSSubsystem::FindSessionByName(FName SessionName, bool bShouldJoinIfSessi
 
 			SearchSettings = MakeShareable(new FOnlineSessionSearch());
 			SearchSettings->MaxSearchResults = 8000;
-			SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, SessionName.ToString(), EOnlineComparisonOp::Equals);
+			SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, TestSessionSearchKeyword, EOnlineComparisonOp::Equals);
 			SearchSettings->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
 
 			SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnFindSessionByNameComplete);
@@ -171,8 +173,7 @@ void UEOSSubsystem::FindAllSessions()
 			SearchSettings = MakeShareable(new FOnlineSessionSearch());
 			SearchSettings->MaxSearchResults = 8000;
 			SearchSettings->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
-			SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("TestSession"), EOnlineComparisonOp::Equals);
-			//SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, FString("RandomNameThatNoOneWillUse"), EOnlineComparisonOp::NotEquals);
+			SearchSettings->QuerySettings.Set(SEARCH_KEYWORDS, TestSessionSearchKeyword, EOnlineComparisonOp::Equals);
 
 			SessionPtr->OnFindSessionsCompleteDelegates.AddUObject(this, &UEOSSubsystem::OnFindAllSessionsComplete);
 			if (SessionPtr->FindSessions(0, SearchSettings.ToSharedRef()))
