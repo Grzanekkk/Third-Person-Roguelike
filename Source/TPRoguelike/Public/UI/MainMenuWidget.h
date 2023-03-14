@@ -32,7 +32,7 @@ public:
 	TObjectPtr<UMenuButtonWidget> HostGameButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Widgets", meta = (BindWidget))
-	TObjectPtr<UMenuButtonWidget> JoinGameButton;
+	TObjectPtr<UMenuButtonWidget> JoinLocalGameButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rogue|Widgets", meta = (BindWidget))
 	TObjectPtr<UMenuButtonWidget> SettingsButton;
