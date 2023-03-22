@@ -118,15 +118,25 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
-	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASCharacter::Jump);
-	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
-	PlayerInputComponent->BindAction("Q_Ability", IE_Pressed, this, &ASCharacter::Q_Ability);
-	PlayerInputComponent->BindAction("E_Ability", IE_Pressed, this, &ASCharacter::E_Ability);
-	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::StartSprint);
-	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::StopSprint);
-	PlayerInputComponent->BindAction("Parry", IE_Pressed, this, &ASCharacter::StartParry);
-	PlayerInputComponent->BindAction("Parry", IE_Released, this, &ASCharacter::StopParry);
+	PlayerInputComponent->BindAction("LMB_Action", IE_Pressed, this, &ASCharacter::LMB_Action_Start);
+	PlayerInputComponent->BindAction("LMB_Action", IE_Released, this, &ASCharacter::LMB_Action_Stop);
+	PlayerInputComponent->BindAction("RMB_Action", IE_Pressed, this, &ASCharacter::RMB_Action_Start);
+	PlayerInputComponent->BindAction("RMB_Action", IE_Released, this, &ASCharacter::RMB_Action_Stop);
+	PlayerInputComponent->BindAction("F_Action", IE_Pressed, this, &ASCharacter::F_Action_Start);
+	PlayerInputComponent->BindAction("F_Action", IE_Released, this, &ASCharacter::F_Action_Stop);
+	PlayerInputComponent->BindAction("Q_Ability", IE_Pressed, this, &ASCharacter::Q_Ability_Start);
+	PlayerInputComponent->BindAction("Q_Ability", IE_Released, this, &ASCharacter::Q_Ability_Stop);
+	PlayerInputComponent->BindAction("E_Ability", IE_Pressed, this, &ASCharacter::E_Ability_Start);
+	PlayerInputComponent->BindAction("E_Ability", IE_Released, this, &ASCharacter::E_Ability_Stop);
+	PlayerInputComponent->BindAction("X_Action", IE_Pressed, this, &ASCharacter::F_Action_Start);
+	PlayerInputComponent->BindAction("X_Action", IE_Released, this, &ASCharacter::F_Action_Stop);
+	PlayerInputComponent->BindAction("Shift_Action", IE_Pressed, this, &ASCharacter::Shift_Action_Start);
+	PlayerInputComponent->BindAction("Shift_Action", IE_Released, this, &ASCharacter::Shift_Action_Stop);
+	PlayerInputComponent->BindAction("Space_Action", IE_Pressed, this, &ASCharacter::Space_Action_Start);
+	PlayerInputComponent->BindAction("Space_Action", IE_Released, this, &ASCharacter::Space_Action_Stop);
+	PlayerInputComponent->BindAction("Control_Action", IE_Pressed, this, &ASCharacter::Control_Action_Start);
+	PlayerInputComponent->BindAction("Control_Action", IE_Released, this, &ASCharacter::Control_Action_Start);
+
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -149,52 +159,88 @@ void ASCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
-void ASCharacter::StartSprint()
-{
-	ActionComponent->StartActionByName(this, "Sprint");
-}
-
-void ASCharacter::StopSprint()
-{
-	ActionComponent->StopActionByName(this, "Sprint");
-}
-
-void ASCharacter::Jump()
-{
-	ACharacter::Jump();
-}
-
-
 //////////////////////////////////////////////////////
-//////	Abilities
-void ASCharacter::PrimaryAttack()
+//////	Actions
+
+void ASCharacter::LMB_Action_Start()
 {
 	ActionComponent->StartActionByName(this, "PrimaryAttack");
 }
 
-void ASCharacter::Q_Ability()
+void ASCharacter::LMB_Action_Stop()
 {
-	ActionComponent->StartActionByName(this, "QAbility");
 }
 
-void ASCharacter::E_Ability()
-{
-	ActionComponent->StartActionByName(this, "EAbility");
-}
-
-void ASCharacter::StartParry()
+void ASCharacter::RMB_Action_Start()
 {
 	ActionComponent->StartActionByName(this, "Parry");
 }
 
-void ASCharacter::StopParry()
+void ASCharacter::RMB_Action_Stop()
 {
 	ActionComponent->StopActionByName(this, "Parry");
 }
 
-void ASCharacter::PrimaryInteract()
+void ASCharacter::Shift_Action_Start()
+{
+	ActionComponent->StartActionByName(this, "Sprint");
+}
+
+void ASCharacter::Shift_Action_Stop()
+{
+	ActionComponent->StopActionByName(this, "Sprint");
+}
+
+void ASCharacter::Space_Action_Start()
+{
+	ACharacter::Jump();
+}
+
+void ASCharacter::Space_Action_Stop()
+{
+}
+
+void ASCharacter::Control_Action_Start()
+{
+}
+
+void ASCharacter::Control_Action_Stop()
+{
+}
+
+void ASCharacter::Q_Ability_Start()
+{
+	ActionComponent->StartActionByName(this, "QAbility");
+}
+
+void ASCharacter::Q_Ability_Stop()
+{
+}
+
+void ASCharacter::E_Ability_Start()
+{
+	ActionComponent->StartActionByName(this, "EAbility");
+}
+
+void ASCharacter::E_Ability_Stop()
+{
+}
+
+void ASCharacter::X_Action_Start()
+{
+}
+
+void ASCharacter::X_Action_Stop()
+{
+}
+
+void ASCharacter::F_Action_Start()
 {
 	InteractionComponent->PrimaryInteract();
+}
+
+void ASCharacter::F_Action_Stop()
+{
 }
 
 

@@ -51,36 +51,55 @@ protected:
 
 	UFUNCTION()
 	void MoveRight(float Value);
-	
-	UFUNCTION()
-	void StartSprint();
-
-	UFUNCTION()
-	void StopSprint();
-
-	void Jump();
 
 	////////////////////////////////////////////////////
 	/// Interaction
 	UFUNCTION()
-	void PrimaryInteract();
+	void F_Action_Start();
+	UFUNCTION()
+	void F_Action_Stop();
 	
 	////////////////////////////////////////////////////
 	/// Abilities
 	UFUNCTION()
-	void PrimaryAttack();
+	void LMB_Action_Start();
+	UFUNCTION()
+	void LMB_Action_Stop();
 
 	UFUNCTION()
-	void Q_Ability();
+	void Q_Ability_Start();
+	UFUNCTION()
+	void Q_Ability_Stop();
 
 	UFUNCTION()
-	void E_Ability();
+	void E_Ability_Start();
+	UFUNCTION()
+	void E_Ability_Stop();
 
 	UFUNCTION()
-	void StartParry();
-	
+	void X_Action_Start();
 	UFUNCTION()
-	void StopParry();
+	void X_Action_Stop();
+
+	UFUNCTION()
+	void RMB_Action_Start();
+	UFUNCTION()
+	void RMB_Action_Stop();
+
+	UFUNCTION()
+	void Shift_Action_Start();
+	UFUNCTION()
+	void Shift_Action_Stop();
+
+	UFUNCTION()
+	void Space_Action_Start();
+	UFUNCTION()
+	void Space_Action_Stop();
+
+	UFUNCTION()
+	void Control_Action_Start();
+	UFUNCTION()
+	void Control_Action_Stop();
 
 	////////////////////////////////////////////////////
 	/// Health + Death
