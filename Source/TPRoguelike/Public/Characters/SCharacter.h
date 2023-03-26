@@ -12,6 +12,7 @@ class USInteractionComponent;
 class USAttributeComponent;
 class USActionComponent;
 class ASProjectileBase;
+class UInputMappingContext;
 
 UCLASS()
 class TPROGUELIKE_API ASCharacter : public ACharacter
@@ -21,11 +22,28 @@ class TPROGUELIKE_API ASCharacter : public ACharacter
 public:
 	ASCharacter();
 
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Input")
+	UInputMappingContext* DefaultCharacterInputMapping;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Input")
+	UInputMappingContext* CharacterActionSet;
+
+	////////////////////////////////////////////////////
+	/// Cheats
+	UFUNCTION(Exec)
+	void HealSelf(float Amount = 100.f);
+
 protected:
 
 	virtual void BeginPlay() override;
 
 	virtual void PostInitializeComponents() override;
+
+	void SetupPlayerEnhancedInput();
 	
 	////////////////////////////////////////////////////
 	/// Components
@@ -115,13 +133,5 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Debug")
 	bool bDrawDebugPlayerCameraRotationArrows = false;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	////////////////////////////////////////////////////
-	/// Cheats
-	UFUNCTION(Exec)
-	void HealSelf(float Amount = 100.f);
 };

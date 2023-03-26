@@ -7,9 +7,11 @@
 #include "Components/SActionComponent.h"
 #include "Components/SAttributeComponent.h"
 #include "Components/SInteractionComponent.h"
+#include "Components/RogueInputComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -50,11 +52,11 @@ void ASCharacter::PostInitializeComponents()
 }
 
 
-//////////////////////////////////////////////////////
-//////	BeginPlay + Tick
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetupPlayerEnhancedInput();
 }
 
 void ASCharacter::Tick(float DeltaTime)
@@ -79,6 +81,11 @@ void ASCharacter::Tick(float DeltaTime)
 		// Draw 'Controller' Rotation ('PlayerController' that 'possessed' this character)
 		DrawDebugDirectionalArrow(GetWorld(), LineStart, ControllerDirection_LineEnd, DrawScale, FColor::Green, false, 0.0f, 0, Thickness);
 	}
+}
+
+void ASCharacter::SetupPlayerEnhancedInput()
+{
+
 }
 
 
@@ -112,30 +119,41 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &ASCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
-	
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	URogueInputComponent* RogueIC = CastChecked<URogueInputComponent>(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("LMB_Action", IE_Pressed, this, &ASCharacter::LMB_Action_Start);
-	PlayerInputComponent->BindAction("LMB_Action", IE_Released, this, &ASCharacter::LMB_Action_Stop);
-	PlayerInputComponent->BindAction("RMB_Action", IE_Pressed, this, &ASCharacter::RMB_Action_Start);
-	PlayerInputComponent->BindAction("RMB_Action", IE_Released, this, &ASCharacter::RMB_Action_Stop);
-	PlayerInputComponent->BindAction("F_Action", IE_Pressed, this, &ASCharacter::F_Action_Start);
-	PlayerInputComponent->BindAction("F_Action", IE_Released, this, &ASCharacter::F_Action_Stop);
-	PlayerInputComponent->BindAction("Q_Ability", IE_Pressed, this, &ASCharacter::Q_Ability_Start);
-	PlayerInputComponent->BindAction("Q_Ability", IE_Released, this, &ASCharacter::Q_Ability_Stop);
-	PlayerInputComponent->BindAction("E_Ability", IE_Pressed, this, &ASCharacter::E_Ability_Start);
-	PlayerInputComponent->BindAction("E_Ability", IE_Released, this, &ASCharacter::E_Ability_Stop);
-	PlayerInputComponent->BindAction("X_Action", IE_Pressed, this, &ASCharacter::F_Action_Start);
-	PlayerInputComponent->BindAction("X_Action", IE_Released, this, &ASCharacter::F_Action_Stop);
-	PlayerInputComponent->BindAction("Shift_Action", IE_Pressed, this, &ASCharacter::Shift_Action_Start);
-	PlayerInputComponent->BindAction("Shift_Action", IE_Released, this, &ASCharacter::Shift_Action_Stop);
-	PlayerInputComponent->BindAction("Space_Action", IE_Pressed, this, &ASCharacter::Space_Action_Start);
-	PlayerInputComponent->BindAction("Space_Action", IE_Released, this, &ASCharacter::Space_Action_Stop);
-	PlayerInputComponent->BindAction("Control_Action", IE_Pressed, this, &ASCharacter::Control_Action_Start);
-	PlayerInputComponent->BindAction("Control_Action", IE_Released, this, &ASCharacter::Control_Action_Start);
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			InputSubsystem->AddMappingContext(DefaultCharacterInputMapping, 0);
+		}
+	}
+
+
+	//PlayerInputComponent->BindAxis("MoveForward", this, &ASCharacter::MoveForward);
+	//PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
+	//
+	//PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	//PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	//
+	//PlayerInputComponent->BindAction("LMB_Action", IE_Pressed, this, &ASCharacter::LMB_Action_Start);
+	//PlayerInputComponent->BindAction("LMB_Action", IE_Released, this, &ASCharacter::LMB_Action_Stop);
+	//PlayerInputComponent->BindAction("RMB_Action", IE_Pressed, this, &ASCharacter::RMB_Action_Start);
+	//PlayerInputComponent->BindAction("RMB_Action", IE_Released, this, &ASCharacter::RMB_Action_Stop);
+	//PlayerInputComponent->BindAction("F_Action", IE_Pressed, this, &ASCharacter::F_Action_Start);
+	//PlayerInputComponent->BindAction("F_Action", IE_Released, this, &ASCharacter::F_Action_Stop);
+	//PlayerInputComponent->BindAction("Q_Ability", IE_Pressed, this, &ASCharacter::Q_Ability_Start);
+	//PlayerInputComponent->BindAction("Q_Ability", IE_Released, this, &ASCharacter::Q_Ability_Stop);
+	//PlayerInputComponent->BindAction("E_Ability", IE_Pressed, this, &ASCharacter::E_Ability_Start);
+	//PlayerInputComponent->BindAction("E_Ability", IE_Released, this, &ASCharacter::E_Ability_Stop);
+	//PlayerInputComponent->BindAction("X_Action", IE_Pressed, this, &ASCharacter::F_Action_Start);
+	//PlayerInputComponent->BindAction("X_Action", IE_Released, this, &ASCharacter::F_Action_Stop);
+	//PlayerInputComponent->BindAction("Shift_Action", IE_Pressed, this, &ASCharacter::Shift_Action_Start);
+	//PlayerInputComponent->BindAction("Shift_Action", IE_Released, this, &ASCharacter::Shift_Action_Stop);
+	//PlayerInputComponent->BindAction("Space_Action", IE_Pressed, this, &ASCharacter::Space_Action_Start);
+	//PlayerInputComponent->BindAction("Space_Action", IE_Released, this, &ASCharacter::Space_Action_Stop);
+	//PlayerInputComponent->BindAction("Control_Action", IE_Pressed, this, &ASCharacter::Control_Action_Start);
+	//PlayerInputComponent->BindAction("Control_Action", IE_Released, this, &ASCharacter::Control_Action_Start);
 
 }
 
