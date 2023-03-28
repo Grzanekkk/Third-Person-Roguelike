@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagContainer.h"
 #include "SCharacter.generated.h"
 
 class UCameraComponent;
@@ -12,6 +13,7 @@ class USInteractionComponent;
 class USAttributeComponent;
 class USActionComponent;
 class ASProjectileBase;
+class URogueInputConfig;
 class UInputMappingContext;
 
 UCLASS()
@@ -31,6 +33,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Input")
 	UInputMappingContext* CharacterActionSet;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Input")
+	URogueInputConfig* CharacterInputConfig;
 
 	////////////////////////////////////////////////////
 	/// Cheats
@@ -62,22 +67,36 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Components")
 	TObjectPtr<USActionComponent> ActionComponent;
 
-	////////////////////////////////////////////////////
+	// Tags
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Tags")
+	FGameplayTag MoveTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Tags")
+	FGameplayTag LookTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Tags")
+	FGameplayTag JumpTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Tags")
+	FGameplayTag SprintTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rogue|Tags")
+	FGameplayTag CrouchTag;
+
+
 	/// Movement
 	UFUNCTION()
-	void MoveForward(float Value);
+	void Input_Move(const FInputActionValue& InputActionValue);
 
 	UFUNCTION()
-	void MoveRight(float Value);
+	void Input_LookMouse(const FInputActionValue& InputActionValue);
 
-	////////////////////////////////////////////////////
 	/// Interaction
 	UFUNCTION()
 	void F_Action_Start();
 	UFUNCTION()
 	void F_Action_Stop();
 	
-	////////////////////////////////////////////////////
 	/// Abilities
 	UFUNCTION()
 	void LMB_Action_Start();
@@ -105,19 +124,19 @@ protected:
 	void RMB_Action_Stop();
 
 	UFUNCTION()
-	void Shift_Action_Start();
+	void Input_Sprint_Start(const FInputActionValue& InputActionValue);
 	UFUNCTION()
-	void Shift_Action_Stop();
+	void Input_Sprint_Stop(const FInputActionValue& InputActionValue);
 
 	UFUNCTION()
-	void Space_Action_Start();
+	void Input_Jump_Start(const FInputActionValue& InputActionValue);
 	UFUNCTION()
-	void Space_Action_Stop();
+	void Input_Jump_Stop(const FInputActionValue& InputActionValue);
 
 	UFUNCTION()
-	void Control_Action_Start();
+	void Crouch_Start();
 	UFUNCTION()
-	void Control_Action_Stop();
+	void Croch_Stop();
 
 	////////////////////////////////////////////////////
 	/// Health + Death

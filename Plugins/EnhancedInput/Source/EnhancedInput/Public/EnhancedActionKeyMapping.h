@@ -59,7 +59,7 @@ class UInputModifier;
 /**
  * Defines a mapping between a key activation and the resulting enhanced action
  * An key could be a button press, joystick axis movement, etc.
- * An enhanced action could be MoveForward, Jump, Fire, etc.
+ * An enhanced action could be Input_Move, Jump, Fire, etc.
  *
 **/
 USTRUCT(BlueprintType)

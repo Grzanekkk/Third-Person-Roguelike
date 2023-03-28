@@ -2,10 +2,18 @@
 
 
 #include "Components/RogueInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 
-void URogueInputComponent::SetMappingContext(UInputMappingContext* MappingContext, int32 Priority)
+void URogueInputComponent::SetMappingContext(AController* Controller, UInputMappingContext* MappingContext, int32 MappingPriority)
 {
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			InputSubsystem->AddMappingContext(MappingContext, MappingPriority);
+		}
+	}
 }
 
 template<class UserClass, typename FuncType>

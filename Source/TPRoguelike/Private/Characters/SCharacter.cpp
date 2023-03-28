@@ -11,7 +11,6 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -120,61 +119,56 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	URogueInputComponent* RogueIC = CastChecked<URogueInputComponent>(PlayerInputComponent);
-
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if (RogueIC)
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		RogueIC->SetMappingContext(Controller, DefaultCharacterInputMapping, 0);
+
+		TArray<uint32> BindHandles;
+		//RogueIC->BindAbilityActions(CharacterInputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+
+		//RogueIC->BindNativeAction(CharacterInputConfig, MoveTag, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
+		//RogueIC->BindNativeAction(DefaultCharacterInputMapping, LookTag, ETriggerEvent::Triggered, this, &ASCharacter::Input_LookMouse, /*bLogIfNotFound=*/ false);
+		//RogueIC->BindNativeAction(DefaultCharacterInputMapping, JumpTag, ETriggerEvent::Triggered, this, &ASCharacter::Input_Jump_Start, /*bLogIfNotFound=*/ false);
+		//RogueIC->BindNativeAction(DefaultCharacterInputMapping, SprintTag, ETriggerEvent::Triggered, this, &ASCharacter::Input_Sprint_Start, /*bLogIfNotFound=*/ false);
+		//RogueIC->BindNativeAction(DefaultCharacterInputMapping, SprintTag, ETriggerEvent::Canceled, this, &ASCharacter::Input_Sprint_Stop, /*bLogIfNotFound=*/ false);
+		//RogueIC->BindNativeAction(DefaultCharacterInputMapping, CrouchTag, ETriggerEvent::Triggered, this, &ASCharacter::Crouch_Start, /*bLogIfNotFound=*/ false);
+	}
+}
+
+void ASCharacter::Input_Move(const FInputActionValue& InputActionValue)
+{
+	if (Controller)
+	{
+		const FVector2D Value = InputActionValue.Get<FVector2D>();
+		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+
+		if (Value.X != 0.0f)
 		{
-			InputSubsystem->AddMappingContext(DefaultCharacterInputMapping, 0);
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+			this->AddMovementInput(MovementDirection, Value.X);
+		}
+
+		if (Value.Y != 0.0f)
+		{
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+			this->AddMovementInput(MovementDirection, Value.Y);
 		}
 	}
-
-
-	//PlayerInputComponent->BindAxis("MoveForward", this, &ASCharacter::MoveForward);
-	//PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
-	//
-	//PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	//PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	//
-	//PlayerInputComponent->BindAction("LMB_Action", IE_Pressed, this, &ASCharacter::LMB_Action_Start);
-	//PlayerInputComponent->BindAction("LMB_Action", IE_Released, this, &ASCharacter::LMB_Action_Stop);
-	//PlayerInputComponent->BindAction("RMB_Action", IE_Pressed, this, &ASCharacter::RMB_Action_Start);
-	//PlayerInputComponent->BindAction("RMB_Action", IE_Released, this, &ASCharacter::RMB_Action_Stop);
-	//PlayerInputComponent->BindAction("F_Action", IE_Pressed, this, &ASCharacter::F_Action_Start);
-	//PlayerInputComponent->BindAction("F_Action", IE_Released, this, &ASCharacter::F_Action_Stop);
-	//PlayerInputComponent->BindAction("Q_Ability", IE_Pressed, this, &ASCharacter::Q_Ability_Start);
-	//PlayerInputComponent->BindAction("Q_Ability", IE_Released, this, &ASCharacter::Q_Ability_Stop);
-	//PlayerInputComponent->BindAction("E_Ability", IE_Pressed, this, &ASCharacter::E_Ability_Start);
-	//PlayerInputComponent->BindAction("E_Ability", IE_Released, this, &ASCharacter::E_Ability_Stop);
-	//PlayerInputComponent->BindAction("X_Action", IE_Pressed, this, &ASCharacter::F_Action_Start);
-	//PlayerInputComponent->BindAction("X_Action", IE_Released, this, &ASCharacter::F_Action_Stop);
-	//PlayerInputComponent->BindAction("Shift_Action", IE_Pressed, this, &ASCharacter::Shift_Action_Start);
-	//PlayerInputComponent->BindAction("Shift_Action", IE_Released, this, &ASCharacter::Shift_Action_Stop);
-	//PlayerInputComponent->BindAction("Space_Action", IE_Pressed, this, &ASCharacter::Space_Action_Start);
-	//PlayerInputComponent->BindAction("Space_Action", IE_Released, this, &ASCharacter::Space_Action_Stop);
-	//PlayerInputComponent->BindAction("Control_Action", IE_Pressed, this, &ASCharacter::Control_Action_Start);
-	//PlayerInputComponent->BindAction("Control_Action", IE_Released, this, &ASCharacter::Control_Action_Start);
-
 }
 
-void ASCharacter::MoveForward(float Value)
+void ASCharacter::Input_LookMouse(const FInputActionValue& InputActionValue)
 {
-	FRotator ControlRot = GetControlRotation();
-	ControlRot.Pitch = 0.f;
-	ControlRot.Roll = 0.f;
-	
-	AddMovementInput(ControlRot.Vector(), Value);
-}
+	const FVector2D Value = InputActionValue.Get<FVector2D>();
 
-void ASCharacter::MoveRight(float Value)
-{
-	FRotator ControlRot = GetControlRotation();
-	ControlRot.Pitch = 0.f;
-	ControlRot.Roll = 0.f;
+	if (Value.X != 0.0f)
+	{
+		this->AddControllerYawInput(Value.X);
+	}
 
-	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
-	
-	AddMovementInput(RightVector, Value);
+	if (Value.Y != 0.0f)
+	{
+		this->AddControllerPitchInput(Value.Y);
+	}
 }
 
 //////////////////////////////////////////////////////
@@ -199,30 +193,30 @@ void ASCharacter::RMB_Action_Stop()
 	ActionComponent->StopActionByName(this, "Parry");
 }
 
-void ASCharacter::Shift_Action_Start()
+void ASCharacter::Input_Sprint_Start(const FInputActionValue& InputActionValue)
 {
 	ActionComponent->StartActionByName(this, "Sprint");
 }
 
-void ASCharacter::Shift_Action_Stop()
+void ASCharacter::Input_Sprint_Stop(const FInputActionValue& InputActionValue)
 {
 	ActionComponent->StopActionByName(this, "Sprint");
 }
 
-void ASCharacter::Space_Action_Start()
+void ASCharacter::Input_Jump_Start(const FInputActionValue& InputActionValue)
 {
 	ACharacter::Jump();
 }
 
-void ASCharacter::Space_Action_Stop()
+void ASCharacter::Input_Jump_Stop(const FInputActionValue& InputActionValue)
 {
 }
 
-void ASCharacter::Control_Action_Start()
+void ASCharacter::Crouch_Start()
 {
 }
 
-void ASCharacter::Control_Action_Stop()
+void ASCharacter::Croch_Stop()
 {
 }
 

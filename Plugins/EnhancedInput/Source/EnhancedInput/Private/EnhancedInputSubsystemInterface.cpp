@@ -130,7 +130,7 @@ EMappingQueryResult IEnhancedInputSubsystemInterface::QueryMapKeyInContextSet(co
 	EInputActionValueType KeyValueType = FInputActionValue(Key).GetValueType();
 	if (Action->ValueType != KeyValueType)
 	{
-		// We exclude bool -> Axis1D promotions, as these are commonly used for paired mappings (e.g. W + S/Negate bound to a MoveForward action), and are fairly intuitive anyway.
+		// We exclude bool -> Axis1D promotions, as these are commonly used for paired mappings (e.g. W + S/Negate bound to a Input_Move action), and are fairly intuitive anyway.
 		if (Action->ValueType != EInputActionValueType::Axis1D || KeyValueType != EInputActionValueType::Boolean)
 		{
 			OutIssues.Add(KeyValueType < Action->ValueType ? EMappingQueryIssue::ForcesTypePromotion : EMappingQueryIssue::ForcesTypeDemotion);

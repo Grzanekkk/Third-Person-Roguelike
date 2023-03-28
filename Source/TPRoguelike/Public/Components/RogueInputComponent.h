@@ -17,10 +17,10 @@ class TPROGUELIKE_API URogueInputComponent : public UEnhancedInputComponent
 	GENERATED_BODY()
 	
 public:
-	void SetMappingContext(UInputMappingContext* MappingContext, int32 Priority);
+	void SetMappingContext(AController* Controller, UInputMappingContext* MappingContext, int32 MappingPriority);
 
 	template<class UserClass, typename FuncType>
-	void BindNativeAction(const URogueInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound);
+	void BindNativeAction(const URogueInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound = true);
 
 	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
 	void BindAbilityActions(const URogueInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
